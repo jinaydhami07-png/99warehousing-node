@@ -142,3 +142,82 @@ JS, served straight from `public/`.
 Development source of truth is
 [99warehousing](https://github.com/jinaydhami07-png/99warehousing); this repo
 is the generated deployment artifact.
+
+---
+
+## Deploying to Vercel
+
+This repo runs on **both** cPanel and Vercel. cPanel runs `app.js` as a
+long-lived process; Vercel invokes `api/index.js` per request. Neither entry
+point interferes with the other.
+
+| File | Role |
+|---|---|
+| `api/index.js` | Serverless handler — the Express app, minus `listen()` |
+| `vercel.json` | Static from `public/`, `/api/*` to the function |
+| `.vercelignore` | Keeps `app.js` and the `.htaccess` files out of the bundle |
+
+### Settings must be added in the Vercel dashboard
+
+`server/env` is not in this repository and Vercel never sees it. Add these
+under **Project → Settings → Environment Variables**, copying the values from
+your own `env` file:
+
+```
+MONGODB_URI
+JWT_ACCESS_SECRET
+JWT_REFRESH_SECRET
+JWT_ACCESS_EXPIRES
+JWT_REFRESH_EXPIRES
+BCRYPT_ROUNDS
+ADMIN_PASSKEY
+CORS_ORIGINS
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+GOOGLE_CALLBACK_URL
+GOOGLE_CALLBACK_URLS
+MEDIA_DRIVER
+BODY_LIMIT
+TRUST_PROXY
+LOG_LEVEL
+MONGO_POOL_SIZE
+RATE_LIMIT_WINDOW_MIN
+RATE_LIMIT_MAX
+AUTH_RATE_LIMIT_MAX
+```
+
+Do **not** set `PORT` — Vercel has no port to listen on. `NODE_ENV` is set to
+`production` by Vercel automatically.
+
+Three of these need different values than the cPanel deployment:
+
+- **`CORS_ORIGINS`** — add your Vercel URL (`https://<project>.vercel.app`)
+  alongside the real domain. Production refuses to start if it still says
+  `localhost`.
+- **`GOOGLE_CALLBACK_URL`** — must point at the deployed domain over https,
+  and the same string must be registered in Google Cloud Console. Production
+  refuses to start on a `localhost` or `http` value.
+- **`MONGO_POOL_SIZE`** — set it to `5` or lower. Every warm function instance
+  holds its own pool, so the cPanel value of 10 multiplies fast and can
+  exhaust the Atlas connection limit.
+
+### Atlas must allow Vercel
+
+**Atlas → Network Access → Add IP Address → `0.0.0.0/0`.**
+
+Serverless functions have no fixed IP, so an allowlist of specific addresses
+blocks every request. This is the most common reason the site deploys fine but
+the API returns errors.
+
+### What runs where
+
+- `/` and every `.html` page, plus `assets/` — served by Vercel's CDN straight
+  from `public/`. No function invocation.
+- `/api/*` — the serverless function.
+
+### Known limits
+
+Cold starts add a second or two to the first request after idle. Uploads are
+capped by Vercel's request body limit, which is smaller than cPanel's. If
+either matters, a long-lived host (Render, Railway, or the cPanel Node app)
+avoids both.

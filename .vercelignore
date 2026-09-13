@@ -1,0 +1,13 @@
+# The cPanel/Passenger entry point. Vercel uses api/index.js instead, and this
+# file would only confuse the build — it calls app.listen(), which serverless
+# never runs.
+app.js
+
+# Apache rules. Vercel does not read .htaccess; its own routing lives in
+# vercel.json. Harmless but pointless to upload.
+.htaccess
+server/.htaccess
+
+# Never needed at runtime.
+server/.env.example
+README.md
