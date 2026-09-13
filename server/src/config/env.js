@@ -269,11 +269,20 @@ if (raw.NODE_ENV === 'production') {
      Skipped when MEDIA_DRIVER=mongo, which says the operator has chosen
      MongoDB on purpose — a deliberate choice is not a misconfiguration, and
      failing to start over it would be the tool second-guessing them. */
-  if (raw.MEDIA_DRIVER !== 'mongo' && Boolean(raw.AWS_S3_BUCKET) !== Boolean(raw.AWS_REGION)) {
+  /* Only a BUCKET without a region is a mistake worth refusing over: it says
+     "use S3" and then silently cannot, so uploads land in MongoDB unnoticed.
+
+     A REGION without a bucket is not evidence of anything. AWS Lambda — and
+     so Vercel, Netlify and anything else built on it — injects AWS_REGION
+     into every function, whether or not the app has heard of S3. This used to
+     be a two-way check, which refused to start on every Lambda host with no
+     S3 configured at all. media.driver below already requires both values
+     before choosing S3, so a lone region resolves to MongoDB correctly. */
+  if (raw.MEDIA_DRIVER !== 'mongo' && raw.AWS_S3_BUCKET && !raw.AWS_REGION) {
     fatal.push(
-      'AWS_S3_BUCKET and AWS_REGION must be set together. With only one of ' +
-      'them, uploads fall back to storing image bytes in MongoDB. Set ' +
-      'MEDIA_DRIVER=mongo if that is what you actually want.'
+      'AWS_S3_BUCKET is set but AWS_REGION is not. Without a region, uploads ' +
+      'fall back to storing image bytes in MongoDB. Set AWS_REGION, or set ' +
+      'MEDIA_DRIVER=mongo if MongoDB storage is what you actually want.'
     );
   }
 
