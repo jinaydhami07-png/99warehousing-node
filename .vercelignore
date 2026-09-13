@@ -1,13 +1,18 @@
-# The cPanel/Passenger entry point. Vercel uses api/index.js instead, and this
-# file would only confuse the build — it calls app.listen(), which serverless
+# Patterns follow .gitignore rules: WITHOUT a leading slash a name matches at
+# ANY depth. That is exactly how this file once broke the deployment — a bare
+# "app.js" also matched server/src/app.js, the Express application itself, and
+# every API request failed with "Cannot find module '../server/src/app'".
+# Anchor anything meant for the root only.
+
+# The cPanel/Passenger entry point, at the repo root only. Vercel uses
+# api/index.js instead, and this file calls app.listen(), which serverless
 # never runs.
-app.js
+/app.js
 
-# Apache rules. Vercel does not read .htaccess; its own routing lives in
-# vercel.json. Harmless but pointless to upload.
+# Apache rules, wherever they are. Vercel ignores .htaccess; its routing is in
+# vercel.json.
 .htaccess
-server/.htaccess
 
-# Never needed at runtime.
-server/.env.example
-README.md
+# Not needed at runtime.
+/server/.env.example
+/README.md
