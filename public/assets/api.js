@@ -230,9 +230,15 @@
      where the browser may never settle the promise) and the page
      would sit on a spinner instead of falling back to demo data.
 
-     This budget only makes sense for a READ, where the question being asked
-     is "is there a backend at all" and the answer arrives in milliseconds. */
-  var API_TIMEOUT_MS = 3500;
+     It has to outlast the server's own database timeout. The API waits up to
+     10 s for MongoDB before answering 503 with the actual reason; a browser
+     that gives up at 3.5 s never sees that answer, reports "no backend" for
+     a backend that is up, and on a slow first request — a serverless cold
+     start plus a fresh Atlas connection routinely takes several seconds —
+     fails a page that was about to load. A static host with no API at all
+     still answers in milliseconds with its own 404 page, which is caught
+     separately below, so this does not slow that case down. */
+  var API_TIMEOUT_MS = 15000;
 
   /* A write gets far longer, and an upload longer still.
      Three and a half seconds is not a timeout for a ten-megabyte photo on a
