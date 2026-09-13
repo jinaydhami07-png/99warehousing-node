@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>Account Settings — 99Warehousing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.page-wrap { padding: 120px 40px 80px; max-width: 720px; margin: 0 auto; }
+.page-title { font-family: var(--font-display); font-size: 40px; font-weight: 600; margin-bottom: 8px; }
+.page-title em { font-style: italic; color: var(--antique-brown); }
+.page-sub { font-size: 14px; color: var(--text-mid); margin-bottom: 36px; }
+
+.card {
+  background: rgba(255,255,255,0.60); backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.75); border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(139,111,78,0.09), inset 0 1px 0 rgba(255,255,255,0.9);
+  padding: 32px; margin-bottom: 20px;
+}
+.card-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+
+.identity { display: flex; align-items: center; gap: 18px; margin-bottom: 26px; }
+.identity img, .identity .initial {
+  width: 68px; height: 68px; border-radius: 50%; object-fit: cover; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold));
+  color: var(--deep-mahogany); font-size: 27px; font-weight: 600;
+}
+.identity-name { font-family: var(--font-display); font-size: 21px; font-weight: 600; }
+.identity-email { font-size: 13px; color: var(--text-mid); }
+.identity-badge {
+  display: inline-block; margin-top: 6px; font-size: 9.5px; letter-spacing: 1.5px;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 100px;
+  background: rgba(184,150,74,0.16); color: var(--antique-brown);
+}
+
+.fld { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+.fld label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--antique-gold); }
+.fld input {
+  background: rgba(250,247,242,0.85); border: 1px solid rgba(200,168,130,0.25);
+  border-radius: 8px; padding: 11px 14px; font-family: var(--font-body); font-size: 13px;
+  color: var(--deep-mahogany); outline: none; width: 100%;
+}
+.fld input:focus { border-color: var(--antique-gold); box-shadow: 0 0 0 3px rgba(184,150,74,0.1); }
+.fld input[readonly] { background: rgba(0,0,0,0.035); color: var(--text-mid); cursor: not-allowed; }
+.fld small { font-size: 11px; color: var(--text-mid); }
+
+.btn-save {
+  background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany));
+  color: var(--off-white); border: none; border-radius: 100px; padding: 13px 34px;
+  font-family: var(--font-body); font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer;
+}
+.btn-save:disabled { opacity: .6; cursor: default; }
+.btn-danger {
+  background: transparent; color: #A6362D; border: 1px solid rgba(166,54,45,0.35);
+  border-radius: 100px; padding: 12px 28px; font-family: var(--font-body);
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+}
+.msg { font-size: 12.5px; margin-top: 14px; }
+.msg.ok { color: #2E6B3C; }
+.msg.err { color: #A6362D; }
+.stat-row { display: flex; gap: 28px; flex-wrap: wrap; }
+.stat-row div span { display: block; }
+.stat-num { font-family: var(--font-display); font-size: 26px; font-weight: 600; color: var(--deep-mahogany); }
+.stat-lab { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-mid); }
+</style>
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><span>99</span>Warehousing</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="warehouses.html">Warehouses</a></li>
+    <li><a href="land-parks.html">Land &amp; Parks</a></li>
+    <li><a href="insights.html">Insights</a></li>
+    <li><a href="calculator.html">Calculator</a></li>
+    <li><a href="partners.html">Partners</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="submit-listing.html" class="btn-cta-nav">List Property</a>
+    <div class="hamburger" onclick="toggleMenu()" id="hamburger" role="button" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html" onclick="toggleMenu()">Home</a></li>
+    <li><a href="warehouses.html" onclick="toggleMenu()">Warehouses</a></li>
+    <li><a href="land-parks.html" onclick="toggleMenu()">Land &amp; Parks</a></li>
+    <li><a href="insights.html" onclick="toggleMenu()">Insights</a></li>
+    <li><a href="calculator.html" onclick="toggleMenu()">Calculator</a></li>
+    <li><a href="partners.html" onclick="toggleMenu()">Partners</a></li>
+    <li><a href="about.html" onclick="toggleMenu()">About</a></li>
+    <li><a href="contact.html" onclick="toggleMenu()">Contact</a></li>
+  </ul>
+</div>
+
+<div class="page-wrap">
+  <h1 class="page-title">Account <em>Settings</em></h1>
+  <p class="page-sub">Your details, and how you appear to owners you enquire with.</p>
+
+  <div class="card">
+    <div class="identity">
+      <span class="initial" id="acAvatar">?</span>
+      <div>
+        <div class="identity-name" id="acName">—</div>
+        <div class="identity-email" id="acEmail">—</div>
+        <span class="identity-badge" id="acProvider"></span>
+      </div>
+    </div>
+
+    <div class="fld">
+      <label for="fName">Full name</label>
+      <input id="fName" type="text" autocomplete="name">
+    </div>
+    <div class="fld">
+      <label for="fEmail">Email address</label>
+      <input id="fEmail" type="email" readonly>
+      <small id="emailNote">Your email is how you sign in and cannot be changed here.</small>
+    </div>
+    <div class="fld">
+      <label for="fMobile">Mobile number</label>
+      <input id="fMobile" type="tel" autocomplete="tel" placeholder="+91 98765 43210">
+      <small>Shown to buyers who unlock the contact details on your listings.</small>
+    </div>
+    <div class="fld">
+      <label for="fCompany">Company</label>
+      <input id="fCompany" type="text" autocomplete="organization">
+    </div>
+
+    <button class="btn-save" id="saveBtn" onclick="saveAccount()">Save Changes</button>
+    <div class="msg" id="saveMsg" hidden></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Your listings</div>
+    <div class="stat-row">
+      <div><span class="stat-num" id="cMine">—</span><span class="stat-lab">Submitted</span></div>
+      <div><span class="stat-num" id="cLive">—</span><span class="stat-lab">Live</span></div>
+      <div><span class="stat-num" id="cWaiting">—</span><span class="stat-lab">Awaiting review</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Session</div>
+    <p class="page-sub" style="margin-bottom:18px;">
+      Signing out ends this session everywhere it was started from this account.
+    </p>
+    <button class="btn-danger" onclick="signOutNow()">Sign Out</button>
+  </div>
+</div>
+
+<script>
+/* Everything here needs a session, so the page is guarded the same way the
+   dashboard is: confirm with the server first, and send anyone without one to
+   the login page rather than rendering an empty shell. */
+document.addEventListener('DOMContentLoaded', function () {
+  var wrap = document.querySelector('.page-wrap');
+  wrap.style.visibility = 'hidden';
+
+  var ready = API.isAuthed() ? Promise.resolve() : API.refresh();
+
+  ready
+    .then(function () { return API.auth.me(); })
+    .then(function (d) {
+      if (!d || !d.user) throw new Error('no session');
+      fill(d.user);
+      wrap.style.visibility = '';
+      return loadCounts();
+    })
+    .catch(function () {
+      try { sessionStorage.setItem('bpsf.after_login', 'account.html'); } catch (e) {}
+      location.replace('login.html');
+    });
+});
+
+function fill(u) {
+  document.getElementById('acName').textContent = u.name || '—';
+  document.getElementById('acEmail').textContent = u.email || '';
+  document.getElementById('acProvider').textContent =
+    u.authProvider === 'google' ? 'Google account' : 'Email account';
+
+  var slot = document.getElementById('acAvatar');
+  if (u.avatar) {
+    var img = document.createElement('img');
+    img.src = u.avatar;
+    img.alt = '';
+    /* Same fallback as the navbar chip — a broken image is worse than an initial. */
+    img.onerror = function () { img.replaceWith(initial(u)); };
+    slot.replaceWith(img);
+  } else {
+    slot.textContent = ((u.name || u.email || '?').trim()[0] || '?').toUpperCase();
+  }
+
+  document.getElementById('fName').value = u.name || '';
+  document.getElementById('fEmail').value = u.email || '';
+  document.getElementById('fMobile').value = u.mobile || '';
+  document.getElementById('fCompany').value = u.company || '';
+
+  if (u.authProvider === 'google') {
+    document.getElementById('emailNote').textContent =
+      'This account signs in with Google, so the email is managed there.';
+  }
+}
+
+function initial(u) {
+  var s = document.createElement('span');
+  s.className = 'initial';
+  s.textContent = ((u.name || u.email || '?').trim()[0] || '?').toUpperCase();
+  return s;
+}
+
+function loadCounts() {
+  return API.properties.mine().then(function (res) {
+    var items = res.items || [];
+    document.getElementById('cMine').textContent = items.length;
+    document.getElementById('cLive').textContent = items.filter(function (p) { return p.status === 'approved'; }).length;
+    document.getElementById('cWaiting').textContent = items.filter(function (p) { return p.status === 'pending'; }).length;
+  }).catch(function () { /* counts are a nicety, not worth an error banner */ });
+}
+
+function saveAccount() {
+  var msg = document.getElementById('saveMsg');
+  var btn = document.getElementById('saveBtn');
+  var val = function (id) { return document.getElementById(id).value.trim(); };
+
+  var show = function (text, kind) {
+    msg.textContent = text;
+    msg.className = 'msg ' + kind;
+    msg.hidden = false;
+  };
+
+  var name = val('fName');
+  if (name.length < 2) return show('Please enter your name.', 'err');
+
+  /* Only send what changed — the server rejects an empty patch, and sending
+     unchanged fields would overwrite a value edited in another tab. */
+  var payload = { name: name };
+  var mobile = val('fMobile');
+  var company = val('fCompany');
+  if (mobile) payload.mobile = mobile;
+  if (company) payload.company = company;
+
+  btn.disabled = true;
+  var label = btn.textContent;
+  btn.textContent = 'Saving…';
+
+  /* Through the API layer, not a raw fetch: it handles the envelope, the
+     token refresh on a 401, and turns a validation failure into a message
+     naming the offending field. */
+  API.account.update(payload)
+    .then(function (res) {
+      var u = res.user || res.item || res;
+      if (u && u.email) {
+        fill(u);
+        /* Keep the cached copy in step so the navbar chip updates too. */
+        API.setSession(sessionStorage.getItem('bpsf.access_token'), u);
+      }
+      show('Saved.', 'ok');
+    })
+    .catch(function (e) { show(e.message || 'Could not save your changes.', 'err'); })
+    .then(function () { btn.disabled = false; btn.textContent = label; });
+}
+
+function signOutNow() {
+  API.auth.logout().then(function () { window.location = 'index.html'; });
+}
+</script>
+</body>
+</html>

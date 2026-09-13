@@ -1,0 +1,450 @@
+/* ============================================================
+   99Warehousing — auth pages (login, register,
+   forgot-password). Split-screen layout: brand panel on the
+   left, form on the right. Requires site.css for tokens.
+   ============================================================ */
+
+html, body { height: 100%; }
+
+body { overflow-x: hidden; }
+
+.auth-page { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+
+/* ─── LEFT / BRAND PANEL ─── */
+.auth-left {
+  background: linear-gradient(135deg, var(--deep-mahogany), rgba(44,74,107,0.9));
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px;
+}
+
+.auth-left::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(184,150,74,0.15) 0%, transparent 70%);
+}
+
+.auth-left::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: -80px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(ellipse, rgba(200,216,228,0.08) 0%, transparent 70%);
+}
+
+.auth-logo {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  text-decoration: none;
+  position: relative;
+  z-index: 2;
+}
+
+.auth-logo span { color: var(--antique-gold); }
+
+.auth-left-content { position: relative; z-index: 2; }
+
+.auth-left-title {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 600;
+  color: white;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.auth-left-title em { font-style: italic; color: var(--warm-gold); }
+
+.auth-left-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.75;
+  max-width: 380px;
+  margin-bottom: 36px;
+}
+
+.auth-left-stats { display: flex; gap: 32px; }
+
+.als-num { font-family: var(--font-display); font-size: 28px; font-weight: 600; color: white; }
+
+.als-label {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-top: 3px;
+}
+
+.auth-left-quote {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 15px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.7;
+  border-left: 2px solid rgba(184,150,74,0.3);
+  padding-left: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.auth-perks { display: flex; flex-direction: column; gap: 12px; }
+
+.perk { display: flex; align-items: center; gap: 12px; font-size: 13px; color: rgba(255,255,255,0.7); }
+
+.perk-dot {
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+/* ─── RIGHT / FORM PANEL ─── */
+.auth-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px;
+  background: var(--off-white);
+  overflow-y: auto;
+}
+
+.auth-card { width: 100%; max-width: 440px; }
+
+.auth-card-title { font-family: var(--font-display); font-size: 30px; font-weight: 600; margin-bottom: 4px; }
+.auth-card-title em { font-style: italic; color: var(--antique-brown); }
+.auth-card-sub { font-size: 13px; color: var(--text-mid); margin-bottom: 24px; line-height: 1.6; }
+
+/* ─── TABS ─── */
+.auth-tabs {
+  display: flex;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 9px;
+  border-radius: 7px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-mid);
+  border: none;
+  background: none;
+}
+
+.auth-tab.active { background: white; color: var(--deep-mahogany); box-shadow: 0 2px 8px rgba(74,55,40,0.1); }
+
+/* ─── GOOGLE / DIVIDER ─── */
+.btn-google {
+  width: 100%;
+  background: white;
+  border: 1px solid rgba(200,168,130,0.3);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--deep-mahogany);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 18px;
+}
+
+.btn-google:hover { box-shadow: 0 4px 16px rgba(74,55,40,0.08); }
+
+.google-icon {
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.divider { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.div-line { flex: 1; height: 1px; background: rgba(200,168,130,0.2); }
+.div-text { font-size: 11px; color: var(--text-mid); letter-spacing: 1px; text-transform: uppercase; }
+
+/* ─── FORM ─── */
+.form-group { margin-bottom: 14px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+
+.form-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--antique-gold);
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  background: rgba(250,247,242,0.9);
+  border: 1px solid rgba(200,168,130,0.25);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--deep-mahogany);
+  outline: none;
+  transition: border-color 0.25s;
+}
+
+.form-input:focus { border-color: var(--antique-gold); }
+
+.pw-row { position: relative; }
+
+.pw-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-mid);
+}
+
+.form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.remember-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-mid); }
+.forgot-link { font-size: 12px; color: var(--antique-gold); text-decoration: none; }
+.forgot-link:hover { text-decoration: underline; }
+
+.terms-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-mid);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.terms-row a { color: var(--antique-gold); text-decoration: none; }
+
+.btn-auth {
+  width: 100%;
+  background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany));
+  color: var(--off-white);
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(74,55,40,0.2);
+  margin-bottom: 18px;
+  transition: all 0.25s;
+}
+
+.btn-auth:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(74,55,40,0.3); }
+
+.auth-switch { text-align: center; font-size: 13px; color: var(--text-mid); }
+.auth-switch a { color: var(--antique-gold); text-decoration: none; }
+
+/* ─── USER TYPE CARDS ─── */
+.type-section-title {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--antique-gold);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.user-types { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 22px; }
+
+.utype {
+  background: rgba(250,247,242,0.8);
+  border: 2px solid rgba(200,168,130,0.2);
+  border-radius: 12px;
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.utype:hover { border-color: rgba(184,150,74,0.5); }
+.utype.active { border-color: var(--antique-gold); background: rgba(184,150,74,0.07); }
+.utype-icon { font-size: 22px; margin-bottom: 6px; }
+.utype-name { font-size: 12px; font-weight: 600; color: var(--deep-mahogany); }
+.utype-desc { font-size: 10px; color: var(--text-mid); margin-top: 3px; line-height: 1.4; }
+
+.utype-badge {
+  display: inline-block;
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold));
+  color: var(--deep-mahogany);
+  padding: 2px 7px;
+  border-radius: 100px;
+  margin-top: 4px;
+}
+
+/* ─── BROKER NOTICE ─── */
+.broker-notice {
+  background: rgba(184,150,74,0.07);
+  border: 1px solid rgba(184,150,74,0.2);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--text-mid);
+  line-height: 1.6;
+  display: none;
+}
+
+.broker-notice.show { display: block; }
+.broker-notice a { color: var(--antique-gold); }
+
+/* ─── ADMIN ACCESS GATE ─── */
+.admin-gate {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(200,168,130,0.28);
+}
+
+.admin-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--warm-tan);
+  padding: 6px;
+  transition: color 0.2s ease;
+}
+
+.admin-toggle:hover { color: var(--antique-gold); }
+.admin-chevron { display: inline-block; font-size: 9px; transition: transform 0.25s ease; }
+
+.admin-panel {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid rgba(184,150,74,0.28);
+  border-radius: 10px;
+  background: rgba(184,150,74,0.05);
+  animation: adminIn 0.28s ease both;
+}
+
+.admin-panel[hidden] { display: none; }
+
+@keyframes adminIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.admin-help {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--text-mid);
+  margin-bottom: 14px;
+}
+
+.admin-error {
+  font-size: 11.5px;
+  color: #A6362D;
+  background: rgba(194,69,60,0.09);
+  border: 1px solid rgba(194,69,60,0.28);
+  border-radius: 7px;
+  padding: 8px 11px;
+  margin-bottom: 12px;
+}
+
+.admin-error[hidden] { display: none; }
+
+.btn-admin {
+  width: 100%;
+  background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold));
+  color: var(--deep-mahogany);
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-admin:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(184,150,74,0.35); }
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-panel { animation: none; }
+  .btn-admin:hover { transform: none; }
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  /* `auto 1fr` matters: without it the two rows share the 100vh minimum and
+     the strip stretches to nearly a third of the screen. */
+  .auth-page { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+
+  /* The brand panel used to be dropped wholesale here, which left the sign-in
+     pages with no logo anywhere on a phone — the one screen where a visitor
+     most wants to see whose site they are handing a password to. It stays, as
+     a slim header strip: the mark survives, the marketing column goes. */
+  .auth-left {
+    display: flex;
+    min-height: 0;
+    padding: 16px 20px;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Everything except the mark goes. Written as "not the logo" rather than by
+     naming the blocks — login, register and forgot-password each carry a
+     different mix of copy, stats and pull-quote, and a list would silently
+     miss whichever one gets added next. */
+  .auth-left > :not(.auth-logo) { display: none; }
+  /* Decorative corner glows sized for a full-height panel; in a 60px strip
+     they are just two blurred blobs over the mark. */
+  .auth-left::before,
+  .auth-left::after { display: none; }
+
+  .auth-right { padding: 24px; }
+  .form-row { grid-template-columns: 1fr; }
+}

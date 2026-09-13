@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>Login — 99Warehousing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/auth.css">
+<style>
+  /* auth.css sets .auth-left to justify-content:space-between so the quote
+     block sits pinned at the bottom. This page has no quote, so without
+     this override the title block would jump down to fill that gap. */
+  .auth-left { justify-content: flex-start; gap: 64px; }
+</style>
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+<div class="auth-page">
+  <!-- LEFT -->
+  <div class="auth-left">
+    <a href="index.html" class="auth-logo"><span>99</span>Warehousing</a>
+    <div class="auth-left-content">
+      <div class="auth-left-title">India's Industrial<br><em>Real Estate Platform</em></div>
+      <div class="auth-left-sub">2,400+ verified listings. 340+ verified agencies. Transparent per-sq-ft pricing across 48 cities. All in one place.</div>
+      <div class="auth-left-stats">
+        <div><div class="als-num">2,400+</div><div class="als-label">Listings</div></div>
+        <div><div class="als-num">48</div><div class="als-label">Cities</div></div>
+        <div><div class="als-num">₹240Cr</div><div class="als-label">Deals Closed</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-card-title">Welcome <em>Back</em></div>
+      <div class="auth-card-sub">Sign in to access your dashboard, saved listings, and enquiries.</div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="setTab(this,'login')">Sign In</button>
+        <button class="auth-tab" onclick="window.location='register.html'">Create Account</button>
+      </div>
+
+      <button class="btn-google" type="button" onclick="googleSignIn()">
+        <div class="google-icon">G</div>
+        Continue with Google
+      </button>
+
+      <div class="divider"><div class="div-line"></div><span class="div-text">or with email</span><div class="div-line"></div></div>
+
+      <div class="admin-error" id="loginError" role="alert" hidden></div>
+
+      <div class="form-group">
+        <label class="form-label" for="emailField">Email Address</label>
+        <input class="form-input" type="email" id="emailField" placeholder="you@company.com"
+               autocomplete="email" onkeydown="if(event.key==='Enter')signIn()">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="pwField">Password</label>
+        <div class="pw-row">
+          <input class="form-input" type="password" placeholder="••••••••" id="pwField"
+                 autocomplete="current-password" onkeydown="if(event.key==='Enter')signIn()">
+          <button class="pw-toggle" type="button" onclick="togglePW()">👁</button>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <label class="remember-row"><input type="checkbox" checked> Remember me</label>
+        <a href="forgot-password.html" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <button class="btn-auth" id="signInBtn" onclick="signIn()">Sign In →</button>
+
+      <div class="auth-switch">Don't have an account? <a href="register.html">Create one free</a></div>
+
+      <!-- ─── ADMIN ACCESS ─── -->
+      <div class="admin-gate">
+        <button class="admin-toggle" type="button" onclick="toggleAdmin()" aria-expanded="false" aria-controls="adminPanel">
+          <span>Staff access</span><span class="admin-chevron" id="adminChevron">▾</span>
+        </button>
+
+        <div class="admin-panel" id="adminPanel" hidden>
+          <p class="admin-help">The admin dashboard requires a passkey. Property owners and buyers do not need this.</p>
+          <div class="form-group">
+            <label class="form-label" for="adminKey">Admin passkey</label>
+            <div class="pw-row">
+              <input class="form-input" type="password" id="adminKey" placeholder="Enter passkey"
+                     autocomplete="off" onkeydown="if(event.key==='Enter')adminSignIn()">
+              <button class="pw-toggle" type="button" onclick="toggleKey()" aria-label="Show passkey">👁</button>
+            </div>
+          </div>
+          <div class="admin-error" id="adminError" role="alert" hidden></div>
+          <button class="btn-admin" type="button" onclick="adminSignIn()">Enter Dashboard →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function togglePW(){const f=document.getElementById('pwField');f.type=f.type==='password'?'text':'password';}
+function toggleKey(){const f=document.getElementById('adminKey');f.type=f.type==='password'?'text':'password';}
+function setTab(el,t){document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+
+function busy(btn, on, label){
+  btn.disabled = on;
+  if (on) { btn.dataset.label = btn.textContent; btn.textContent = label; }
+  else if (btn.dataset.label) { btn.textContent = btn.dataset.label; }
+}
+
+function showLoginErr(msg){
+  const err = document.getElementById('loginError');
+  err.textContent = msg; err.hidden = false;
+}
+
+/* Email + password sign-in against the API. A normal sign-in is never an
+   admin sign-in — the server decides the role, and regular users land on
+   the listings page. */
+function signIn(){
+  const email = document.getElementById('emailField').value.trim();
+  const password = document.getElementById('pwField').value;
+  const btn = document.getElementById('signInBtn');
+  document.getElementById('loginError').hidden = true;
+
+  if (!email || !password) { showLoginErr('Enter your email and password.'); return; }
+
+  busy(btn, true, 'Signing in…');
+  API.auth.login(email, password)
+    .then(d => { window.location = d.user.role === 'admin' ? 'dashboard.html' : 'warehouses.html'; })
+    .catch(e => { busy(btn, false); showLoginErr(e.message); });
+}
+
+/* OAuth needs a full-page redirect — it cannot run inside fetch(). */
+function googleSignIn(){ window.location = API.auth.googleUrl(); }
+
+function toggleAdmin(){
+  const panel=document.getElementById('adminPanel');
+  const btn=document.querySelector('.admin-toggle');
+  const open=panel.hidden;
+  panel.hidden=!open;
+  btn.setAttribute('aria-expanded',String(open));
+  document.getElementById('adminChevron').style.transform=open?'rotate(180deg)':'';
+  if(open) document.getElementById('adminKey').focus();
+}
+
+/* The passkey is now verified on the SERVER — it is never shipped to the
+   browser, so it cannot be read out of the page source. */
+function adminSignIn(){
+  const key = document.getElementById('adminKey').value.trim();
+  const btn = document.querySelector('.btn-admin');
+  if(!key){ showErr('Enter the admin passkey to continue.'); return; }
+
+  busy(btn, true, 'Verifying…');
+  API.auth.adminLogin(key)
+    .then(() => { window.location = 'dashboard.html'; })
+    .catch(e => { busy(btn, false); showErr(e.message); });
+}
+
+function showErr(msg){
+  const err=document.getElementById('adminError');
+  err.textContent=msg; err.hidden=false;
+  document.getElementById('adminKey').select();
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  const p=new URLSearchParams(location.search);
+  if(p.get('admin')==='1'){
+    toggleAdmin();
+    if(p.get('denied')==='1') showErr('Admin sign-in required to open the dashboard.');
+  }
+  /* Google redirected back with an error. */
+  const oauthErr = p.get('error');
+  if (oauthErr === 'google_not_configured') {
+    showLoginErr('Google sign-in is not configured on the server yet.');
+  } else if (oauthErr === 'google_failed') {
+    showLoginErr('Google sign-in did not complete. Please try again.');
+  } else if (oauthErr === 'google_cancelled') {
+    /* The user pressed Cancel on Google's screen. That is a choice, not a
+       fault — say so plainly instead of implying something broke. */
+    showLoginErr('Google sign-in was cancelled. You can sign in with your email instead.');
+  }
+  /* api.js captures #token= from a successful Google redirect; once the
+     session is live, move the user on. */
+  window.addEventListener('bpsf:auth', function (e) {
+    if (e.detail && e.detail.user) {
+      window.location = e.detail.user.role === 'admin' ? 'dashboard.html' : 'warehouses.html';
+    }
+  });
+});
+</script>
+</body>
+</html>

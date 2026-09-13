@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>About Us — 99Warehousing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+
+/* HERO */
+.about-hero{padding:140px 40px 80px;background:linear-gradient(135deg,rgba(200,216,228,0.3),rgba(245,240,232,0.8),rgba(212,176,106,0.1));border-bottom:1px solid rgba(200,168,130,0.12);text-align:center;position:relative;overflow:hidden;}
+.about-hero::before{content:'✦';font-size:400px;color:rgba(184,150,74,0.04);position:absolute;top:-100px;left:50%;transform:translateX(-50%);pointer-events:none;}
+.hero-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--antique-gold);display:block;margin-bottom:14px;}
+.hero-title{font-family:var(--font-display);font-size:56px;font-weight:700;line-height:1.1;margin-bottom:18px;}
+.hero-title em{font-style:italic;color:var(--antique-brown);}
+.hero-quote{font-family:var(--font-editorial);font-size:22px;font-style:italic;color:var(--text-mid);max-width:680px;margin:0 auto 32px;line-height:1.6;}
+.hero-stats{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;}
+.hstat-num{font-family:var(--font-display);font-size:36px;font-weight:600;color:var(--deep-mahogany);}
+.hstat-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-mid);margin-top:3px;}
+
+/* STORY */
+.story-section{padding:80px 40px;max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.story-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--antique-gold);display:block;margin-bottom:12px;}
+.story-title{font-family:var(--font-display);font-size:36px;font-weight:600;line-height:1.2;margin-bottom:18px;}
+.story-title em{font-style:italic;color:var(--antique-brown);}
+.story-body p{font-size:14px;color:var(--text-mid);line-height:1.85;margin-bottom:14px;}
+.story-image{background:linear-gradient(135deg,rgba(200,216,228,0.5),rgba(212,176,106,0.2));border-radius:20px;height:360px;display:flex;align-items:center;justify-content:center;font-size:80px;border:1px solid rgba(255,255,255,0.7);box-shadow:0 16px 48px rgba(139,111,78,0.1);}
+
+/* VERIFICATION */
+.verify-section{background:linear-gradient(135deg,rgba(184,150,74,0.06),rgba(200,216,228,0.15));border-top:1px solid rgba(200,168,130,0.12);border-bottom:1px solid rgba(200,168,130,0.12);padding:80px 40px;text-align:center;}
+.verify-title{font-family:var(--font-display);font-size:36px;font-weight:600;margin-bottom:10px;}
+.verify-title em{font-style:italic;color:var(--antique-brown);}
+.verify-sub{font-size:14px;color:var(--text-mid);max-width:560px;margin:0 auto 48px;line-height:1.75;}
+.verify-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;max-width:1000px;margin:0 auto;}
+.vstep{background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.7);border-radius:16px;padding:28px 20px;text-align:center;}
+.vstep-num{width:44px;height:44px;background:linear-gradient(135deg,var(--antique-gold),var(--warm-gold));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--deep-mahogany);}
+.vstep-title{font-size:13px;font-weight:600;color:var(--deep-mahogany);margin-bottom:6px;}
+.vstep-desc{font-size:11px;color:var(--text-mid);line-height:1.6;}
+
+/* TEAM */
+.team-section{padding:80px 40px;max-width:1200px;margin:0 auto;}
+.section-title{font-family:var(--font-display);font-size:36px;font-weight:600;margin-bottom:8px;}
+.section-title em{font-style:italic;color:var(--antique-brown);}
+.section-sub{font-size:14px;color:var(--text-mid);margin-bottom:40px;}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.team-card{background:rgba(255,255,255,0.55);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.7);border-radius:16px;padding:24px 20px;text-align:center;transition:all 0.3s;}
+.team-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(139,111,78,0.1);}
+.team-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:30px;}
+.team-av1{background:linear-gradient(135deg,var(--antique-gold),var(--warm-gold));}
+.team-av2{background:linear-gradient(135deg,var(--powder-blue),var(--dusty-steel));}
+.team-av3{background:linear-gradient(135deg,var(--linen-beige),var(--warm-tan));}
+.team-av4{background:linear-gradient(135deg,rgba(154,175,155,0.5),rgba(200,216,228,0.6));}
+.team-name{font-family:var(--font-display);font-size:18px;font-weight:600;margin-bottom:2px;}
+.team-role{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--antique-gold);margin-bottom:8px;}
+.team-bio{font-size:12px;color:var(--text-mid);line-height:1.6;}
+
+/* TIMELINE */
+.timeline-section{background:var(--deep-mahogany);padding:80px 40px;}
+.timeline-title{font-family:var(--font-display);font-size:36px;font-weight:600;color:white;text-align:center;margin-bottom:48px;}
+.timeline-title em{font-style:italic;color:var(--warm-gold);}
+.timeline{position:relative;max-width:900px;margin:0 auto;}
+.timeline::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(184,150,74,0.2);transform:translateX(-50%);}
+.titem{display:grid;grid-template-columns:1fr 40px 1fr;gap:20px;align-items:center;margin-bottom:32px;}
+.titem:nth-child(even) .tcontent{order:3;text-align:left;}
+.titem:nth-child(even) .tblank{order:1;}
+.tcontent{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;}
+.tblank{}
+.tdot{width:40px;height:40px;background:linear-gradient(135deg,var(--antique-gold),var(--warm-gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;font-weight:700;color:var(--deep-mahogany);flex-shrink:0;box-shadow:0 0 0 4px rgba(184,150,74,0.15);}
+.tyear{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--antique-gold);margin-bottom:6px;}
+.tevent{font-size:13px;color:rgba(255,255,255,0.85);line-height:1.6;}
+
+/* PRESS */
+.press-section{padding:64px 40px;text-align:center;}
+.press-title{font-family:var(--font-display);font-size:28px;font-weight:600;margin-bottom:32px;}
+.press-title em{font-style:italic;color:var(--antique-brown);}
+.press-logos{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;}
+.press-logo{background:rgba(255,255,255,0.55);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.7);border-radius:10px;padding:14px 24px;font-size:13px;font-weight:600;color:var(--antique-brown);letter-spacing:1px;}
+
+@media(max-width:900px){.story-section{grid-template-columns:1fr;}.verify-steps{grid-template-columns:1fr 1fr;}.team-grid{grid-template-columns:1fr 1fr;}.timeline::before{left:20px;}.titem{grid-template-columns:1fr;}.tblank{display:none;}}
+@media(max-width:768px){.about-hero,.press-section,.team-section{padding-left:16px;padding-right:16px;}.hero-title{font-size:36px;}.team-grid{grid-template-columns:1fr;}}
+
+/* Phone icon pass. The story panel keeps its full 360px height on a phone
+   with an 80px emoji floating in the middle of it — a lot of screen for a
+   placeholder, and the glyph is upscaled past its bitmap at that size. */
+@media (max-width: 560px) {
+  .story-image { font-size: 52px; height: 220px; }
+  .team-avatar { width: 60px; height: 60px; font-size: 25px; }
+}
+</style>
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><span>99</span>Warehousing</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="warehouses.html">Warehouses</a></li>
+    <li><a href="land-parks.html">Land &amp; Parks</a></li>
+    <li><a href="insights.html">Insights</a></li>
+    <li><a href="calculator.html">Calculator</a></li>
+    <li><a href="partners.html">Partners</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="submit-listing.html" class="btn-cta-nav">List Property</a>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html" onclick="toggleMenu()">Home</a></li>
+    <li><a href="warehouses.html" onclick="toggleMenu()">Warehouses</a></li>
+    <li><a href="land-parks.html" onclick="toggleMenu()">Land &amp; Parks</a></li>
+    <li><a href="insights.html" onclick="toggleMenu()">Insights</a></li>
+    <li><a href="calculator.html" onclick="toggleMenu()">Calculator</a></li>
+    <li><a href="partners.html" onclick="toggleMenu()">Partners</a></li>
+    <li><a href="about.html" onclick="toggleMenu()">About</a></li>
+    <li><a href="contact.html" onclick="toggleMenu()">Contact</a></li>
+    <li><a href="login.html" onclick="toggleMenu()">Login</a></li>
+  </ul>
+</div>
+
+<div class="about-hero">
+  <span class="hero-label">Our Story</span>
+  <h1 class="hero-title">Built for India's<br><em>Industrial Future</em></h1>
+  <p class="hero-quote">"India's industrial real estate sector deserved a platform built by people who understand the sector — not a generic property portal with a new filter."</p>
+  <div class="hero-stats">
+    <div><div class="hstat-num">2,400+</div><div class="hstat-label">Verified Listings</div></div>
+    <div><div class="hstat-num">48</div><div class="hstat-label">Cities Covered</div></div>
+    <div><div class="hstat-num">₹240Cr+</div><div class="hstat-label">Deals Facilitated</div></div>
+    <div><div class="hstat-num">340+</div><div class="hstat-label">verified agencies</div></div>
+  </div>
+</div>
+
+<!-- STORY -->
+<div class="story-section">
+  <div class="story-body">
+    <span class="story-label">The Origin</span>
+    <h2 class="story-title">Why We <em>Built</em> 99Warehousing</h2>
+    <p>In 2019, co-founders Neeraj Agarwal and Priya Krishnamurthy were negotiating an 80,000 sq ft lease for Neeraj's FMCG distribution company in Bhiwandi. Despite months of search, they couldn't find a single reliable source of verified industrial listings with transparent per-sq-ft pricing.</p>
+    <p>Every broker quoted different rates for the same property. Floor plans were approximate. Structural certifications were photocopies of photocopies. The entire process was opaque, time-consuming, and expensive.</p>
+    <p>They built 99Warehousing to fix exactly that — starting with Mumbai, expanding to 48 cities, and today operating India's only industrial-first, verification-first real estate marketplace.</p>
+  </div>
+  <div class="story-image">🏭</div>
+</div>
+
+<!-- VERIFICATION PROCESS -->
+<div class="verify-section">
+  <div class="verify-title">The <em>99Warehousing Verified</em> Process</div>
+  <p class="verify-sub">Every 99Warehousing Verified badge represents a rigorous 4-stage process that no generic property portal can match.</p>
+  <div class="verify-steps">
+    <div class="vstep"><div class="vstep-num">1</div><div class="vstep-title">Document Review</div><div class="vstep-desc">RERA certificate, ownership proof, structural clearance, NOC — all reviewed by our legal team before the listing goes live.</div></div>
+    <div class="vstep"><div class="vstep-num">2</div><div class="vstep-title">On-Site Inspection</div><div class="vstep-desc">A 99Warehousing field officer visits every property to verify dimensions, clear height, loading docks, and condition against claimed specifications.</div></div>
+    <div class="vstep"><div class="vstep-num">3</div><div class="vstep-title">Rate Benchmarking</div><div class="vstep-desc">The listed rate is cross-checked against our proprietary database of 2,400+ recent transactions in the micro-market.</div></div>
+    <div class="vstep"><div class="vstep-num">4</div><div class="vstep-num" style="background:linear-gradient(135deg,var(--sage-green),#70a870);">✦</div><div class="vstep-title">99Warehousing Verified Badge</div><div class="vstep-desc">Awarded only after all three stages pass. The badge is renewed quarterly — so you always know the status is current.</div></div>
+  </div>
+</div>
+
+<!-- TEAM -->
+<div class="team-section">
+  <div class="section-title">The <em>Team</em></div>
+  <p class="section-sub">Industrial real estate specialists, technologists, and data scientists — building the platform India's supply chain deserves.</p>
+  <div class="team-grid">
+    <div class="team-card"><div class="team-avatar team-av1">👨‍💼</div><div class="team-name">Neeraj Agarwal</div><div class="team-role">Co-founder & CEO</div><div class="team-bio">Former logistics operator. 14 years in FMCG supply chain across India and Southeast Asia.</div></div>
+    <div class="team-card"><div class="team-avatar team-av2">👩‍💼</div><div class="team-name">Priya Krishnamurthy</div><div class="team-role">Co-founder & COO</div><div class="team-bio">Ex-JLL India. Led industrial leasing across 8 cities. RICS-certified valuer.</div></div>
+    <div class="team-card"><div class="team-avatar team-av3">👨‍💻</div><div class="team-name">Arjun Desai</div><div class="team-role">CTO</div><div class="team-bio">Previously at Zomato and CRED. Builds the data infrastructure powering 2,400+ verified listings.</div></div>
+    <div class="team-card"><div class="team-avatar team-av4">👩‍🔬</div><div class="team-name">Ananya Mehta</div><div class="team-role">Head of Research</div><div class="team-bio">Publishes 99Warehousing's quarterly market reports. Former economist at CBRE South Asia.</div></div>
+    <div class="team-card"><div class="team-avatar team-av1">👨‍💼</div><div class="team-name">Vikram Shah</div><div class="team-role">VP Broker Relations</div><div class="team-bio">Manages the 99Warehousing Elite Broker network. 18 years in commercial real estate brokerage.</div></div>
+    <div class="team-card"><div class="team-avatar team-av2">👩‍💼</div><div class="team-name">Sneha Kapoor</div><div class="team-role">VP Growth</div><div class="team-bio">Built 99Warehousing's city expansion playbook. Previously at Anarock and JLL.</div></div>
+    <div class="team-card"><div class="team-avatar team-av3">👨‍⚖️</div><div class="team-name">Rahul Nair</div><div class="team-role">Head of Verification</div><div class="team-bio">Leads the field inspection and document verification team across 48 cities.</div></div>
+    <div class="team-card"><div class="team-avatar team-av4">👩‍💻</div><div class="team-name">Kavya Iyer</div><div class="team-role">Head of Product</div><div class="team-bio">Designed the 99Warehousing Verified badge system and broker CRM. Formerly Freshworks.</div></div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline-section">
+  <div class="timeline-title">Our <em>Journey</em></div>
+  <div class="timeline">
+    <div class="titem">
+      <div class="tcontent" style="text-align:right;"><div class="tyear">2019</div><div class="tevent">99Warehousing founded in Mumbai. First 50 listings verified in Bhiwandi and Navi Mumbai.</div></div>
+      <div class="tdot">19</div>
+      <div class="tblank"></div>
+    </div>
+    <div class="titem">
+      <div class="tblank"></div>
+      <div class="tdot">20</div>
+      <div class="tcontent"><div class="tyear">2020</div><div class="tevent">Expanded to Delhi NCR, Pune, and Bengaluru. Launched the 99Warehousing Verified badge system. 400+ listings.</div></div>
+    </div>
+    <div class="titem">
+      <div class="tcontent" style="text-align:right;"><div class="tyear">2021</div><div class="tevent">Raised Series A. Launched Elite Broker Network. 1,000+ listings across 12 cities.</div></div>
+      <div class="tdot">21</div>
+      <div class="tblank"></div>
+    </div>
+    <div class="titem">
+      <div class="tblank"></div>
+      <div class="tdot">22</div>
+      <div class="tcontent"><div class="tyear">2022</div><div class="tevent">Crossed ₹100Cr in facilitated deal value. Launched Market Insights quarterly reports.</div></div>
+    </div>
+    <div class="titem">
+      <div class="tcontent" style="text-align:right;"><div class="tyear">2023</div><div class="tevent">Expanded to 48 cities. 2,000+ verified listings. Launched Dashboard & Broker CRM.</div></div>
+      <div class="tdot">23</div>
+      <div class="tblank"></div>
+    </div>
+    <div class="titem">
+      <div class="tblank"></div>
+      <div class="tdot">24</div>
+      <div class="tcontent"><div class="tyear">2024</div><div class="tevent">Crossed ₹240Cr deal value. 340+ verified agencies. Launched cold chain & dark store verticals.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRESS -->
+<div class="press-section">
+  <div class="press-title">As Featured <em>In</em></div>
+  <div class="press-logos">
+    <div class="press-logo">Economic Times</div>
+    <div class="press-logo">Mint</div>
+    <div class="press-logo">Business Standard</div>
+    <div class="press-logo">YourStory</div>
+    <div class="press-logo">VCCircle</div>
+    <div class="press-logo">Inc42</div>
+    <div class="press-logo">The Hindu BusinessLine</div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">99Warehousing</div>
+      <p class="footer-desc">India's most trusted marketplace for industrial and warehousing real estate. Every square foot, verified.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Properties</div>
+      <ul class="footer-links">
+        <li><a href="warehouses.html">Warehouses</a></li>
+        <li><a href="land-parks.html">Industrial Land</a></li>
+        <li><a href="land-parks.html">Logistics Parks</a></li>
+        <li><a href="warehouses.html">Cold Storage</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="about.html">About 99Warehousing</a></li>
+        <li><a href="partners.html">Partners</a></li>
+        <li><a href="insights.html">Market Insights</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Account</div>
+      <ul class="footer-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Register</a></li>
+        <li><a href="submit-listing.html">List Property</a></li>
+        <li><a href="terms.html">Terms of Service</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 99warehousing. All rights reserved.</span>
+    <span class="footer-copy">Made with ✦ in India</span>
+  </div>
+</footer>
+</body>
+</html>

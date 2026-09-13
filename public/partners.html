@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>Agency Partners — 99Warehousing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.footer{margin-top:64px;}
+
+/* HERO */
+.hero{padding:140px 40px 80px;background:linear-gradient(135deg,rgba(212,176,106,0.12),rgba(245,240,232,0.8),rgba(200,216,228,0.2));border-bottom:1px solid rgba(200,168,130,0.12);text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'✦';font-size:500px;color:rgba(184,150,74,0.03);position:absolute;top:-100px;left:50%;transform:translateX(-50%);pointer-events:none;}
+.hero-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--antique-gold);display:block;margin-bottom:14px;}
+.hero-title{font-family:var(--font-display);font-size:52px;font-weight:600;line-height:1.1;margin-bottom:14px;}
+.hero-title em{font-style:italic;color:var(--antique-brown);}
+.hero-sub{font-size:15px;color:var(--text-mid);line-height:1.75;max-width:560px;margin:0 auto 32px;}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:linear-gradient(135deg,var(--antique-brown),var(--deep-mahogany));color:var(--off-white);border:none;border-radius:100px;padding:14px 36px;font-family:var(--font-body);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 20px rgba(74,55,40,0.2);}
+.btn-outline{background:transparent;color:var(--antique-brown);border:1px solid rgba(200,168,130,0.4);border-radius:100px;padding:13px 36px;font-family:var(--font-body);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+
+/* STATS */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,255,255,0.55);backdrop-filter:blur(20px);border-bottom:1px solid rgba(200,168,130,0.12);}
+.sstat{padding:28px;text-align:center;border-right:1px solid rgba(200,168,130,0.15);}
+.sstat:last-child{border-right:none;}
+.sstat-num{font-family:var(--font-display);font-size:32px;font-weight:600;color:var(--deep-mahogany);}
+.sstat-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-mid);margin-top:4px;}
+
+.main{padding:64px 40px;max-width:1300px;margin:0 auto;}
+
+/* PARTNER GRID */
+.section-title{font-family:var(--font-display);font-size:32px;font-weight:600;margin-bottom:8px;}
+.section-title em{font-style:italic;color:var(--antique-brown);}
+.section-sub{font-size:14px;color:var(--text-mid);line-height:1.75;margin-bottom:36px;}
+.partner-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:64px;}
+.partner-card{background:rgba(255,255,255,0.55);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.70);border-radius:20px;padding:32px;transition:all .3s;position:relative;overflow:hidden;}
+.partner-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(139,111,78,0.12);}
+.partner-card.featured{border-color:rgba(184,150,74,0.3);}
+.partner-card.featured::before{content:'✦ Featured Partner';position:absolute;top:16px;right:16px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--antique-gold);background:rgba(184,150,74,0.1);border:1px solid rgba(184,150,74,0.2);border-radius:100px;padding:3px 10px;}
+.partner-logo-box{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:18px;}
+.pl1{background:linear-gradient(135deg,rgba(200,216,228,0.5),rgba(245,240,232,0.8));}
+.pl2{background:linear-gradient(135deg,rgba(212,176,106,0.2),rgba(200,216,228,0.4));}
+.pl3{background:linear-gradient(135deg,rgba(154,175,155,0.3),rgba(200,216,228,0.4));}
+.partner-name{font-family:var(--font-display);font-size:22px;font-weight:600;margin-bottom:4px;}
+.partner-type{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--antique-gold);margin-bottom:12px;}
+.partner-desc{font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:18px;}
+.partner-stats{display:flex;gap:16px;}
+.ps{text-align:center;}
+.ps-num{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--deep-mahogany);}
+.ps-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-mid);}
+
+/* BENEFITS */
+.benefits-section{background:linear-gradient(135deg,rgba(200,216,228,0.15),rgba(245,240,232,0.5));border:1px solid rgba(200,168,130,0.1);border-radius:24px;padding:56px;margin-bottom:64px;}
+.benefits-title{font-family:var(--font-display);font-size:32px;font-weight:600;margin-bottom:8px;text-align:center;}
+.benefits-title em{font-style:italic;color:var(--antique-brown);}
+.benefits-sub{font-size:14px;color:var(--text-mid);text-align:center;margin-bottom:40px;}
+.benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.benefit-item{background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.75);border-radius:16px;padding:24px;}
+.benefit-icon{font-size:28px;margin-bottom:12px;}
+.benefit-title{font-size:14px;font-weight:600;color:var(--deep-mahogany);margin-bottom:6px;}
+.benefit-desc{font-size:12px;color:var(--text-mid);line-height:1.65;}
+
+/* PROCESS TIMELINE */
+.process-section{margin-bottom:64px;}
+.process-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;}
+.process-steps::before{content:'';position:absolute;top:24px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(184,150,74,0.3),rgba(184,150,74,0.3),transparent);}
+.pstep{text-align:center;padding:0 12px;}
+.pstep-dot{width:48px;height:48px;background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);border:2px solid rgba(184,150,74,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:18px;transition:all .3s;}
+.pstep:hover .pstep-dot{background:linear-gradient(135deg,var(--antique-gold),var(--warm-gold));border-color:transparent;}
+.pstep-num{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--antique-gold);margin-bottom:6px;}
+.pstep-title{font-size:13px;font-weight:600;color:var(--deep-mahogany);margin-bottom:4px;}
+.pstep-desc{font-size:11px;color:var(--text-mid);line-height:1.6;}
+
+/* APPLICATION FORM */
+.apply-section{background:linear-gradient(135deg,var(--deep-mahogany),rgba(44,74,107,0.85));border-radius:24px;padding:56px;display:grid;grid-template-columns:1fr 1.2fr;gap:48px;align-items:start;}
+.apply-left .label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(212,176,106,0.8);margin-bottom:12px;}
+.apply-left .title{font-family:var(--font-display);font-size:34px;font-weight:600;color:white;line-height:1.2;margin-bottom:12px;}
+.apply-left .title em{font-style:italic;color:var(--warm-gold);}
+.apply-left p{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.75;margin-bottom:20px;}
+.apply-perks{display:flex;flex-direction:column;gap:10px;}
+.perk{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.75);}
+.perk-dot{width:20px;height:20px;background:linear-gradient(135deg,var(--antique-gold),var(--warm-gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.apply-form{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;}
+.af-label{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(212,176,106,0.7);margin-bottom:5px;}
+.af-input{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;font-family:var(--font-body);font-size:13px;color:white;outline:none;margin-bottom:14px;}
+.af-input::placeholder{color:rgba(255,255,255,0.3);}
+.af-select{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;font-family:var(--font-body);font-size:13px;color:rgba(255,255,255,0.7);outline:none;margin-bottom:14px;}
+.btn-apply{width:100%;background:linear-gradient(135deg,var(--antique-gold),var(--warm-gold));color:var(--deep-mahogany);border:none;border-radius:8px;padding:14px;font-family:var(--font-body);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;cursor:pointer;}
+
+/* TESTIMONIALS */
+.testimonials{margin-top:64px;}
+.testi-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+.testi-card{background:rgba(255,255,255,0.55);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.7);border-radius:16px;padding:24px;}
+.testi-stars{color:var(--antique-gold);font-size:13px;margin-bottom:12px;}
+.testi-quote{font-family:var(--font-editorial);font-style:italic;font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:16px;}
+.testi-author{font-size:12px;font-weight:600;color:var(--deep-mahogany);}
+.testi-co{font-size:10px;color:var(--text-mid);}
+
+@media(max-width:900px){.partner-grid,.benefits-grid,.testi-grid{grid-template-columns:1fr 1fr;}.apply-section{grid-template-columns:1fr;}.process-steps{grid-template-columns:1fr 1fr;gap:20px;}.process-steps::before{display:none;}}
+@media(max-width:768px){.hero,.main{padding-left:16px;padding-right:16px;}.partner-grid,.benefits-grid,.testi-grid{grid-template-columns:1fr;}.stats-bar{grid-template-columns:1fr 1fr;}.hero-title{font-size:36px;}}
+</style>
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><span>99</span>Warehousing</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="warehouses.html">Warehouses</a></li>
+    <li><a href="land-parks.html">Land &amp; Parks</a></li>
+    <li><a href="insights.html">Insights</a></li>
+    <li><a href="calculator.html">Calculator</a></li>
+    <li><a href="partners.html" class="active">Partners</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="submit-listing.html" class="btn-cta-nav">List Property</a>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html" onclick="toggleMenu()">Home</a></li>
+    <li><a href="warehouses.html" onclick="toggleMenu()">Warehouses</a></li>
+    <li><a href="land-parks.html" onclick="toggleMenu()">Land &amp; Parks</a></li>
+    <li><a href="insights.html" onclick="toggleMenu()">Insights</a></li>
+    <li><a href="calculator.html" onclick="toggleMenu()">Calculator</a></li>
+    <li><a href="partners.html" onclick="toggleMenu()">Partners</a></li>
+    <li><a href="about.html" onclick="toggleMenu()">About</a></li>
+    <li><a href="contact.html" onclick="toggleMenu()">Contact</a></li>
+    <li><a href="login.html" onclick="toggleMenu()">Login</a></li>
+  </ul>
+</div>
+
+<div class="hero">
+  <span class="hero-label">99Warehousing Partner Network</span>
+  <h1 class="hero-title">Grow Together with<br><em>India's Best</em></h1>
+  <p class="hero-sub">Agency partners get co-branded listings, priority lead routing, joint market reports, and a dedicated account manager. Built for serious firms, not hobbyists.</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="document.getElementById('applySection').scrollIntoView({behavior:'smooth'})">Apply as a Partner ✦</button>
+    <button class="btn-outline" onclick="document.querySelector(&#39;.benefits-grid&#39;).scrollIntoView({behavior:&#39;smooth&#39;})">View Benefits</button>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="sstat"><div class="sstat-num">48</div><div class="sstat-label">Partner Agencies</div></div>
+  <div class="sstat"><div class="sstat-num">₹240Cr+</div><div class="sstat-label">Deals via Partners</div></div>
+  <div class="sstat"><div class="sstat-num">2,400+</div><div class="sstat-label">Co-Listed Properties</div></div>
+  <div class="sstat"><div class="sstat-num">48</div><div class="sstat-label">Cities Covered</div></div>
+</div>
+
+<div class="main">
+
+  <div class="section-title">Our <em>Agency Partners</em></div>
+  <p class="section-sub">India's leading commercial real estate agencies, co-listing their industrial inventory on 99Warehousing's verified marketplace.</p>
+  <div class="partner-grid">
+    <div class="partner-card featured">
+      <div class="partner-logo-box pl1">🏢</div>
+      <div class="partner-name">JLL India</div>
+      <div class="partner-type">Gold Partner · Institutional</div>
+      <div class="partner-desc">Joint listings across Grade A logistics parks in Mumbai, Delhi, Bengaluru and Pune. Co-branded market reports published quarterly.</div>
+      <div class="partner-stats"><div class="ps"><div class="ps-num">420+</div><div class="ps-label">Co-Listings</div></div><div class="ps"><div class="ps-num">18</div><div class="ps-label">Cities</div></div><div class="ps"><div class="ps-num">₹80Cr+</div><div class="ps-label">Deals</div></div></div>
+    </div>
+    <div class="partner-card featured">
+      <div class="partner-logo-box pl2">🏛️</div>
+      <div class="partner-name">CBRE South Asia</div>
+      <div class="partner-type">Gold Partner · Institutional</div>
+      <div class="partner-desc">Exclusive industrial mandates shared on 99Warehousing with CBRE verification. Priority buyer introductions for Grade A assets above ₹5Cr deal value.</div>
+      <div class="partner-stats"><div class="ps"><div class="ps-num">310+</div><div class="ps-label">Co-Listings</div></div><div class="ps"><div class="ps-num">12</div><div class="ps-label">Cities</div></div><div class="ps"><div class="ps-num">₹60Cr+</div><div class="ps-label">Deals</div></div></div>
+    </div>
+    <div class="partner-card">
+      <div class="partner-logo-box pl3">🏗️</div>
+      <div class="partner-name">Anarock Commercial</div>
+      <div class="partner-type">Silver Partner</div>
+      <div class="partner-desc">Industrial leasing specialists covering MMR, Pune, and Bengaluru corridors. Active on 99Warehousing's built-to-suit and land verticals.</div>
+      <div class="partner-stats"><div class="ps"><div class="ps-num">180+</div><div class="ps-label">Co-Listings</div></div><div class="ps"><div class="ps-num">6</div><div class="ps-label">Cities</div></div><div class="ps"><div class="ps-num">₹28Cr+</div><div class="ps-label">Deals</div></div></div>
+    </div>
+    <div class="partner-card">
+      <div class="partner-logo-box pl1">📦</div>
+      <div class="partner-name">Knight Frank India</div>
+      <div class="partner-type">Silver Partner</div>
+      <div class="partner-desc">Logistics and supply chain advisory practice co-listed on 99Warehousing. Specialising in cold chain and food logistics facilities.</div>
+      <div class="partner-stats"><div class="ps"><div class="ps-num">140+</div><div class="ps-label">Co-Listings</div></div><div class="ps"><div class="ps-num">8</div><div class="ps-label">Cities</div></div><div class="ps"><div class="ps-num">₹22Cr+</div><div class="ps-label">Deals</div></div></div>
+    </div>
+    <div class="partner-card">
+      <div class="partner-logo-box pl2">🌐</div>
+      <div class="partner-name">Colliers India</div>
+      <div class="partner-type">Silver Partner</div>
+      <div class="partner-desc">Industrial and logistics practice covering South India corridors — Chennai, Bengaluru, Hyderabad, and Coimbatore.</div>
+      <div class="partner-stats"><div class="ps"><div class="ps-num">96+</div><div class="ps-label">Co-Listings</div></div><div class="ps"><div class="ps-num">5</div><div class="ps-label">Cities</div></div><div class="ps"><div class="ps-num">₹14Cr+</div><div class="ps-label">Deals</div></div></div>
+    </div>
+    <div class="partner-card">
+      <div class="partner-logo-box pl3">🔑</div>
+      <div class="partner-name">Square Yards Commercial</div>
+      <div class="partner-type">Bronze Partner</div>
+      <div class="partner-desc">Growing industrial brokerage with strong presence in Delhi NCR and Haryana corridors. Co-listing Grade B and Grade A assets.</div>
+      <div class="partner-stats"><div class="ps"><div class="ps-num">64+</div><div class="ps-label">Co-Listings</div></div><div class="ps"><div class="ps-num">4</div><div class="ps-label">Cities</div></div><div class="ps"><div class="ps-num">₹8Cr+</div><div class="ps-label">Deals</div></div></div>
+    </div>
+  </div>
+
+  <!-- BENEFITS -->
+  <div class="benefits-section">
+    <div class="benefits-title">Why Partner with <em>99Warehousing</em></div>
+    <p class="benefits-sub">Everything serious agencies need to close industrial deals faster and at higher value.</p>
+    <div class="benefits-grid">
+      <div class="benefit-item"><div class="benefit-icon">🎯</div><div class="benefit-title">Priority Lead Routing</div><div class="benefit-desc">Qualified buyer enquiries in your coverage cities routed to your team first — before the open marketplace.</div></div>
+      <div class="benefit-item"><div class="benefit-icon">🏷️</div><div class="benefit-title">Co-Branded Listings</div><div class="benefit-desc">Your agency logo and team profiles featured prominently alongside every 99Warehousing listing you manage.</div></div>
+      <div class="benefit-item"><div class="benefit-icon">📊</div><div class="benefit-title">Market Intelligence Access</div><div class="benefit-desc">Full access to 99Warehousing's proprietary per-sq-ft database and quarterly research reports — before public release.</div></div>
+      <div class="benefit-item"><div class="benefit-icon">🤝</div><div class="benefit-title">Dedicated Account Manager</div><div class="benefit-desc">Gold and Silver partners get a named 99Warehousing account manager who handles onboarding and support.</div></div>
+      <div class="benefit-item"><div class="benefit-icon">📱</div><div class="benefit-title">CRM Integration</div><div class="benefit-desc">Connect your existing CRM to 99Warehousing's listing API. Sync properties and leads without manual data entry.</div></div>
+      <div class="benefit-item"><div class="benefit-icon">📣</div><div class="benefit-title">Joint Marketing</div><div class="benefit-desc">Co-authored market reports, email newsletters to 40,000+ subscribers, and social media promotion of your listings.</div></div>
+    </div>
+  </div>
+
+  <!-- PROCESS -->
+  <div class="process-section">
+    <div class="section-title">How to <em>Apply</em></div>
+    <p class="section-sub" style="margin-bottom:40px;">Five steps from application to active partnership. Most agencies are onboarded within 7 business days.</p>
+    <div class="process-steps">
+      <div class="pstep"><div class="pstep-dot">📝</div><div class="pstep-num">Step 1</div><div class="pstep-title">Submit Application</div><div class="pstep-desc">Fill out the form below. Takes under 5 minutes.</div></div>
+      <div class="pstep"><div class="pstep-dot">🔍</div><div class="pstep-num">Step 2</div><div class="pstep-title">Agency Review</div><div class="pstep-desc">We verify your agency credentials and deal history.</div></div>
+      <div class="pstep"><div class="pstep-dot">📞</div><div class="pstep-num">Step 3</div><div class="pstep-title">Partner Call</div><div class="pstep-desc">A 30-minute intro call to align on scope and coverage.</div></div>
+      <div class="pstep"><div class="pstep-dot">⚙️</div><div class="pstep-num">Step 4</div><div class="pstep-title">Onboarding</div><div class="pstep-desc">Profile setup, listing sync, and CRM integration.</div></div>
+      <div class="pstep"><div class="pstep-dot">✦</div><div class="pstep-num">Step 5</div><div class="pstep-title">Go Live</div><div class="pstep-desc">Your co-branded listings go live on 99Warehousing within 48 hours.</div></div>
+    </div>
+  </div>
+
+  <!-- APPLICATION FORM -->
+  <div class="apply-section" id="applySection">
+    <div class="apply-left">
+      <div class="label">Apply Now</div>
+      <div class="title">Become a 99Warehousing<br><em>Agency Partner</em></div>
+      <p>We accept applications from established commercial real estate agencies with a proven track record in industrial leasing.</p>
+      <div class="apply-perks">
+        <div class="perk"><div class="perk-dot">✓</div>Free to apply — no upfront fees</div>
+        <div class="perk"><div class="perk-dot">✓</div>Response within 2 business days</div>
+        <div class="perk"><div class="perk-dot">✓</div>Gold, Silver, Bronze tier options</div>
+        <div class="perk"><div class="perk-dot">✓</div>API access for 50+ listings</div>
+        <div class="perk"><div class="perk-dot">✓</div>Co-branded market report access</div>
+      </div>
+    </div>
+    <div class="apply-form">
+      <label class="af-label" for="apAgency">Agency Name</label>
+      <input class="af-input" type="text" id="apAgency" placeholder="Your Agency Pvt Ltd" autocomplete="organization">
+      <label class="af-label" for="apName">Your Name & Title</label>
+      <input class="af-input" type="text" id="apName" placeholder="Ravi Kumar, Head of Industrial" autocomplete="name">
+      <label class="af-label" for="apEmail">Email</label>
+      <input class="af-input" type="email" id="apEmail" placeholder="ravi@agency.com" autocomplete="email">
+      <label class="af-label" for="apMobile">Mobile</label>
+      <input class="af-input" type="tel" id="apMobile" placeholder="+91 98765 43210" autocomplete="tel">
+      <label class="af-label" for="apCities">Cities Covered</label>
+      <input class="af-input" type="text" id="apCities" placeholder="e.g. Mumbai, Pune, Bengaluru">
+      <label class="af-label" for="apValue">Approximate Annual Deal Value (Industrial)</label>
+      <select class="af-select" id="apValue">
+        <option>Under ₹5 Crore</option>
+        <option>₹5–20 Crore</option>
+        <option>₹20–50 Crore</option>
+        <option>₹50 Crore+</option>
+      </select>
+      <div class="af-label" id="apError" hidden style="color:#A6362D;text-transform:none;letter-spacing:0;"></div>
+      <button class="btn-apply" id="apSend" type="button" onclick="submitApplication()">Submit Application ✦</button>
+    </div>
+  </div>
+
+  <!-- TESTIMONIALS -->
+  <div class="testimonials" style="margin-top:64px;">
+    <div class="section-title">What Partners <em>Say</em></div>
+    <p class="section-sub">From agency heads across India's top industrial real estate firms.</p>
+    <div class="testi-grid">
+      <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">"The co-branded listing feature has been a genuine differentiator for us. Our clients see JLL and 99Warehousing Verified side by side — that combination closes deals faster."</p><div class="testi-author">Rahul Arora</div><div class="testi-co">Director, Industrial & Logistics — JLL India</div></div>
+      <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">"99Warehousing's per-sq-ft database is frankly the best market intelligence we've accessed. Our analysts use it weekly for pricing mandates and it's transformed our proposal quality."</p><div class="testi-author">Sunita Rao</div><div class="testi-co">Associate Director — CBRE South Asia</div></div>
+      <div class="testi-card"><div class="testi-stars">★★★★☆</div><p class="testi-quote">"The priority lead routing alone justified the partnership. We received 23 qualified industrial enquiries in our first month that we wouldn't have reached through our own channels."</p><div class="testi-author">Karan Mehta</div><div class="testi-co">MD, Industrial Practice — Anarock Commercial</div></div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">99Warehousing</div>
+      <p class="footer-desc">India's most trusted marketplace for industrial and warehousing real estate. Every square foot, verified.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Properties</div>
+      <ul class="footer-links">
+        <li><a href="warehouses.html">Warehouses</a></li>
+        <li><a href="land-parks.html">Industrial Land</a></li>
+        <li><a href="land-parks.html">Logistics Parks</a></li>
+        <li><a href="warehouses.html">Cold Storage</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="about.html">About 99Warehousing</a></li>
+        <li><a href="partners.html">Partners</a></li>
+        <li><a href="insights.html">Market Insights</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Account</div>
+      <ul class="footer-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Register</a></li>
+        <li><a href="submit-listing.html">List Property</a></li>
+        <li><a href="terms.html">Terms of Service</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 99warehousing. All rights reserved.</span>
+    <span class="footer-copy">Made with ✦ in India</span>
+  </div>
+</footer>
+
+<script>
+/* The Submit Application button used to fire an alert() saying the
+   application had been sent. Nothing was sent — every agency that applied
+   was silently dropped. It now files a real enquiry, which lands in the
+   admin inbox alongside the contact-form leads. */
+function submitApplication() {
+  var val = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+  var err = document.getElementById('apError');
+  var btn = document.getElementById('apSend');
+
+  var fail = function (msg, focus) {
+    err.textContent = msg; err.hidden = false;
+    var f = document.getElementById(focus); if (f) f.focus();
+  };
+  err.hidden = true;
+
+  var agency = val('apAgency');
+  var name   = val('apName');
+  var email  = val('apEmail');
+  if (agency.length < 2) return fail('Please enter your agency name.', 'apAgency');
+  if (name.length < 2)   return fail('Please enter your name and title.', 'apName');
+  if (!/^\S+@\S+\.\S+$/.test(email)) return fail('Please enter a valid email address.', 'apEmail');
+
+  btn.disabled = true;
+  var label = btn.textContent;
+  btn.textContent = 'Submitting…';
+
+  API.enquiries.create({
+    name: name,
+    email: email,
+    mobile: val('apMobile'),
+    company: agency,
+    subject: 'Agency partner application',
+    message: 'Agency: ' + agency +
+             '\nCities covered: ' + (val('apCities') || 'not specified') +
+             '\nAnnual industrial deal value: ' + val('apValue'),
+  })
+    .then(function () {
+      var form = document.querySelector('.apply-form');
+      form.innerHTML =
+        '<div style="text-align:center;padding:28px 8px;">' +
+          '<div style="font-size:34px;margin-bottom:10px;">✦</div>' +
+          '<div style="font-family:var(--font-display);font-size:20px;margin-bottom:6px;">Application received</div>' +
+          '<div style="font-size:13px;color:var(--text-mid);">Our partnerships team will be in touch within 2 business days.</div>' +
+        '</div>';
+    })
+    .catch(function (e) { fail(e.message || 'Could not submit your application.', 'apAgency'); })
+    .then(function () { btn.disabled = false; btn.textContent = label; });
+}
+</script>
+</body>
+</html>

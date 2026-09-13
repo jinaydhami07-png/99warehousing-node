@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>Browse Warehouses — 99Warehousing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+
+/* NAVBAR */
+
+/* PAGE HEADER */
+.page-header {
+  padding: 140px 40px 60px;
+  background: linear-gradient(135deg, rgba(200,216,228,0.35) 0%, rgba(245,240,232,0.6) 50%, rgba(212,176,106,0.1) 100%);
+  border-bottom: 1px solid rgba(200,168,130,0.15);
+  position: relative; overflow: hidden;
+}
+.page-header::before {
+  content: '';
+  position: absolute; top: -100px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(ellipse, rgba(200,216,228,0.4) 0%, transparent 70%);
+  pointer-events: none;
+}
+.header-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--antique-gold); font-weight: 500; margin-bottom: 12px; display: block; }
+.header-title { font-family: var(--font-display); font-size: 44px; font-weight: 600; color: var(--deep-mahogany); line-height: 1.1; margin-bottom: 16px; }
+.header-title em { font-style: italic; color: var(--antique-brown); }
+.header-sub { font-size: 14px; color: var(--text-mid); line-height: 1.75; max-width: 560px; }
+.header-meta { display: flex; align-items: center; gap: 24px; margin-top: 24px; flex-wrap: wrap; }
+.meta-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 100px; padding: 6px 14px; font-size: 11px; color: var(--antique-brown); letter-spacing: 0.5px; }
+
+/* SEARCH BAR */
+.search-bar-wrap {
+  background: rgba(255,255,255,0.6); backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.8);
+  border-radius: 16px; padding: 20px 24px;
+  box-shadow: 0 8px 32px rgba(74,55,40,0.06);
+  margin: -30px 40px 0; position: relative; z-index: 10;
+  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 16px; align-items: end;
+}
+.search-field label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--antique-gold); margin-bottom: 6px; }
+.search-field input, .search-field select {
+  width: 100%; background: rgba(250,247,242,0.8); border: 1px solid rgba(200,168,130,0.25);
+  border-radius: 8px; padding: 10px 14px; font-family: var(--font-body); font-size: 13px;
+  color: var(--deep-mahogany); outline: none; transition: border-color 0.25s;
+}
+.search-field input:focus, .search-field select:focus { border-color: var(--antique-gold); }
+.btn-search {
+  background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany));
+  color: var(--off-white); border: none; border-radius: 8px; padding: 11px 28px;
+  font-family: var(--font-body); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; white-space: nowrap; transition: all 0.25s;
+  box-shadow: 0 4px 16px rgba(74,55,40,0.2);
+}
+.btn-search:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(74,55,40,0.3); }
+
+/* LAYOUT */
+.listings-layout { display: grid; grid-template-columns: 280px 1fr; gap: 32px; padding: 40px; max-width: 1400px; margin: 0 auto; align-items: start; }
+
+/* FILTER SIDEBAR */
+.filter-sidebar { position: sticky; top: 100px; }
+.filter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.filter-title { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+.filter-reset { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--antique-gold); cursor: pointer; background: none; border: none; }
+.filter-group { background: rgba(255,255,255,0.55); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(74,55,40,0.05); }
+.filter-group-title { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--antique-gold); margin-bottom: 14px; }
+.filter-option { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; }
+.filter-option input[type=checkbox] { accent-color: var(--antique-brown); width: 15px; height: 15px; }
+.filter-option span { font-size: 13px; color: var(--text-mid); }
+.filter-option span b { color: var(--deep-mahogany); font-weight: 500; }
+/* Facet lists are generated from the catalogue, so their length is whatever
+   the data happens to be — the seed set alone yields 25 distinct features.
+   Cap them at about eight rows and scroll, rather than letting one group run
+   the height of the page. */
+.filter-group > div[id^="f"] { max-height: 216px; overflow-y: auto; }
+.filter-group > div[id^="f"]::-webkit-scrollbar { width: 6px; }
+.filter-group > div[id^="f"]::-webkit-scrollbar-thumb { background: rgba(184,150,74,0.35); border-radius: 3px; }
+/* The last option in a scrolling list would otherwise sit flush on the edge. */
+.filter-option:last-child { margin-bottom: 0; }
+.range-wrap { position: relative; }
+.range-input { width: 100%; accent-color: var(--antique-brown); }
+.range-vals { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-mid); margin-top: 6px; }
+.save-search-btn { width: 100%; background: rgba(184,150,74,0.1); border: 1px solid rgba(184,150,74,0.3); border-radius: 8px; padding: 10px; font-family: var(--font-body); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--antique-gold); cursor: pointer; transition: all 0.25s; }
+.save-search-btn:hover { background: rgba(184,150,74,0.2); }
+
+/* LISTINGS AREA */
+.listings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.results-count { font-size: 14px; color: var(--text-mid); }
+.results-count b { color: var(--deep-mahogany); }
+.view-controls { display: flex; align-items: center; gap: 12px; }
+.view-btn { background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 8px; padding: 8px 14px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--antique-brown); cursor: pointer; transition: all 0.25s; }
+.view-btn.active, .view-btn:hover { background: rgba(255,255,255,0.8); color: var(--deep-mahogany); }
+.sort-select { background: rgba(255,255,255,0.6); border: 1px solid rgba(200,168,130,0.25); border-radius: 8px; padding: 8px 12px; font-family: var(--font-body); font-size: 12px; color: var(--deep-mahogany); outline: none; }
+
+/* COMPARE BAR */
+.compare-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 900;
+  background: rgba(74,55,40,0.96); backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 16px 40px; display: none; align-items: center; gap: 20px;
+  transform: translateY(100%); transition: transform 0.4s ease;
+}
+.compare-bar.visible { display: flex; transform: translateY(0); }
+.compare-slots { display: flex; gap: 16px; flex: 1; }
+.compare-slot { flex: 1; background: rgba(255,255,255,0.08); border: 1px dashed rgba(255,255,255,0.2); border-radius: 8px; padding: 10px 14px; min-height: 56px; display: flex; align-items: center; gap: 10px; }
+.compare-slot.filled { border-style: solid; border-color: rgba(184,150,74,0.5); background: rgba(184,150,74,0.1); }
+.compare-slot-name { font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 500; }
+.compare-slot-price { font-size: 11px; color: rgba(184,150,74,0.9); }
+.compare-slot-empty { font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 1px; text-transform: uppercase; }
+.compare-remove { background: none; border: none; color: rgba(255,255,255,0.4); cursor: pointer; font-size: 16px; margin-left: auto; }
+.btn-compare-now { background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold)); color: var(--deep-mahogany); border: none; border-radius: 8px; padding: 12px 28px; font-family: var(--font-body); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.btn-compare-now:disabled { opacity: 0.4; cursor: not-allowed; }
+.compare-count { font-family: var(--font-display); font-size: 22px; color: var(--warm-gold); font-style: italic; white-space: nowrap; }
+
+/* LISTING CARDS GRID */
+.listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+
+.listing-card {
+  background: rgba(245,240,232,0.55); backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.70); border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(139,111,78,0.08);
+  overflow: hidden; transition: all 0.3s ease; cursor: pointer;
+  position: relative;
+}
+.listing-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(139,111,78,0.14); }
+
+.card-photo { width: 100%; height: 200px; background: linear-gradient(135deg, var(--linen-beige), var(--powder-blue)); position: relative; overflow: hidden; }
+.card-photo-bg { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 64px; opacity: 0.4; }
+.card-photo-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(74,55,40,0.4) 0%, transparent 60%); }
+.card-badges { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+.badge-verified { background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold)); color: var(--deep-mahogany); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; padding: 4px 10px; border-radius: 100px; }
+.badge-type { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); color: var(--deep-mahogany); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; }
+.card-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; }
+.card-action-btn { width: 32px; height: 32px; background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; transition: all 0.25s; border: none; }
+.card-action-btn:hover { transform: scale(1.1); background: white; }
+.card-action-btn.saved { background: rgba(184,150,74,0.2); }
+.card-price-chip { position: absolute; bottom: 12px; left: 12px; }
+.price-per-sqft { font-family: var(--font-display); font-size: 22px; font-weight: 600; color: white; line-height: 1; }
+.price-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.75); }
+
+.card-body { padding: 20px; }
+.card-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--deep-mahogany); margin-bottom: 4px; line-height: 1.3; }
+.card-location { font-size: 11px; color: var(--text-mid); letter-spacing: 0.5px; margin-bottom: 14px; }
+.card-location span { color: var(--antique-gold); }
+.card-specs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.spec-item { text-align: center; background: rgba(250,247,242,0.7); border: 1px solid rgba(200,168,130,0.15); border-radius: 8px; padding: 8px 4px; }
+.spec-val { font-size: 13px; font-weight: 600; color: var(--deep-mahogany); display: block; }
+.spec-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-mid); }
+.card-footer { display: flex; align-items: center; gap: 10px; }
+.btn-enquire { flex: 1; background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany)); color: var(--off-white); border: none; border-radius: 8px; padding: 10px; font-family: var(--font-body); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: all 0.25s; }
+.btn-enquire:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(74,55,40,0.25); }
+.btn-compare-add { background: rgba(255,255,255,0.6); border: 1px solid rgba(200,168,130,0.3); border-radius: 8px; padding: 10px 14px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--antique-brown); cursor: pointer; transition: all 0.25s; white-space: nowrap; }
+.btn-compare-add:hover { background: rgba(255,255,255,0.85); }
+.btn-compare-add.in-compare { background: rgba(184,150,74,0.1); border-color: rgba(184,150,74,0.4); color: var(--antique-gold); }
+
+/* MAP VIEW */
+.map-view { display: none; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, rgba(200,216,228,0.4), rgba(245,240,232,0.6)); min-height: 600px; border: 1px solid rgba(255,255,255,0.7); position: relative; }
+.map-view.active { display: block; }
+.map-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 600px; gap: 16px; }
+.map-placeholder .map-icon { font-size: 80px; opacity: 0.3; }
+.map-placeholder p { font-size: 14px; color: var(--text-mid); }
+.map-pins { position: absolute; inset: 0; }
+.map-pin { position: absolute; cursor: pointer; transform: translate(-50%, -100%); }
+.pin-dot { width: 36px; height: 36px; background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold)); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 4px 12px rgba(184,150,74,0.4); display: flex; align-items: center; justify-content: center; }
+.pin-dot span { transform: rotate(45deg); font-size: 14px; }
+.map-pin-label { background: rgba(74,55,40,0.9); color: white; font-size: 10px; padding: 4px 8px; border-radius: 4px; margin-top: 4px; white-space: nowrap; text-align: center; }
+
+/* COMPARE MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(74,55,40,0.6); backdrop-filter: blur(12px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.compare-modal { background: rgba(250,247,242,0.95); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; box-shadow: 0 32px 80px rgba(74,55,40,0.2); max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; }
+.modal-header { padding: 28px 32px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(200,168,130,0.2); }
+.modal-title { font-family: var(--font-display); font-size: 24px; font-weight: 600; }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-mid); }
+.compare-table { padding: 24px 32px 32px; overflow-x: auto; }
+.compare-table table { width: 100%; border-collapse: collapse; }
+.compare-table th { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--antique-gold); text-align: left; padding: 8px 12px; }
+.compare-table th:first-child { color: var(--text-mid); font-size: 10px; }
+.compare-table td { padding: 12px; border-bottom: 1px solid rgba(200,168,130,0.12); font-size: 13px; color: var(--deep-mahogany); vertical-align: top; }
+.compare-table td:first-child { font-size: 11px; letter-spacing: 0.5px; color: var(--text-mid); text-transform: uppercase; font-weight: 500; }
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-best { color: var(--sage-green); font-weight: 600; }
+
+/* PAGINATION */
+.pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 48px; }
+.page-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 8px; font-size: 13px; color: var(--antique-brown); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
+.page-btn.active, .page-btn:hover { background: rgba(255,255,255,0.85); color: var(--deep-mahogany); }
+
+/* FOOTER */
+
+/* WHATSAPP */
+@keyframes pulse { 0%,100%{box-shadow:0 4px 20px rgba(37,211,102,0.4);} 50%{box-shadow:0 4px 32px rgba(37,211,102,0.6);} }
+
+/* Below this the sidebar stops being a column and stacks above the results,
+   so its full height is height a visitor must scroll past before reaching a
+   single listing. Cap it and let the panel itself scroll. */
+@media (max-width: 1100px) {
+  .listings-layout { grid-template-columns: 1fr; }
+  .filter-sidebar { position: static; max-height: 62vh; overflow-y: auto; padding-right: 4px; }
+}
+@media (max-width: 768px) {  .search-bar-wrap { margin: -20px 16px 0; grid-template-columns: 1fr; } .listings-layout { padding: 24px 16px; }  .compare-bar { padding: 12px 16px; } }
+
+/* The compare bar is fixed to the bottom at z-index 900 with a near-opaque
+   fill; the WhatsApp bubble is fixed to the same corner at z-index 500. The
+   moment a property was added to compare, the bar swallowed the bubble whole
+   and the page's main contact action became untappable. The bar precedes the
+   bubble in the document, so a sibling selector can lift it clear. */
+.compare-bar.visible ~ .whatsapp-bubble { bottom: 128px; }
+
+/* ─── PHONE ICON PASS ─────────────────────────────────────────── */
+@media (max-width: 560px) {
+  /* The bar's three children have a combined min-content of roughly 542px
+     against 343px of room — the slots cannot shrink because PROPERTY is one
+     unbreakable uppercase word — so the remove icons and the Compare Now
+     button were pushed off the right edge entirely. Giving the slots their
+     own row is what makes the rest fit. */
+  .compare-bar { flex-wrap: wrap; row-gap: 10px; }
+  .compare-slots { flex: 1 0 100%; order: 3; gap: 8px; }
+  .compare-slot { min-width: 0; min-height: 44px; padding: 8px 10px; }
+  /* A bare glyph with no padding is a ~16px target at the very bottom of the
+     screen, where a thumb is least accurate. Smaller mark, bigger box. */
+  .compare-remove {
+    width: 40px; height: 40px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    margin: -8px -10px -8px auto; font-size: 15px;
+  }
+
+  /* Seeded listings carry no photo, so this fallback glyph is on every card
+     in the column — at 64px it was the heaviest mark on the page and well
+     past the size its bitmap can hold. Real photos are unaffected: they take
+     their size from the img attributes, not from font-size. */
+  .card-photo-bg { font-size: 48px; }
+
+  .map-placeholder .map-icon { font-size: 56px; }
+
+  /* Pins are placed by percentage, so a 343px map pulls them together while
+     the tiles stay 36px — Mumbai/Pune and Bengaluru/Hyderabad ended up about
+     14px apart and physically overlapping. */
+  .pin-dot { width: 26px; height: 26px; box-shadow: 0 3px 8px rgba(184,150,74,0.35); }
+  .pin-dot span { font-size: 11px; }
+
+  .modal-close {
+    width: 40px; height: 40px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    margin: -8px -8px -8px 0; font-size: 20px;
+  }
+}
+
+/* Favourite and share sit 6px apart in the corner of a photo whose card is
+   itself clickable, so a near miss navigated away instead. The circles get
+   *smaller*, as asked — the tap area is grown separately by an invisible
+   pad, which is what a finger actually needs. 30px + 5px each side = a 40px
+   target, and the 8px gap keeps the two from overlapping. */
+@media (hover: none), (max-width: 560px) {
+  .card-actions { gap: 8px; }
+  .card-action-btn { width: 30px; height: 30px; font-size: 13px; position: relative; }
+  .card-action-btn::after { content: ''; position: absolute; inset: -5px; }
+}
+</style>
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><span>99</span>Warehousing</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="warehouses.html" class="active">Warehouses</a></li>
+    <li><a href="land-parks.html">Land &amp; Parks</a></li>
+    <li><a href="insights.html">Insights</a></li>
+    <li><a href="calculator.html">Calculator</a></li>
+    <li><a href="partners.html">Partners</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="submit-listing.html" class="btn-cta-nav">List Property</a>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html" onclick="toggleMenu()">Home</a></li>
+    <li><a href="warehouses.html" onclick="toggleMenu()">Warehouses</a></li>
+    <li><a href="land-parks.html" onclick="toggleMenu()">Land &amp; Parks</a></li>
+    <li><a href="insights.html" onclick="toggleMenu()">Insights</a></li>
+    <li><a href="calculator.html" onclick="toggleMenu()">Calculator</a></li>
+    <li><a href="partners.html" onclick="toggleMenu()">Partners</a></li>
+    <li><a href="about.html" onclick="toggleMenu()">About</a></li>
+    <li><a href="contact.html" onclick="toggleMenu()">Contact</a></li>
+    <li><a href="login.html" onclick="toggleMenu()">Login</a></li>
+  </ul>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <span class="header-label">Industrial Warehousing</span>
+  <h1 class="header-title">Browse <em>Warehouses</em></h1>
+  <p class="header-sub">2,400+ verified industrial spaces across 48 cities. Every listing inspected on-site by our team.</p>
+  <div class="header-meta">
+    <!-- Filled in from the catalogue once it loads. These read "2,400+
+         Listings" and "48 Cities" before, which no query produced. -->
+    <span class="meta-pill" id="pillListings">🏭 Loading listings…</span>
+    <span class="meta-pill" id="pillCities">📍 —</span>
+    <span class="meta-pill">✦ 99Warehousing Verified</span>
+    <span class="meta-pill">⚡ Reviewed Before Publishing</span>
+  </div>
+</div>
+
+<!-- SEARCH BAR -->
+<div class="search-bar-wrap">
+  <div class="search-field">
+    <label>City / Location</label>
+    <input type="text" placeholder="Mumbai, Pune, Delhi NCR…" id="cityInput">
+  </div>
+  <div class="search-field">
+    <label>Warehouse Type</label>
+    <select id="typeSelect">
+      <option value="">All Types</option>
+      <option value="Warehouse">Warehouse</option>
+      <option value="Cold Storage">Cold Storage</option>
+      <option value="Industrial Shed">Industrial Shed</option>
+      <option value="Logistics Park">Logistics Park</option>
+      <option value="Dark Store">Dark Store</option>
+      <option value="Industrial Land">Industrial Land</option>
+    </select>
+  </div>
+  <div class="search-field">
+    <label>Min Area (sq ft)</label>
+    <input type="number" placeholder="e.g. 10,000" id="minAreaInput">
+  </div>
+  <div class="search-field">
+    <label>Max Rent (₹/sq ft)</label>
+    <input type="number" placeholder="e.g. 35" id="maxRateInput">
+  </div>
+  <button class="btn-search" onclick="filterListings()">Search →</button>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="listings-layout">
+
+  <!-- FILTER SIDEBAR -->
+  <aside class="filter-sidebar">
+    <div class="filter-header">
+      <h3 class="filter-title">Filters</h3>
+      <button class="filter-reset" onclick="resetFilters()">Reset All</button>
+    </div>
+
+    <!-- ─── The option lists below are built by JS from the listings that
+         actually came back, not written out here. Two reasons:
+
+           • a hard-coded list offers choices the catalogue cannot satisfy —
+             the old sidebar filtered on "Built-to-Suit", "SEZ / Free Trade",
+             "LEED Certified" and an availability window, none of which exist
+             as fields on a property, so they could never have matched;
+           • the counts that used to sit beside each option — (842), (340) —
+             were invented and, worse, would have been wrong the moment any
+             other filter was touched.
+
+         Every group renders only the values present in the data, so a filter
+         can never return an empty grid for a reason the visitor cannot see. -->
+
+    <div class="filter-group">
+      <div class="filter-group-title">Warehouse Type</div>
+      <div id="fType"></div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-title">Grade</div>
+      <div id="fGrade"></div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-title">Max Price (₹ / sq ft / month)</div>
+      <div class="range-wrap">
+        <input type="range" class="range-input" id="fRate" min="5" max="80" value="80" aria-label="Maximum price per square foot">
+        <div class="range-vals"><span>₹5</span><span id="priceVal">Any</span></div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-title">Min Area (sq ft)</div>
+      <div class="range-wrap">
+        <input type="range" class="range-input" id="fArea" min="0" max="500000" step="1000" value="0" aria-label="Minimum area in square feet">
+        <div class="range-vals"><span>Any</span><span id="areaVal">Any</span></div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-title">City</div>
+      <div id="fCity"></div>
+    </div>
+
+    <!-- Hidden until at least one listing carries a feature to filter on. -->
+    <div class="filter-group" id="fFeatureGroup" hidden>
+      <div class="filter-group-title">Features</div>
+      <div id="fFeature"></div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-title">Verification</div>
+      <label class="filter-option"><input type="checkbox" id="fVerified"> <span>99Warehousing Verified only</span></label>
+    </div>
+
+    <button class="save-search-btn" onclick="saveSearch()">⊕ Save This Search</button>
+  </aside>
+
+  <!-- LISTINGS RIGHT PANEL -->
+  <div class="listings-right">
+    <div class="listings-header">
+      <p class="results-count"><b id="resultsCount">—</b> <span id="resultsNoun">warehouses</span> found</p>
+      <div class="view-controls">
+        <button class="view-btn active" id="gridBtn" onclick="setView('grid')">⊞ Grid</button>
+        <button class="view-btn" id="mapBtn" onclick="setView('map')">◎ Map</button>
+        <!-- The options carried no value attributes, so `this.value` handed
+             sortListings the visible label — "Price: Low to High" — which
+             matched no sort key and silently fell through to newest. -->
+        <select class="sort-select" onchange="sortListings(this.value)">
+          <option value="newest">Sort: Newest Listed</option>
+          <option value="rate-asc">Price: Low to High</option>
+          <option value="rate-desc">Price: High to Low</option>
+          <option value="area-desc">Area: Largest First</option>
+          <option value="area-asc">Area: Smallest First</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- GRID VIEW -->
+    <div class="listings-grid" id="gridView">
+      <div class="empty-state" id="gridLoading" style="grid-column:1/-1;padding:48px;text-align:center;color:var(--text-mid);font-size:13px;">Loading properties…</div>
+
+    </div>
+
+    <!-- MAP VIEW -->
+    <div class="map-view" id="mapView">
+      <div class="map-placeholder">
+        <div class="map-icon">🗺️</div>
+        <p style="font-family: var(--font-display); font-size: 20px; color: var(--deep-mahogany);">Interactive Map View</p>
+        <p id="mapCount">—</p>
+      </div>
+      <div class="map-pins">
+        <div class="map-pin" style="left: 32%; top: 55%;">
+          <div class="pin-dot"><span>🏭</span></div>
+          <div class="map-pin-label">Mumbai · ₹28–55/sqft</div>
+        </div>
+        <div class="map-pin" style="left: 54%; top: 28%;">
+          <div class="pin-dot"><span>🏭</span></div>
+          <div class="map-pin-label">Delhi NCR · ₹18–42/sqft</div>
+        </div>
+        <div class="map-pin" style="left: 36%; top: 60%;">
+          <div class="pin-dot"><span>🏭</span></div>
+          <div class="map-pin-label">Pune · ₹22–38/sqft</div>
+        </div>
+        <div class="map-pin" style="left: 42%; top: 72%;">
+          <div class="pin-dot"><span>🏭</span></div>
+          <div class="map-pin-label">Bengaluru · ₹28–45/sqft</div>
+        </div>
+        <div class="map-pin" style="left: 46%; top: 66%;">
+          <div class="pin-dot"><span>🏭</span></div>
+          <div class="map-pin-label">Hyderabad · ₹20–36/sqft</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGINATION — built from the real filtered count. It used to be a
+         fixed row ending at page 48, which was a number nothing produced. -->
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<!-- COMPARE BAR -->
+<div class="compare-bar" id="compareBar">
+  <div class="compare-count" id="compareCount">0 / 3</div>
+  <div class="compare-slots">
+    <div class="compare-slot" id="slot0"><span class="compare-slot-empty">Add a property</span></div>
+    <div class="compare-slot" id="slot1"><span class="compare-slot-empty">Add a property</span></div>
+    <div class="compare-slot" id="slot2"><span class="compare-slot-empty">Add a property</span></div>
+  </div>
+  <button class="btn-compare-now" id="compareNowBtn" onclick="openCompare()" disabled>Compare Now →</button>
+</div>
+
+<!-- COMPARE MODAL -->
+<div class="modal-overlay" id="compareModal">
+  <div class="compare-modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Property Comparison</h2>
+      <button class="modal-close" onclick="closeCompare()">✕</button>
+    </div>
+    <!-- Rendered from the selected properties by renderCompareTable() -->
+    <div class="compare-table">
+      <table>
+        <thead><tr id="compareHead"></tr></thead>
+        <tbody id="compareBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- WHATSAPP -->
+<a href="https://wa.me/919819216600" class="whatsapp-bubble" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" title="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">99Warehousing</div>
+      <p class="footer-desc">India's most trusted marketplace for industrial and warehousing real estate. Every square foot, verified.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Properties</div>
+      <ul class="footer-links">
+        <li><a href="warehouses.html">Warehouses</a></li>
+        <li><a href="land-parks.html">Industrial Land</a></li>
+        <li><a href="land-parks.html">Logistics Parks</a></li>
+        <li><a href="warehouses.html">Cold Storage</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="about.html">About 99Warehousing</a></li>
+        <li><a href="partners.html">Partners</a></li>
+        <li><a href="insights.html">Market Insights</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Account</div>
+      <ul class="footer-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Register</a></li>
+        <li><a href="submit-listing.html">List Property</a></li>
+        <li><a href="terms.html">Terms of Service</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 99warehousing. All rights reserved.</span>
+    <span class="footer-copy">Made with ✦ in India</span>
+  </div>
+</footer>
+
+<script>
+  // View toggle
+  function setView(v) {
+    const grid = document.getElementById('gridView');
+    const map = document.getElementById('mapView');
+    document.getElementById('gridBtn').classList.toggle('active', v === 'grid');
+    document.getElementById('mapBtn').classList.toggle('active', v === 'map');
+    grid.style.display = v === 'grid' ? 'grid' : 'none';
+    map.classList.toggle('active', v === 'map');
+  }
+
+  /* Slider readouts. Both sliders rest at the end of their travel that means
+     "no limit", and say so rather than showing a bound that is not being
+     applied — the old Price slider sat mid-track reading "₹50" while every
+     listing above ₹50 was still on screen. */
+  function updateRangeLabels() {
+    var rate = document.getElementById('fRate');
+    var area = document.getElementById('fArea');
+    if (rate) {
+      document.getElementById('priceVal').textContent =
+        rate.value >= +rate.max ? 'Any' : '≤ ₹' + rate.value;
+    }
+    if (area) {
+      document.getElementById('areaVal').textContent =
+        +area.value <= +area.min ? 'Any' : '≥ ' + (+area.value).toLocaleString('en-IN');
+    }
+  }
+
+  /* Compare bar + table render from the shared store (assets/bpsf-store.js),
+     so a selection survives reloads and is shared with every other page.
+     Saving and add-to-compare are handled by the store's delegated listener —
+     the cards opt in via data-fav-id / data-cmp-id attributes. */
+
+  function updateCompareBar() {
+    if (!window.BPSF) return;
+    const items = BPSF.compare.listSync();
+    const max = BPSF.COMPARE_MAX;
+    document.getElementById('compareCount').textContent = items.length + ' / ' + max;
+
+    for (let i = 0; i < max; i++) {
+      const slot = document.getElementById('slot' + i);
+      if (!slot) continue;
+      slot.textContent = '';
+      if (items[i]) {
+        slot.classList.add('filled');
+        const wrap = document.createElement('div');
+        const name = document.createElement('div');
+        name.className = 'compare-slot-name';
+        name.textContent = items[i].name;              // textContent, never innerHTML
+        const rate = document.createElement('div');
+        rate.className = 'compare-slot-price';
+        rate.textContent = items[i].rate;
+        wrap.append(name, rate);
+        const rm = document.createElement('button');
+        rm.className = 'compare-remove';
+        rm.type = 'button';
+        rm.textContent = '✕';
+        rm.setAttribute('aria-label', 'Remove ' + items[i].name + ' from comparison');
+        rm.onclick = () => BPSF.compare.remove(items[i].id);
+        slot.append(wrap, rm);
+      } else {
+        slot.classList.remove('filled');
+        const empty = document.createElement('span');
+        empty.className = 'compare-slot-empty';
+        empty.textContent = 'Add a property';
+        slot.append(empty);
+      }
+    }
+
+    document.getElementById('compareNowBtn').disabled = items.length < 2;
+    document.getElementById('compareBar').classList.toggle('visible', items.length > 0);
+  }
+
+  // Only rows we hold real data for — no invented specs.
+  const COMPARE_ROWS = [
+    { label: 'Price / sq ft', key: 'rate', best: 'min' },
+    { label: 'Location', key: 'location' },
+    { label: 'Total area', key: 'area' }
+  ];
+
+  function renderCompareTable() {
+    if (!window.BPSF) return;
+    const items = BPSF.compare.listSync();
+    const head = document.getElementById('compareHead');
+    const body = document.getElementById('compareBody');
+    if (!head || !body) return;
+
+    head.textContent = '';
+    body.textContent = '';
+
+    const th0 = document.createElement('th');
+    th0.textContent = 'Attribute';
+    head.append(th0);
+    items.forEach(it => {
+      const th = document.createElement('th');
+      th.textContent = it.name;
+      head.append(th);
+    });
+
+    // Cheapest rate wins the highlight — parsed from the "₹28/sqft" label.
+    const rateOf = it => parseFloat(String(it.rate).replace(/[^0-9.]/g, '')) || Infinity;
+    const cheapest = Math.min(...items.map(rateOf));
+
+    COMPARE_ROWS.forEach(row => {
+      const tr = document.createElement('tr');
+      const label = document.createElement('td');
+      label.textContent = row.label;
+      tr.append(label);
+      items.forEach(it => {
+        const td = document.createElement('td');
+        td.textContent = it[row.key] || '—';
+        if (row.best === 'min' && items.length > 1 && rateOf(it) === cheapest) {
+          td.classList.add('compare-best');
+        }
+        tr.append(td);
+      });
+      body.append(tr);
+    });
+
+    const actions = document.createElement('tr');
+    actions.append(document.createElement('td'));
+    items.forEach(it => {
+      const td = document.createElement('td');
+      const btn = document.createElement('button');
+      btn.className = 'btn-enquire';
+      btn.type = 'button';
+      btn.style.cssText = 'width:100%; border-radius:8px; padding:10px;';
+      btn.textContent = 'Enquire';
+      btn.onclick = () => { window.location = it.url || 'property-detail.html'; };
+      td.append(btn);
+      actions.append(td);
+    });
+    body.append(actions);
+  }
+
+  function openCompare() {
+    renderCompareTable();
+    document.getElementById('compareModal').classList.add('open');
+  }
+  function closeCompare() { document.getElementById('compareModal').classList.remove('open'); }
+
+  window.addEventListener('bpsf:compare', () => { updateCompareBar(); renderCompareTable(); });
+  document.addEventListener('DOMContentLoaded', updateCompareBar);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCompare(); });
+
+  /* ── Listings come from the API (GET /api/properties) ──
+     Only approved properties are ever returned; the server enforces that,
+     not this page. */
+  var currentSort = 'newest';
+
+  var escHtml = function (s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+
+  var ICON = {
+    'Warehouse': '🏭', 'Cold Storage': '❄️', 'Industrial Shed': '🏗️',
+    'Logistics Park': '🚛', 'Dark Store': '🛒', 'Industrial Land': '🏞️'
+  };
+
+  /* Real photo when the listing has one, type emoji otherwise. Seeded and
+     older listings carry no images, so the emoji is a genuine fallback
+     rather than dead code.
+
+     A card draws its photo in a box a few hundred pixels wide, so it asks
+     for the 320px rendition and lets srcset upgrade that on a wide screen
+     or a retina display. The feed endpoint sends only the cover image, not
+     all twelve — the other eleven are never drawn here. */
+  function coverPhoto(p) {
+    var cover = API.media.cover(p);
+    if (cover) {
+      return API.media.tag(cover, {
+        alt: p.name,
+        className: 'card-photo-bg',
+        sizes: '(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 360px',
+        min: 320,
+        style: 'width:100%;height:100%;object-fit:cover;display:block;'
+      });
+    }
+    return '<div class="card-photo-bg">' + (ICON[p.type] || '🏭') + '</div>';
+  }
+
+  function currentFilters() {
+    var v = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+    var f = {
+      city: v('cityInput'),
+      type: v('typeSelect'),
+      minArea: v('minAreaInput'),
+      maxRate: v('maxRateInput'),
+      sort: currentSort
+    };
+    /* Sidebar state, so a saved search restores the whole sidebar and not
+       just the four boxes along the top. */
+    f.types = checkedFacet('type');
+    f.grades = checkedFacet('grade');
+    f.cities = checkedFacet('city');
+    f.features = checkedFacet('feature');
+    f.verifiedOnly = !!(document.getElementById('fVerified') || {}).checked;
+    f.rateCap = sliderCap('fRate');
+    f.areaFloor = sliderFloor('fArea');
+    return f;
+  }
+
+  /* ── The catalogue ───────────────────────────────────────────────
+     Approved listings are fetched once and every filter is then applied in
+     the browser.
+
+     The alternative — pushing each control down to GET /properties — cannot
+     work as the sidebar is drawn: the endpoint takes a single `type`, a
+     single `grade` and a single `city`, while these are multi-select groups,
+     and it has no notion of `isVerified` or of a feature list at all. Doing
+     it here also means the demo fallback and the live API filter through
+     exactly the same code, so what you see with the backend down is what you
+     get with it up.
+
+     The trade is that the whole approved set has to fit in memory. Six pages
+     of 100 is the ceiling; past that the sidebar needs real server support
+     and the banner below says so rather than quietly showing a subset. */
+  var CATALOGUE = [];
+  var truncated = false;
+  var PAGE_SIZE = 12;
+
+  function fetchCatalogue() {
+    var out = [];
+    var MAX_PAGES = 6;
+
+    function grab(n) {
+      return API.properties.list({ page: n, limit: 100, sort: 'newest' })
+        .then(function (res) {
+          out = out.concat(res.items || []);
+          var pages = res.pages || 1;
+          if (n < pages) {
+            if (n < MAX_PAGES) return grab(n + 1);
+            truncated = true;
+          }
+          return out;
+        });
+    }
+
+    /* No fallback to sample listings here on purpose. Substituting a
+       fabricated catalogue for the real one showed visitors warehouses that
+       do not exist, at prices nobody set — and made the site look like it
+       had lost its listings. An unreachable API is reported as exactly
+       that, by the error state in loadListings(). */
+    return grab(1);
+  }
+
+  function checkedFacet(key) {
+    return [].slice.call(document.querySelectorAll('input[data-facet="' + key + '"]:checked'))
+      .map(function (c) { return c.value; });
+  }
+
+  /* null means "not limiting", which is what the slider says at rest. */
+  function sliderCap(id) {
+    var el = document.getElementById(id);
+    if (!el) return null;
+    return +el.value >= +el.max ? null : +el.value;
+  }
+  function sliderFloor(id) {
+    var el = document.getElementById(id);
+    if (!el) return null;
+    return +el.value <= +el.min ? null : +el.value;
+  }
+
+  /* Options are read off the listings themselves, so no group can offer a
+     choice that matches nothing. */
+  function buildFacet(containerId, key, pick) {
+    var box = document.getElementById(containerId);
+    if (!box) return 0;
+    var seen = Object.create(null);
+    CATALOGUE.forEach(function (p) {
+      pick(p).forEach(function (v) { if (v) seen[String(v)] = true; });
+    });
+    var values = Object.keys(seen).sort();
+    box.innerHTML = values.map(function (v) {
+      return '<label class="filter-option"><input type="checkbox" data-facet="' + key +
+             '" value="' + escHtml(v) + '"> <span>' + escHtml(v) + '</span></label>';
+    }).join('');
+    return values.length;
+  }
+
+  function buildFacets() {
+    buildFacet('fType', 'type', function (p) { return [p.type]; });
+    buildFacet('fGrade', 'grade', function (p) { return [p.grade]; });
+    buildFacet('fCity', 'city', function (p) { return [p.city]; });
+    var n = buildFacet('fFeature', 'feature', function (p) {
+      return (p.specs && p.specs.features) || [];
+    });
+    var group = document.getElementById('fFeatureGroup');
+    if (group) group.hidden = n === 0;
+
+    var cities = Object.create(null);
+    CATALOGUE.forEach(function (p) { if (p.city) cities[p.city] = true; });
+    var cityCount = Object.keys(cities).length;
+    setText('pillListings', '🏭 ' + CATALOGUE.length + (truncated ? '+' : '') +
+      ' Listing' + (CATALOGUE.length === 1 ? '' : 's'));
+    setText('pillCities', '📍 ' + cityCount + ' Cit' + (cityCount === 1 ? 'y' : 'ies'));
+  }
+
+  function setText(id, s) { var el = document.getElementById(id); if (el) el.textContent = s; }
+
+  function matches(p, f) {
+    if (f.city && ((p.city || '') + ' ' + (p.locality || '')).toLowerCase().indexOf(f.city.toLowerCase()) === -1) return false;
+    if (f.type && p.type !== f.type) return false;
+    if (f.minArea !== '' && Number(p.area || 0) < Number(f.minArea)) return false;
+    if (f.maxRate !== '' && Number(p.rate || 0) > Number(f.maxRate)) return false;
+
+    if (f.types.length && f.types.indexOf(p.type) === -1) return false;
+    if (f.grades.length && f.grades.indexOf(p.grade) === -1) return false;
+    if (f.cities.length && f.cities.indexOf(p.city) === -1) return false;
+    if (f.verifiedOnly && !p.isVerified) return false;
+    if (f.rateCap !== null && Number(p.rate || 0) > f.rateCap) return false;
+    if (f.areaFloor !== null && Number(p.area || 0) < f.areaFloor) return false;
+
+    /* Every ticked feature must be present, not just one of them — ticking
+       more boxes should narrow the list, not widen it. */
+    if (f.features.length) {
+      var have = (p.specs && p.specs.features) || [];
+      for (var i = 0; i < f.features.length; i++) {
+        if (have.indexOf(f.features[i]) === -1) return false;
+      }
+    }
+    return true;
+  }
+
+  var SORTS = {
+    'rate-asc':  function (a, b) { return (a.rate || 0) - (b.rate || 0); },
+    'rate-desc': function (a, b) { return (b.rate || 0) - (a.rate || 0); },
+    'area-asc':  function (a, b) { return (a.area || 0) - (b.area || 0); },
+    'area-desc': function (a, b) { return (b.area || 0) - (a.area || 0); },
+    'newest':    function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); }
+  };
+
+  function cardHtml(p) {
+    var loc = escHtml(p.location || p.city || '');
+    var name = escHtml(p.name);
+    var rate = '₹' + p.rate + '/sqft';
+    var area = Number(p.area || 0).toLocaleString('en-IN') + ' sq ft';
+    var attrs = 'data-name="' + name + '" data-location="' + loc +
+                '" data-rate="' + rate + '" data-area="' + area +
+                '" data-url="property-detail.html?id=' + p.id + '"';
+
+    return '' +
+      '<div class="listing-card">' +
+        '<div class="card-photo">' +
+          coverPhoto(p) +
+          '<div class="card-photo-overlay"></div>' +
+          '<div class="card-badges">' +
+            (p.isVerified ? '<span class="badge-verified">✦ 99Warehousing Verified</span>' : '') +
+            '<span class="badge-type">' + escHtml(p.grade || p.type) + '</span>' +
+          '</div>' +
+          '<div class="card-actions">' +
+            '<button class="card-action-btn" data-fav-id="' + p.id + '" data-fav-icon ' + attrs + '>♡</button>' +
+            '<button class="card-action-btn" onclick="shareCard()" title="Share">↗</button>' +
+          '</div>' +
+          '<div class="card-price-chip">' +
+            '<div class="price-per-sqft">₹' + p.rate + '</div>' +
+            '<div class="price-label">Per Sq Ft / Month</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card-body">' +
+          '<div class="card-title">' + name + '</div>' +
+          '<div class="card-location"><span>📍</span> ' + loc + '</div>' +
+          '<div class="card-specs">' +
+            '<div class="spec-item"><span class="spec-val">' + Number(p.area || 0).toLocaleString('en-IN') + '</span><span class="spec-label">Sq Ft</span></div>' +
+            '<div class="spec-item"><span class="spec-val">' + (p.specs && p.specs.clearHeight ? p.specs.clearHeight + 'm' : '—') + '</span><span class="spec-label">Clear Height</span></div>' +
+            '<div class="spec-item"><span class="spec-val">' + (p.specs && p.specs.loadingDocks ? p.specs.loadingDocks : '—') + '</span><span class="spec-label">Dock Doors</span></div>' +
+          '</div>' +
+          '<div class="card-footer">' +
+            '<button class="btn-enquire" onclick="window.location=\'property-detail.html?id=' + p.id + '\'">Enquire Now</button>' +
+            '<button class="btn-compare-add" data-cmp-id="' + p.id + '" data-cmp-label ' + attrs + '>+ Compare</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  var currentPage = 1;
+
+  /* Filter → sort → page → paint. Called by every control on the page, so
+     there is exactly one path from "what is ticked" to "what is on screen". */
+  function applyFilters() {
+    var grid = document.getElementById('gridView');
+    var f = currentFilters();
+    var hits = CATALOGUE.filter(function (p) { return matches(p, f); });
+    hits.sort(SORTS[f.sort] || SORTS.newest);
+
+    var pages = Math.max(1, Math.ceil(hits.length / PAGE_SIZE));
+    if (currentPage > pages) currentPage = pages;
+
+    setText('resultsCount', hits.length.toLocaleString('en-IN') + (truncated ? '+' : ''));
+    setText('resultsNoun', hits.length === 1 ? 'warehouse' : 'warehouses');
+    setText('mapCount', 'Showing ' + hits.length.toLocaleString('en-IN') +
+      ' listing' + (hits.length === 1 ? '' : 's'));
+
+    if (!hits.length) {
+      grid.innerHTML =
+        '<div style="grid-column:1/-1;padding:56px 24px;text-align:center;color:var(--text-mid);">' +
+        '<div style="font-size:32px;opacity:.5;margin-bottom:10px;">🔍</div>' +
+        'No properties match these filters.' +
+        '<div style="margin-top:14px;"><button class="filter-reset" onclick="resetFilters()">Clear all filters</button></div>' +
+        '</div>';
+      renderPagination(1);
+      return;
+    }
+
+    var start = (currentPage - 1) * PAGE_SIZE;
+    grid.innerHTML = hits.slice(start, start + PAGE_SIZE).map(cardHtml).join('');
+    // Repaint favourite/compare buttons for the freshly-rendered cards.
+    if (window.BPSF) BPSF.refresh();
+    renderPagination(pages);
+  }
+
+  /* A window of five around the current page, with first/last always
+     reachable. Built from the real count — the row used to end at a
+     hard-coded page 48. */
+  function renderPagination(pages) {
+    var box = document.getElementById('pagination');
+    if (!box) return;
+    if (pages <= 1) { box.innerHTML = ''; return; }
+
+    var nums = [];
+    for (var i = 1; i <= pages; i++) {
+      if (i === 1 || i === pages || Math.abs(i - currentPage) <= 2) nums.push(i);
+      else if (nums[nums.length - 1] !== '…') nums.push('…');
+    }
+
+    box.innerHTML = nums.map(function (n) {
+      if (n === '…') return '<button class="page-btn" disabled aria-hidden="true">…</button>';
+      return '<button class="page-btn' + (n === currentPage ? ' active' : '') +
+             '" onclick="goToPage(' + n + ')"' +
+             (n === currentPage ? ' aria-current="page"' : '') + '>' + n + '</button>';
+    }).join('') +
+      (currentPage < pages
+        ? '<button class="page-btn" onclick="goToPage(' + (currentPage + 1) + ')" aria-label="Next page">→</button>'
+        : '');
+  }
+
+  function goToPage(n) {
+    currentPage = n;
+    applyFilters();
+    document.querySelector('.listings-header').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function loadListings() {
+    var grid = document.getElementById('gridView');
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:48px;text-align:center;color:var(--text-mid);font-size:13px;">Loading properties…</div>';
+
+    return fetchCatalogue()
+      .then(function (items) {
+        CATALOGUE = items || [];
+        buildFacets();
+        updateRangeLabels();
+        applyFilters();
+      })
+      .catch(function (err) {
+        grid.innerHTML =
+          '<div style="grid-column:1/-1;padding:48px 24px;text-align:center;color:var(--text-mid);">' +
+          '<div style="font-size:30px;opacity:.5;margin-bottom:10px;">⚠️</div>' +
+          '<div style="margin-bottom:6px;color:var(--deep-mahogany);">Could not load properties.</div>' +
+          '<div style="font-size:12px;">' + escHtml(err.message) + '</div>' +
+          '<button type="button" onclick="loadListings()" style="margin-top:14px;padding:9px 20px;border-radius:8px;' +
+            'border:1px solid var(--antique-gold);background:none;color:var(--deep-mahogany);font:inherit;' +
+            'font-size:12px;cursor:pointer;">Try again</button>' +
+          /* The "start the API" hint is for whoever is running this locally.
+             On the live domain it is noise to a visitor who cannot act on it. */
+          (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+            ? '<div style="font-size:12px;margin-top:10px;">Is the API running? <code>cd server &amp;&amp; npm start</code></div>'
+            : '') +
+          '</div>';
+      });
+  }
+
+  /* Saved searches are per-device until the API stores them per account.
+     The label now names the sidebar groups too, so two saved searches that
+     differ only in their sidebar no longer collapse into one entry. */
+  function saveSearch() {
+    var f = currentFilters();
+    var label = [
+      f.city,
+      f.type,
+      f.types.join('/'),
+      f.grades.join('/'),
+      f.cities.join('/'),
+      f.features.join('/'),
+      f.verifiedOnly ? 'verified' : '',
+      f.rateCap ? 'under ₹' + f.rateCap : (f.maxRate ? 'under ₹' + f.maxRate : ''),
+      f.areaFloor ? 'over ' + f.areaFloor.toLocaleString('en-IN') + ' sq ft'
+                  : (f.minArea ? 'over ' + f.minArea + ' sq ft' : '')
+    ].filter(Boolean).join(' · ') || 'All warehouses';
+
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem('bpsf.saved_searches') || '[]'); } catch (e) {}
+    if (!saved.some(function (s) { return s.label === label; })) {
+      saved.push({ label: label, filters: f });
+      try { localStorage.setItem('bpsf.saved_searches', JSON.stringify(saved)); } catch (e) {}
+    }
+    if (window.BPSF) BPSF.toast('Search saved: ' + label);
+  }
+
+  /* Changing a filter always returns to page one — staying on page 6 of a
+     result set that just shrank to two pages is how a filter looks broken. */
+  function filterListings() { currentPage = 1; applyFilters(); }
+  function sortListings(v) { currentSort = v || 'newest'; currentPage = 1; applyFilters(); }
+
+  function resetFilters() {
+    /* Scoped to the sidebar: page-wide, this also cleared checkboxes that
+       have nothing to do with filtering. */
+    document.querySelectorAll('.filter-sidebar input[type=checkbox]')
+      .forEach(function (c) { c.checked = false; });
+
+    var rate = document.getElementById('fRate'); if (rate) rate.value = rate.max;
+    var area = document.getElementById('fArea'); if (area) area.value = area.min;
+
+    ['cityInput', 'minAreaInput', 'maxRateInput'].forEach(function (id) {
+      var el = document.getElementById(id); if (el) el.value = '';
+    });
+    var t = document.getElementById('typeSelect'); if (t) t.value = '';
+    var s = document.querySelector('.sort-select'); if (s) s.value = 'newest';
+    currentSort = 'newest';
+
+    updateRangeLabels();
+    filterListings();
+  }
+
+  function shareCard() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(location.href)
+        .then(function () { if (window.BPSF) BPSF.toast('Link copied to clipboard.'); });
+    }
+  }
+
+  /* One delegated listener rather than an inline handler per control: the
+     sidebar's options are generated, so there is nothing to attach to at
+     parse time. `input` covers the sliders live; `change` covers the boxes. */
+  function wireFilters() {
+    var side = document.querySelector('.filter-sidebar');
+    if (side) {
+      side.addEventListener('change', filterListings);
+      side.addEventListener('input', function (e) {
+        if (e.target && e.target.type === 'range') { updateRangeLabels(); filterListings(); }
+      });
+    }
+    /* The Search button still works; typing just no longer requires it. */
+    ['cityInput', 'minAreaInput', 'maxRateInput'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('input', filterListings);
+    });
+    var t = document.getElementById('typeSelect');
+    if (t) t.addEventListener('change', filterListings);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    wireFilters();
+    loadListings();
+  });
+
+  // Init
+  document.getElementById('mapView').style.display = 'none';
+</script>
+</body>
+</html>

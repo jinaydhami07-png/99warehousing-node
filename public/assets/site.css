@@ -1,0 +1,1094 @@
+/* ============================================================
+   99Warehousing — shared site chrome
+   Design tokens, reset, navbar, mobile menu, footer, utilities.
+   Page-specific styles stay inline in each page's <style> block.
+   ============================================================ */
+
+:root {
+  /* Neutrals */
+  --off-white: #FAF7F2;
+  --warm-cream: #F5F0E8;
+  --linen-beige: #E8DDD0;
+  --warm-tan: #C4A882;
+  --antique-brown: #8B6F4E;
+  --deep-mahogany: #4A3728;
+  --text-mid: #6B5744;
+  /* Accents */
+  --powder-blue: #C8D8E4;
+  --dusty-steel: #8BA3B8;
+  --deep-indigo: #2C4A6B;
+  --antique-gold: #B8964A;
+  --warm-gold: #D4B06A;
+  --sage-green: #9AAF9B;
+  /* Type */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-editorial: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Jost', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--off-white);
+  color: var(--deep-mahogany);
+  overflow-x: hidden;
+}
+
+/* ─── NAVBAR ─── */
+.navbar {
+  position: fixed;
+  top: 20px;
+  left: 40px;
+  right: 40px;
+  z-index: 1000;
+  border-radius: 100px;
+
+  /* Matte liquid glass.
+     Tuned for cheap compositing: the fill is near-opaque, so a small blur
+     radius still reads as frosted. No saturate() pass, and the blur radius
+     is fixed — animating it would re-rasterize the backdrop on every scroll
+     frame, which is what made the old 28px→40px version expensive. */
+  background-color: rgba(246,243,237,0.88);
+  background-image:
+    linear-gradient(180deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0) 62%),
+    linear-gradient(180deg, rgba(200,216,228,0.16) 0%, rgba(232,221,208,0.10) 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255,255,255,0.66);
+  border-bottom-color: rgba(139,111,78,0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.92),
+    inset 0 -1px 0 rgba(139,111,78,0.045),
+    0 4px 18px rgba(74,55,40,0.07);
+
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  /* Only compositor-cheap properties animate — never backdrop-filter. */
+  transition: background-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Applied by site.js once the page scrolls past 50px.
+   Deepens the matte fill only — the blur is untouched, so scrolling stays smooth. */
+.navbar.scrolled {
+  background-color: rgba(244,240,233,0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.98),
+    inset 0 -1px 0 rgba(139,111,78,0.05),
+    0 6px 22px rgba(74,55,40,0.11);
+}
+
+/* No backdrop-filter support: fall back to an opaque bar rather than
+   an unreadable translucent one. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .navbar { background-color: rgba(246,243,237,0.985); }
+  .navbar.scrolled { background-color: rgba(244,240,233,1); }
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--deep-mahogany);
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.nav-logo span { color: var(--antique-gold); }
+
+.nav-links { display: flex; align-items: center; gap: 22px; list-style: none; }
+
+.nav-links a {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--antique-brown);
+  text-decoration: none;
+  transition: color 0.3s;
+  position: relative;
+  white-space: nowrap;
+}
+
+.nav-links a:hover { color: var(--deep-mahogany); }
+.nav-links a.active { color: var(--deep-mahogany); }
+
+/* Underline wipes out from the centre on hover, and stays put when active. */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--antique-gold);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.nav-links a:hover::after,
+.nav-links a:focus-visible::after { transform: scaleX(1); }
+.nav-links a.active::after { transform: scaleX(1); }
+
+/* Each link lifts a hair — reads as responsive without being noisy. */
+.nav-links a {
+  will-change: auto;
+}
+
+.nav-links a:hover { transform: translateY(-1px); }
+.nav-links a { transition: color 0.3s ease, transform 0.3s ease; }
+
+/* ─── Brand logo ───────────────────────────────────────────────
+   The SVG replaces the text wordmark once site.js has inlined it. Height is
+   fixed and width follows the aspect ratio, so the mark keeps its
+   proportions wherever it sits. `currentColor` inside the SVG means the
+   colour comes from whatever the slot inherits — dark on the navbar, cream
+   on the dashboard sidebar — from one file. */
+.nav-logo.has-logo,
+.auth-logo.has-logo,
+.sidebar-logo-text.has-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;               /* space between the mark and the name */
+}
+/* ─── Account chip ───────────────────────────────────────────── */
+.account-chip { position: relative; display: inline-flex; }
+.account-chip-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.62); border: 1px solid rgba(200,168,130,0.38);
+  border-radius: 100px; padding: 4px 12px 4px 4px; cursor: pointer;
+  font-family: inherit; font-size: 12px; color: var(--deep-mahogany, #4A3728);
+  max-width: 230px; transition: background .2s, border-color .2s;
+}
+.account-chip-btn:hover { background: rgba(255,255,255,0.9); border-color: var(--antique-gold, #B8964A); }
+.account-avatar {
+  width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.account-initial {
+  background: linear-gradient(135deg, var(--antique-gold, #B8964A), var(--warm-gold, #D4B06A));
+  color: var(--deep-mahogany, #4A3728); font-weight: 600; font-size: 13px;
+}
+/* The email is the long part — let it shrink rather than push the navbar wide. */
+.account-email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.account-caret { font-size: 9px; opacity: .55; flex: none; }
+
+.account-menu {
+  position: absolute; top: calc(100% + 10px); right: 0; min-width: 244px; z-index: 200;
+  background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
+  border: 1px solid rgba(200,168,130,0.35); border-radius: 12px;
+  box-shadow: 0 12px 34px rgba(90,70,50,0.18); overflow: hidden; padding: 6px;
+}
+.account-menu-head { padding: 10px 12px 12px; border-bottom: 1px solid rgba(200,168,130,0.22); margin-bottom: 6px; }
+.account-menu-name { font-size: 13px; font-weight: 600; color: var(--deep-mahogany, #4A3728); }
+.account-menu-email { font-size: 11.5px; color: var(--text-mid, #6B5744); overflow: hidden; text-overflow: ellipsis; }
+.account-menu-item {
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  padding: 9px 12px; border-radius: 8px; font-family: inherit; font-size: 12.5px;
+  color: var(--deep-mahogany, #4A3728); text-decoration: none; cursor: pointer;
+}
+.account-menu-item:hover { background: rgba(200,168,130,0.16); }
+
+/* On a phone the email would swallow the navbar — keep the avatar only. */
+@media (max-width: 700px) {
+  .account-email, .account-caret { display: none; }
+  .account-chip-btn { padding: 4px; }
+}
+
+/* Gold, stated explicitly. The mark would otherwise inherit this by accident
+   from `.nav-logo span`, which is fragile — that rule exists to tint the "99"
+   in the wordmark, not to colour the icon. Gold also holds enough contrast on
+   the dark sidebar, where the surrounding text is white.
+
+   Each selector is qualified by its parent on purpose. `.brand-mark` alone is
+   a single class and loses to `.nav-logo span` (a class *and* an element), so
+   the plain version was silently overridden — the mark kept `.nav-logo span`'s
+   display and ignored the mobile rule below entirely. */
+.nav-logo .brand-mark,
+.auth-logo .brand-mark,
+.sidebar-logo-text .brand-mark {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+  flex: none;
+  color: var(--antique-gold);
+  animation: none;         /* `.nav-logo span` may still carry one */
+}
+.nav-logo .brand-mark img,
+.auth-logo .brand-mark img,
+.sidebar-logo-text .brand-mark img { height: 30px; width: auto; display: block; }
+
+.sidebar-logo-text .brand-mark img { height: 24px; }
+
+/* ─── Wordmark ───────────────────────────────────────────────
+   site.js wraps the written name in `.brand-name` so a phone can drop it.
+   That wrapper is a <span>, which `.nav-logo span` — the rule that tints
+   the "99" gold — would otherwise catch, turning the whole name gold.
+   `inherit` hands the colour back to the slot: mahogany on the navbar,
+   white on the dark sidebar, from one rule. Both selectors outrank
+   `.nav-logo span` on specificity, so source order does not matter. */
+.nav-logo .brand-name,
+.auth-logo .brand-name,
+.sidebar-logo-text .brand-name { color: inherit; }
+
+/* The gold "99". It reads as the mark's partner rather than the first word
+   of a sentence, so it is set a shade larger than the name beside it — and
+   pulled tight against it. The gap being closed is a literal space character
+   in the markup of every page, so a negative margin closes it here once
+   instead of editing eighteen files. */
+.nav-logo .brand-name span,
+.auth-logo .brand-name span,
+.sidebar-logo-text .brand-name span,
+.footer-brand-name span {
+  color: var(--antique-gold);
+  font-size: 1.18em;
+  /* Roughly half the space character it is closing — at the full width the
+     numerals sat flush against the W with no gap at all. */
+  margin-right: -0.10em;
+  letter-spacing: -0.005em;
+}
+
+/* On a phone the mark carries the brand alone — it contains the "99", so
+   nothing is lost — and the written name is what goes. This is gated on
+   `.has-logo`, which site.js adds only once the image has actually
+   loaded: if the file 404s the name stays and the navbar is never empty. */
+@media (max-width: 560px) {
+  .nav-logo.has-logo .brand-name,
+  .auth-logo.has-logo .brand-name { display: none; }
+
+  /* Nothing left to sit beside, so the gap would only push the mark off
+     the left edge of the bar. */
+  .nav-logo.has-logo,
+  .auth-logo.has-logo { gap: 0; }
+
+  .nav-logo .brand-mark img,
+  .auth-logo .brand-mark img { height: 30px; }
+}
+@media (min-width: 561px) and (max-width: 768px) {
+  .nav-logo .brand-mark img,
+  .auth-logo .brand-mark img { height: 24px; }
+}
+
+/* The gold accent in the wordmark.
+
+   This used to pulse — scaling and fading on a loop — which read as a quiet
+   flourish when it was applied to a single separator dot. It now carries the
+   "99", and a brand numeral that throbs is a tic rather than a flourish, so
+   the animation is gone and the accent simply holds its colour. */
+.nav-logo span { display: inline-block; }
+
+/* The bar itself drops in once on load. */
+.navbar {
+  animation: navDrop 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes navDrop {
+  from { opacity: 0; transform: translateY(-22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Nav items stagger in behind the bar. */
+.nav-links li {
+  animation: navItemIn 0.5s ease both;
+}
+
+.nav-links li:nth-child(1) { animation-delay: 0.16s; }
+.nav-links li:nth-child(2) { animation-delay: 0.21s; }
+.nav-links li:nth-child(3) { animation-delay: 0.26s; }
+.nav-links li:nth-child(4) { animation-delay: 0.31s; }
+.nav-links li:nth-child(5) { animation-delay: 0.36s; }
+.nav-links li:nth-child(6) { animation-delay: 0.41s; }
+.nav-links li:nth-child(7) { animation-delay: 0.46s; }
+.nav-links li:nth-child(8) { animation-delay: 0.51s; }
+
+@keyframes navItemIn {
+  from { opacity: 0; transform: translateY(-7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Motion is decorative here — drop all of it when asked. */
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .nav-links li,
+  .nav-logo span { animation: none; }
+  .nav-links a,
+  .nav-links a::after { transition: none; }
+  .nav-links a:hover { transform: none; }
+}
+
+.nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+/* ─── BUTTONS ─── */
+.btn-login {
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--antique-brown);
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.8);
+  border-radius: 100px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.btn-login:hover {
+  background: rgba(255,255,255,0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(74,55,40,0.1);
+}
+
+.btn-cta-nav {
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--off-white);
+  background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany));
+  border: none;
+  border-radius: 100px;
+  padding: 9px 22px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(74,55,40,0.2);
+  text-decoration: none;
+}
+
+.btn-cta-nav:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(74,55,40,0.3);
+}
+
+/* ─── MOBILE MENU ─── */
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+
+.hamburger span {
+  width: 22px;
+  height: 1.5px;
+  background: var(--antique-brown);
+  display: block;
+  transition: all 0.3s;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Matte, near-opaque — at this alpha a backdrop blur would cost a full
+     GPU pass for an effect nobody can see through it, so there isn't one. */
+  background: rgba(246,243,237,0.975);
+  border-bottom: 1px solid rgba(196,168,130,0.3);
+  padding: 100px 40px 40px;
+  z-index: 900;
+  transform: translateY(-100%);
+  transition: transform 0.4s ease;
+}
+
+.mobile-menu.open { transform: translateY(0); }
+.mobile-menu ul { list-style: none; }
+.mobile-menu ul li { margin-bottom: 20px; }
+
+.mobile-menu ul a {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--deep-mahogany);
+  text-decoration: none;
+}
+
+/* ─── FOOTER ─── */
+.footer {
+  background: var(--deep-mahogany);
+  color: rgba(255,255,255,0.7);
+  padding: 60px 40px 30px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto 40px;
+}
+
+.footer-brand-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.footer-brand-name span { color: var(--antique-gold); }
+
+.footer-desc { font-size: 13px; line-height: 1.75; opacity: 0.6; }
+
+.footer-col-title {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--antique-gold);
+  margin-bottom: 16px;
+}
+
+.footer-links { list-style: none; }
+.footer-links li { margin-bottom: 10px; }
+
+.footer-links a {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover { color: white; }
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-copy { font-size: 11px; color: rgba(255,255,255,0.35); }
+
+/* ─── WHATSAPP FLOAT ─── */
+/* Both class names now take the same inline SVG. They used to differ — the
+   bubble carried a 💬 emoji — but an emoji is drawn by the platform's own
+   font, so it changed shape between Android, iOS and Windows and went soft
+   the moment it was scaled. The glyph is vector now, and crisp at any size. */
+.wa-btn,
+.whatsapp-bubble {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 500;
+  width: 52px;
+  height: 52px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(37,211,102,0.4);
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+  font-size: 24px;
+}
+
+.wa-btn:hover,
+.whatsapp-bubble:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 24px rgba(37,211,102,0.5); }
+
+.wa-btn svg,
+.whatsapp-bubble svg { width: 26px; height: 26px; fill: #fff; display: block; }
+
+/* Smaller and tucked closer to the corner on a phone, where 52px reads as a
+   blob over the content. 46px still clears the 40px minimum tap target. */
+@media (max-width: 560px) {
+  .wa-btn,
+  .whatsapp-bubble { width: 46px; height: 46px; bottom: 20px; right: 18px; }
+  .wa-btn svg,
+  .whatsapp-bubble svg { width: 22px; height: 22px; }
+}
+
+/* ─── FAVOURITES / COMPARE (assets/bpsf-store.js) ─── */
+
+/* Favourites count badge, sits on the nav "Saved" link */
+.nav-fav {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fav-badge {
+  min-width: 17px;
+  height: 17px;
+  padding: 0 5px;
+  border-radius: 100px;
+  background: var(--antique-gold);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 17px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.fav-badge[hidden] { display: none; }
+
+/* Saved state for any heart button */
+[data-fav-id] { transition: color 0.2s ease, transform 0.2s ease; }
+[data-fav-id].saved { color: #C2453C; }
+[data-fav-id].saved:active { transform: scale(0.88); }
+
+/* Toast — announced politely, never steals focus */
+#bpsfToast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translate(-50%, 16px);
+  z-index: 1200;
+  background: var(--deep-mahogany);
+  color: var(--off-white);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  letter-spacing: 0.3px;
+  padding: 11px 22px;
+  border-radius: 100px;
+  box-shadow: 0 10px 34px rgba(74,55,40,0.32);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+#bpsfToast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  #bpsfToast { transition: opacity 0.28s ease; transform: translate(-50%, 0); }
+}
+
+/* ─── ANIMATION UTILITIES ─── */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Revealed by the IntersectionObserver in site.js */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible { opacity: 1; transform: none; }
+
+/* If JS is unavailable, show the content rather than hiding it forever */
+.no-js .reveal { opacity: 1; transform: none; }
+
+/* ─── RESPONSIVE CHROME ─── */
+
+/* Tighten the nav before it has to collapse. */
+@media (max-width: 1180px) {
+  .navbar { padding: 14px 20px; gap: 14px; }
+  .nav-links { gap: 15px; }
+}
+
+/* Nine nav items plus a logo and two buttons stop fitting around here,
+   so swap the inline links for the hamburger well before phone widths. */
+@media (max-width: 1024px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+}
+
+@media (max-width: 900px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+
+@media (max-width: 768px) {
+  .navbar { left: 16px; right: 16px; padding: 12px 20px; }
+  .btn-login { display: none; }
+
+  /* Mobile GPUs pay the most for a full-width fixed backdrop filter.
+     Go fully matte here — visually near-identical, materially cheaper. */
+  .navbar {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: rgba(246,243,237,0.97);
+  }
+  .navbar.scrolled { background-color: rgba(244,240,233,0.99); }
+  .footer { padding: 40px 24px 24px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+}
+
+/* ============================================================
+   SOFT UI — "liquid glass" surface system
+   ------------------------------------------------------------
+   Added for the hero redesign. Two surface languages, both cheap
+   to composite:
+
+   1. EXTRUDED (neumorphic). Pure box-shadow — a warm shade on the
+      bottom-right, a white highlight on the top-left. No filters,
+      no extra layers, so it costs nothing to paint and nothing to
+      scroll. This carries most of the UI.
+
+   2. GLASS. One small backdrop-filter, used only on surfaces that
+      actually sit over moving content (navbar, hero search). The
+      fill underneath is near-opaque so a 10-12px blur is enough to
+      read as frosted, and the radius is FIXED — animating a
+      backdrop-filter re-rasterises the backdrop every frame, which
+      is the expensive mistake this file already avoids on .navbar.
+
+   Palette and type are unchanged: the highlight is white, the
+   shade is --deep-mahogany at low alpha, so extrusion reads as warm
+   rather than the cold grey of a stock neumorphic kit.
+   ============================================================ */
+
+:root {
+  /* Canvas. A step deeper than --off-white — extrusion is invisible
+     on a near-white ground because the white highlight has nothing
+     to sit against. Still inside the cream family. */
+  --sg-canvas: #F0EBE2;
+  --sg-canvas-deep: #E9E3D8;
+  --sg-surface: #F5F1EA;
+
+  /* The two lights. Everything below is composed from these. */
+  --sg-hi: rgba(255,255,255,0.95);
+  --sg-lo: rgba(74,55,40,0.13);
+  --sg-lo-soft: rgba(74,55,40,0.08);
+
+  /* Extrusion. -out = raised, -in = pressed, -float = lifted. */
+  --sg-out-sm: 3px 3px 8px var(--sg-lo), -3px -3px 7px var(--sg-hi);
+  --sg-out: 6px 6px 16px var(--sg-lo), -5px -5px 13px var(--sg-hi);
+  --sg-out-lg: 10px 12px 28px var(--sg-lo), -8px -8px 20px var(--sg-hi);
+  --sg-in: inset 3px 3px 7px var(--sg-lo), inset -3px -3px 7px var(--sg-hi);
+  --sg-in-sm: inset 2px 2px 5px var(--sg-lo), inset -2px -2px 5px var(--sg-hi);
+  --sg-float: 12px 16px 34px rgba(74,55,40,0.16), -8px -8px 20px var(--sg-hi);
+
+  /* Radii */
+  --sg-r-pill: 100px;
+  --sg-r-lg: 28px;
+  --sg-r-md: 18px;
+  --sg-r-sm: 12px;
+
+  /* Motion. One ease, three durations — used everywhere so the whole
+     UI decelerates with the same weight. */
+  --sg-ease: cubic-bezier(0.4, 0.14, 0.3, 1);
+  --sg-fast: 0.18s;
+  --sg-mid: 0.3s;
+  --sg-slow: 0.55s;
+}
+
+/* ─── Surfaces ─── */
+
+.soft-panel {
+  background: linear-gradient(145deg, var(--sg-surface), var(--sg-canvas-deep));
+  border-radius: var(--sg-r-lg);
+  box-shadow: var(--sg-out-lg);
+  border: 1px solid rgba(255,255,255,0.55);
+}
+
+.soft-card {
+  background: linear-gradient(145deg, var(--sg-surface), var(--sg-canvas-deep));
+  border-radius: var(--sg-r-md);
+  box-shadow: var(--sg-out);
+  border: 1px solid rgba(255,255,255,0.5);
+  transition: transform var(--sg-mid) var(--sg-ease),
+              box-shadow var(--sg-mid) var(--sg-ease);
+}
+
+.soft-card:hover { transform: translateY(-3px); box-shadow: var(--sg-float); }
+
+/* Pressed well — inputs and anything that should read as recessed. */
+.soft-well {
+  background: var(--sg-canvas);
+  border-radius: var(--sg-r-pill);
+  box-shadow: var(--sg-in);
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+/* ─── Glass ───
+   The only rules in this file that use a filter. Fill first, blur
+   second: if backdrop-filter is unsupported the fill alone is still
+   legible (see the @supports fallback at the end). */
+.soft-glass {
+  background-color: rgba(246,242,235,0.82);
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 60%);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.66);
+  box-shadow: var(--sg-out-sm);
+}
+
+/* ─── Search pill ─── */
+
+.soft-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 0 22px;
+  height: 58px;
+  border-radius: var(--sg-r-pill);
+  background: linear-gradient(145deg, #F7F4EE, var(--sg-canvas-deep));
+  box-shadow: var(--sg-out), inset 0 1px 0 rgba(255,255,255,0.9);
+  border: 1px solid rgba(255,255,255,0.55);
+  transition: box-shadow var(--sg-mid) var(--sg-ease),
+              transform var(--sg-mid) var(--sg-ease);
+}
+
+/* Focus presses the pill in — the affordance the mockup's inset bar
+   implies, and it doubles as the focus indicator. */
+.soft-search:focus-within {
+  box-shadow: var(--sg-in), 0 0 0 3px rgba(184,150,74,0.22);
+  transform: translateY(1px);
+}
+
+.soft-search svg { width: 19px; height: 19px; flex: none; color: var(--warm-tan); }
+
+.soft-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 16px;         /* 16px minimum, or iOS Safari zooms on focus */
+  color: var(--deep-mahogany);
+}
+
+.soft-search input::placeholder { color: var(--warm-tan); opacity: 0.85; }
+
+/* ─── Buttons ─── */
+
+.soft-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 15px 30px;
+  border-radius: var(--sg-r-pill);
+  border: 1px solid rgba(255,255,255,0.6);
+  background: linear-gradient(145deg, #F8F5F0, var(--sg-canvas-deep));
+  box-shadow: var(--sg-out);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--deep-mahogany);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--sg-fast) var(--sg-ease),
+              box-shadow var(--sg-fast) var(--sg-ease),
+              color var(--sg-fast) var(--sg-ease);
+}
+
+.soft-btn:hover { transform: translateY(-2px); box-shadow: var(--sg-float); }
+/* Press physically sinks the control into the canvas. */
+.soft-btn:active { transform: translateY(1px); box-shadow: var(--sg-in-sm); }
+.soft-btn:focus-visible { outline: none; box-shadow: var(--sg-out), 0 0 0 3px rgba(184,150,74,0.35); }
+
+.soft-btn-primary {
+  background: linear-gradient(145deg, var(--warm-gold), var(--antique-gold));
+  border-color: rgba(255,255,255,0.35);
+  color: #fff;
+  box-shadow: 6px 6px 16px rgba(139,111,78,0.28), -4px -4px 12px var(--sg-hi);
+}
+
+.soft-btn-primary:hover { box-shadow: 10px 14px 30px rgba(139,111,78,0.32), -5px -5px 14px var(--sg-hi); }
+
+/* Round icon button — the circle beside the search bar. */
+.soft-icon-btn {
+  width: 58px;
+  height: 58px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.6);
+  background: linear-gradient(145deg, #F8F5F0, var(--sg-canvas-deep));
+  box-shadow: var(--sg-out);
+  color: var(--antique-brown);
+  cursor: pointer;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--sg-fast) var(--sg-ease),
+              box-shadow var(--sg-fast) var(--sg-ease);
+}
+
+.soft-icon-btn:hover { transform: translateY(-2px); box-shadow: var(--sg-float); }
+.soft-icon-btn:active { transform: translateY(1px); box-shadow: var(--sg-in-sm); }
+.soft-icon-btn:focus-visible { outline: none; box-shadow: var(--sg-out), 0 0 0 3px rgba(184,150,74,0.35); }
+.soft-icon-btn svg { width: 20px; height: 20px; }
+
+/* ─── Carousel dots ─── */
+
+.soft-dots { display: flex; align-items: center; justify-content: center; gap: 9px; }
+
+.soft-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--sg-canvas-deep);
+  box-shadow: var(--sg-in-sm);
+  cursor: pointer;
+  transition: width var(--sg-mid) var(--sg-ease),
+              background-color var(--sg-mid) var(--sg-ease);
+}
+
+/* Active dot stretches into a lozenge rather than just recolouring —
+   readable without relying on colour alone. */
+.soft-dot[aria-selected="true"] {
+  width: 24px;
+  border-radius: var(--sg-r-pill);
+  background: var(--antique-gold);
+  box-shadow: var(--sg-out-sm);
+}
+
+.soft-dot:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184,150,74,0.4); }
+
+/* ─── Chrome restyled onto the soft system ───
+   These override the rules earlier in this file by source order. */
+
+body { background: var(--sg-canvas); }
+
+.navbar {
+  background-color: rgba(245,241,234,0.80);
+  box-shadow: var(--sg-out-sm), inset 0 1px 0 rgba(255,255,255,0.9);
+  border-color: rgba(255,255,255,0.62);
+}
+
+.navbar.scrolled {
+  background-color: rgba(243,238,230,0.94);
+  box-shadow: var(--sg-out), inset 0 1px 0 rgba(255,255,255,0.95);
+}
+
+.btn-login,
+.btn-cta-nav {
+  border-radius: var(--sg-r-pill);
+  transition: transform var(--sg-fast) var(--sg-ease),
+              box-shadow var(--sg-fast) var(--sg-ease),
+              color var(--sg-fast) var(--sg-ease),
+              background-color var(--sg-fast) var(--sg-ease);
+}
+
+.btn-login {
+  background: linear-gradient(145deg, #F8F5F0, var(--sg-canvas-deep));
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: var(--sg-out-sm);
+}
+
+.btn-login:hover { transform: translateY(-2px); box-shadow: var(--sg-out); }
+.btn-login:active { transform: translateY(1px); box-shadow: var(--sg-in-sm); }
+
+.btn-cta-nav {
+  box-shadow: 4px 4px 12px rgba(139,111,78,0.26), -3px -3px 9px var(--sg-hi);
+}
+
+.btn-cta-nav:hover { transform: translateY(-2px); box-shadow: 8px 10px 22px rgba(139,111,78,0.3), -4px -4px 11px var(--sg-hi); }
+.btn-cta-nav:active { transform: translateY(1px); box-shadow: var(--sg-in-sm); }
+
+/* Hamburger becomes a round soft key, matching the mockup's mobile bar. */
+.hamburger {
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #F8F5F0, var(--sg-canvas-deep));
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: var(--sg-out-sm);
+  transition: transform var(--sg-fast) var(--sg-ease),
+              box-shadow var(--sg-fast) var(--sg-ease);
+}
+
+.hamburger:active { transform: scale(0.96); box-shadow: var(--sg-in-sm); }
+.hamburger span { width: 17px; height: 2px; border-radius: 2px; }
+
+/* Bars fold into an X while the sheet is open. */
+.hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0.4); }
+.hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+.hamburger span { transition: transform var(--sg-mid) var(--sg-ease), opacity var(--sg-fast) var(--sg-ease); }
+
+/* The sheet covers the page rather than floating over it, so it gets no
+   backdrop blur — that would buy a full GPU pass for an effect nothing
+   shows through. It does get a solid fill: at the old 0.975 the headline
+   underneath still ghosted through, and the page behind is scroll-locked,
+   so there is nothing there worth hinting at. Full height for the same
+   reason — a sheet that stops mid-screen reads as a dropped panel. */
+.mobile-menu {
+  background: #F6F3ED;
+  min-height: 100svh;
+  padding: 100px 32px calc(40px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  box-shadow: 0 18px 40px rgba(74,55,40,0.14);
+  transition: transform var(--sg-slow) var(--sg-ease);
+}
+
+/* Menu items stagger in behind the sheet. */
+.mobile-menu ul li {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity var(--sg-mid) var(--sg-ease), transform var(--sg-mid) var(--sg-ease);
+}
+
+.mobile-menu.open ul li { opacity: 1; transform: none; }
+.mobile-menu.open ul li:nth-child(1) { transition-delay: 0.10s; }
+.mobile-menu.open ul li:nth-child(2) { transition-delay: 0.15s; }
+.mobile-menu.open ul li:nth-child(3) { transition-delay: 0.20s; }
+.mobile-menu.open ul li:nth-child(4) { transition-delay: 0.25s; }
+.mobile-menu.open ul li:nth-child(5) { transition-delay: 0.30s; }
+.mobile-menu.open ul li:nth-child(6) { transition-delay: 0.35s; }
+.mobile-menu.open ul li:nth-child(7) { transition-delay: 0.40s; }
+.mobile-menu.open ul li:nth-child(8) { transition-delay: 0.45s; }
+.mobile-menu.open ul li:nth-child(9) { transition-delay: 0.50s; }
+
+/* ─── Device fitting ───
+   Control heights step down with the viewport so the same markup is
+   comfortable on a 320px phone and a 1600px desktop. */
+
+@media (max-width: 768px) {
+  .soft-search { height: 52px; padding: 0 18px; }
+  .soft-icon-btn { width: 52px; height: 52px; }
+  .soft-btn { padding: 14px 26px; }
+}
+
+@media (max-width: 480px) {
+  :root { --sg-r-lg: 22px; }
+  .soft-search { height: 48px; padding: 0 16px; gap: 10px; }
+  .soft-icon-btn { width: 48px; height: 48px; }
+  .soft-btn { padding: 13px 22px; font-size: 12.5px; }
+}
+
+/* Touch pointers get no hover lift — on a phone it fires on tap and
+   sticks until the next tap, which reads as a stuck button. */
+@media (hover: none) {
+  .soft-btn:hover,
+  .soft-icon-btn:hover,
+  .soft-card:hover,
+  .btn-login:hover,
+  .btn-cta-nav:hover { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soft-btn,
+  .soft-icon-btn,
+  .soft-card,
+  .soft-search,
+  .soft-dot,
+  .mobile-menu,
+  .mobile-menu ul li,
+  .hamburger,
+  .hamburger span { transition: none; }
+  .soft-btn:hover,
+  .soft-icon-btn:hover,
+  .soft-card:hover { transform: none; }
+  .mobile-menu ul li { opacity: 1; transform: none; }
+}
+
+/* No backdrop-filter (Firefox with the flag off, older Safari): drop to
+   an opaque fill rather than leaving text over a transparent panel. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .soft-glass { background-color: rgba(246,242,235,0.98); }
+}
+
+/* Body scroll lock while the mobile sheet is open (set by site.js). */
+body.menu-open { overflow: hidden; }
+
+/* Visually hidden, still read by screen readers. Used for the labels on
+   icon-only controls. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── "Sample data" notice (assets/demo-banner.js) ───
+   Rendered only when the demo backend has actually served a request. */
+.demo-notice {
+  position: fixed;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 1200;
+  width: min(680px, calc(100vw - 32px));
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px 14px 13px 16px;
+  border-radius: var(--sg-r-md);
+  background: rgba(74,55,40,0.96);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 14px 34px rgba(74,55,40,0.28);
+  animation: demoNoticeIn 0.45s var(--sg-ease) both;
+}
+
+@keyframes demoNoticeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(14px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.demo-notice-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--warm-gold);
+  flex: none;
+  margin-top: 6px;
+}
+
+.demo-notice-text {
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.82);
+}
+
+.demo-notice-text strong { color: #fff; font-weight: 500; }
+
+.demo-notice-x {
+  flex: none;
+  width: 26px; height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.75);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.demo-notice-x:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+/* The WhatsApp bubble shares the bottom-right corner; lift it clear. */
+body.has-demo-notice .wa-btn,
+body.has-demo-notice .whatsapp-bubble { bottom: 112px; }
+
+@media (max-width: 560px) {
+  .demo-notice { bottom: max(12px, env(safe-area-inset-bottom)); padding: 11px 12px; }
+  .demo-notice-text { font-size: 11.5px; }
+  body.has-demo-notice .wa-btn,
+  body.has-demo-notice .whatsapp-bubble { bottom: 148px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-notice { animation: none; }
+}

@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>99Warehousing — India's Most Trusted Warehousing Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+
+
+
+
+  /* ─── LIQUID GLASS NAVBAR ─── */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* ─── HERO ───────────────────────────────────────────────────
+     One soft panel floating on a warm canvas: search bar + account
+     key across the top, the headline under it, two pill CTAs, and a
+     dot rail that steps through the segment lines.
+
+     Everything that moves here animates transform/opacity only, so
+     the whole hero stays on the compositor. The frosted layer is the
+     search pill alone — the panel itself is pure box-shadow. */
+
+  .hero {
+    position: relative;
+    min-height: 100svh;          /* svh, not vh: no jump when iOS hides the URL bar */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: clamp(96px, 12vw, 148px) clamp(16px, 4vw, 48px) clamp(44px, 6vw, 76px);
+    padding-left: max(clamp(16px, 4vw, 48px), env(safe-area-inset-left));
+    padding-right: max(clamp(16px, 4vw, 48px), env(safe-area-inset-right));
+  }
+
+  /* Ambient wash. Two radial gradients — no filter, no extra element. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(920px 540px at 12% 6%, rgba(255,255,255,0.9), transparent 62%),
+      radial-gradient(760px 500px at 88% 94%, rgba(200,216,228,0.34), transparent 64%);
+  }
+
+  .hero-panel {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: clamp(16px, 2.4vw, 26px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(22px, 3.6vw, 40px);
+    animation: sgRise 0.75s var(--sg-ease) both;
+  }
+
+  @keyframes sgRise {
+    from { opacity: 0; transform: translateY(22px) scale(0.985); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* Children arrive behind the panel, one beat apart. */
+  .hero-panel > * { animation: sgFadeUp 0.6s var(--sg-ease) both; }
+  .hero-bar  { animation-delay: 0.16s; }
+  .hero-body { animation-delay: 0.26s; }
+  .hero-foot { animation-delay: 0.38s; }
+
+  @keyframes sgFadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ─── Top bar: search + round account key ─── */
+  .hero-bar { display: flex; align-items: center; gap: 14px; }
+
+  .hero-search { flex: 1; min-width: 0; }
+
+  /* ─── Headline ───
+     Jost 600 uppercase — the site's own body face, pushed to the
+     blocky weight the mockup carries. Playfair stays on the section
+     headings below, so the brand voice is unchanged. */
+  .hero-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(16px, 2.4vw, 26px);
+    padding: clamp(6px, 2vw, 22px) clamp(6px, 2vw, 18px) 0;
+  }
+
+  .hero-h1 {
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: clamp(32px, 7.2vw, 88px);
+    line-height: 0.98;
+    letter-spacing: -0.022em;
+    color: var(--deep-mahogany);
+    text-wrap: balance;
+  }
+
+  .hero-h1 em { font-style: normal; color: var(--antique-gold); }
+
+  /* Rotating segment line. Fixed min-height so swapping the text
+     never reflows the buttons underneath. */
+  .hero-sub {
+    font-size: clamp(13.5px, 1.5vw, 16px);
+    line-height: 1.7;
+    color: var(--text-mid);
+    max-width: 56ch;
+    min-height: 3.4em;
+    transition: opacity var(--sg-mid) var(--sg-ease), transform var(--sg-mid) var(--sg-ease);
+  }
+
+  .hero-sub.is-swapping { opacity: 0; transform: translateY(6px); }
+
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: 14px; }
+
+  /* ─── Foot: stats + dot rail ─── */
+  .hero-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 0 clamp(6px, 2vw, 18px);
+  }
+
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(16px, 3vw, 38px);
+  }
+
+  .stat-card { white-space: nowrap; }
+
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.4vw, 30px);
+    font-weight: 500;
+    color: var(--deep-mahogany);
+    display: block;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--antique-brown);
+    display: block;
+    margin-top: 3px;
+  }
+
+  /* ─── Featured rail under the panel ─── */
+  .hero-rail {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1240px;
+    margin: clamp(26px, 4vw, 44px) auto 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(12px, 1.6vw, 20px);
+    animation: sgFadeUp 0.6s 0.5s var(--sg-ease) both;
+  }
+
+  .feat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .feat-photo {
+    height: clamp(96px, 12vw, 128px);
+    border-radius: var(--sg-r-sm);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 30px;
+    background: linear-gradient(140deg, var(--linen-beige), var(--powder-blue));
+    box-shadow: var(--sg-in-sm);
+  }
+
+  .feat-photo-2 { background: linear-gradient(140deg, var(--powder-blue), var(--linen-beige)); }
+  .feat-photo-3 { background: linear-gradient(140deg, var(--linen-beige), var(--sage-green)); }
+
+  .feat-tag {
+    font-size: 9px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--deep-mahogany);
+    background: rgba(255,255,255,0.82);
+    border-radius: var(--sg-r-pill);
+    padding: 5px 11px;
+    align-self: flex-start;
+  }
+
+  .feat-name { font-family: var(--font-display); font-size: 15px; font-weight: 500; }
+  .feat-loc { font-size: 11.5px; color: var(--text-mid); margin-top: 2px; }
+
+  .feat-foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-top: 1px solid rgba(200,168,130,0.28);
+    padding-top: 10px;
+    margin-top: auto;
+  }
+
+  .feat-rate { font-family: var(--font-display); font-size: 17px; color: var(--antique-gold); }
+  .feat-rate span { font-size: 10px; color: var(--text-mid); }
+  .feat-area { font-size: 11px; color: var(--text-mid); }
+
+  /* ─── Device fitting ─── */
+
+  @media (max-width: 1024px) {
+    .hero-foot { justify-content: flex-start; gap: 26px; }
+  }
+
+  /* Phone layout, straight off the mockup: the search pill drops below
+     the buttons — the navbar already carries a search-shaped pill and a
+     hamburger up top, so a second bar there would just repeat it. */
+  @media (max-width: 768px) {
+    .hero { justify-content: flex-start; }
+    .hero-panel { gap: 22px; }
+    .hero-bar { order: 3; }
+    .hero-body { order: 1; }
+    .hero-foot { order: 2; flex-direction: column; align-items: flex-start; }
+    .hero-bar .soft-icon-btn { display: none; }
+    .hero-stats { width: 100%; justify-content: space-between; gap: 14px; }
+    .hero-rail {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 8px;
+      margin-inline: calc(clamp(16px, 4vw, 48px) * -1);
+      padding-inline: clamp(16px, 4vw, 48px);
+      scrollbar-width: none;
+    }
+    .hero-rail::-webkit-scrollbar { display: none; }
+    .feat-card { flex: 0 0 78%; scroll-snap-align: start; }
+  }
+
+  /* Full-width CTAs are a phone pattern. Held back to 600px because a
+     pill stretched across a 768px tablet reads as a banner, not a button. */
+  @media (max-width: 600px) {
+    .hero-ctas { flex-direction: column; align-items: stretch; width: 100%; }
+    .hero-ctas .soft-btn { width: 100%; }
+  }
+
+  @media (max-width: 480px) {
+    .hero-h1 { font-size: clamp(28px, 9vw, 40px); }
+    .hero-sub { min-height: 4.2em; }
+    .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 10px; }
+  }
+
+  /* Short landscape phones: let the hero size to content instead of
+     forcing a full viewport nothing fits inside. */
+  @media (max-height: 560px) and (orientation: landscape) {
+    .hero { min-height: auto; padding-top: 104px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-panel,
+    .hero-panel > *,
+    .hero-rail { animation: none; }
+    .hero-sub { transition: none; }
+    .hero-sub.is-swapping { opacity: 1; transform: none; }
+  }
+  /* ─── TRUST STRIP ─── */
+  .trust-strip {
+    background: rgba(245,240,232,0.6);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(200,168,130,0.2);
+    border-bottom: 1px solid rgba(200,168,130,0.2);
+    padding: 20px 0;
+    overflow: hidden;
+  }
+
+  .trust-inner {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    /* Slower than it was: the strip now carries sentences rather than company
+       names, and at 25s the longer track scrolled past faster than it reads. */
+    animation: scrollLeft 45s linear infinite;
+    width: max-content;
+  }
+
+  @keyframes scrollLeft {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Text that moves and cannot be stopped is the worst case for reduced
+     motion — hold it still and let it wrap instead. */
+  @media (prefers-reduced-motion: reduce) {
+    .trust-inner {
+      animation: none;
+      width: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+      row-gap: 6px;
+    }
+    /* The second copy exists only to make the loop seamless. It is tagged in
+       the markup rather than counted with nth-child, which would silently
+       point at the wrong element the moment an item is added or removed. */
+    .trust-dup { display: none; }
+  }
+
+  .trust-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--warm-tan);
+    padding: 0 32px;
+    white-space: nowrap;
+  }
+
+  .trust-logo {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--antique-brown);
+    opacity: 0.6;
+    padding: 0 36px;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+
+  .trust-divider {
+    width: 1px; height: 16px;
+    background: rgba(200,168,130,0.3);
+    flex-shrink: 0;
+  }
+
+  /* ─── SECTION LAYOUT ─── */
+  section { padding: 100px 60px; max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-family: var(--font-editorial);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--antique-gold);
+    margin-bottom: 16px;
+    display: block;
+    font-style: italic;
+  }
+
+  .section-h2 {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4vw, 44px);
+    font-weight: 400;
+    color: var(--deep-mahogany);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .section-h2 em { font-style: italic; color: var(--antique-brown); }
+
+  .section-sub {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--text-mid);
+    line-height: 1.75;
+    max-width: 540px;
+    margin-bottom: 56px;
+  }
+
+  /* ─── GLASSMORPHISM CARDS ─── */
+  .glass-card {
+    background: rgba(245,240,232,0.55);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.70);
+    border-radius: 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 8px 32px rgba(139,111,78,0.08);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-3px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 16px 48px rgba(139,111,78,0.14);
+  }
+
+  /* ─── LISTING CARDS GRID ─── */
+  .listings-section { background: var(--off-white); }
+  .listings-section > div { max-width: 1200px; margin: 0 auto; padding: 100px 60px; }
+
+  .listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .listing-card {
+    background: rgba(245,240,232,0.55);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.70);
+    border-radius: 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 8px 32px rgba(139,111,78,0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .listing-card:hover { transform: translateY(-3px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 16px 48px rgba(139,111,78,0.14); }
+
+  .listing-photo {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+    background: linear-gradient(135deg, var(--powder-blue) 0%, var(--linen-beige) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .listing-photo-inner {
+    height: 200px;
+    background: linear-gradient(135deg, rgba(200,216,228,0.6), rgba(196,168,130,0.4));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+  }
+
+  .verified-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, var(--warm-gold), var(--antique-gold));
+    color: white;
+    font-family: var(--font-body);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 100px;
+    box-shadow: 0 2px 8px rgba(184,150,74,0.3);
+  }
+
+  .listing-body { padding: 24px; }
+
+  .listing-price {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--deep-mahogany);
+    margin-bottom: 6px;
+  }
+
+  .listing-price span {
+    font-size: 14px;
+    color: var(--antique-brown);
+    font-family: var(--font-body);
+  }
+
+  .listing-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--deep-mahogany);
+    margin-bottom: 8px;
+  }
+
+  .listing-meta {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-mid);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .listing-meta span { display: flex; align-items: center; gap: 4px; }
+  .listing-divider { width: 1px; height: 10px; background: var(--warm-tan); opacity: 0.4; }
+
+  .listing-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+
+  .tag {
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--dusty-steel);
+    background: rgba(200,216,228,0.3);
+    border: 1px solid rgba(139,163,184,0.25);
+    border-radius: 100px;
+    padding: 4px 12px;
+  }
+
+  .listing-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid rgba(196,168,130,0.2);
+  }
+
+  .btn-glass {
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--antique-brown);
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.7);
+    border-radius: 100px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+
+  .btn-glass:hover { transform: translateY(-1px); background: rgba(255,255,255,0.7); }
+
+  .btn-primary {
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--off-white);
+    background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany));
+    border: none;
+    border-radius: 0;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 16px rgba(74,55,40,0.2);
+  }
+
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(74,55,40,0.3); }
+
+  .btn-gold {
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--deep-mahogany);
+    background: linear-gradient(135deg, var(--warm-gold), var(--antique-gold));
+    border: none;
+    border-radius: 100px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 16px rgba(184,150,74,0.25);
+  }
+
+  .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,150,74,0.35); }
+
+  .btn-outline {
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--antique-brown);
+    background: transparent;
+    border: 1.5px solid var(--antique-brown);
+    border-radius: 0;
+    padding: 9px 22px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .btn-outline:hover { background: var(--antique-brown); color: var(--off-white); }
+
+  /* ─── SERVICES ─── */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .service-card {
+    padding: 32px 28px;
+  }
+
+  .service-icon {
+    width: 48px; height: 48px;
+    background: rgba(184,150,74,0.1);
+    border: 1px solid rgba(184,150,74,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+
+  .service-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--deep-mahogany);
+    margin-bottom: 10px;
+  }
+
+  .service-desc {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--text-mid);
+    line-height: 1.7;
+  }
+
+  /* ─── BROKER SPOTLIGHT ─── */
+
+
+
+
+
+
+
+
+
+  .stars { color: var(--antique-gold); font-size: 12px; margin-bottom: 16px; }
+
+  /* ─── INSIGHTS ─── */
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .insight-card { padding: 32px; position: relative; overflow: hidden; }
+
+  .insight-cat {
+    font-family: var(--font-editorial);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--antique-gold);
+    font-style: italic;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .insight-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--deep-mahogany);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .insight-excerpt {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--text-mid);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .insight-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid rgba(196,168,130,0.2);
+  }
+
+  .insight-date { font-family: var(--font-body); font-size: 11px; color: var(--warm-tan); }
+
+  /* ─── CTA BANNER ─── */
+  .cta-banner {
+    background: linear-gradient(135deg, var(--deep-mahogany), #2a1f18);
+    padding: 80px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(ellipse, rgba(200,216,228,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .cta-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(ellipse, rgba(184,150,74,0.1) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .cta-banner h2 {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 400;
+    color: var(--off-white);
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-banner h2 em { font-style: italic; color: var(--warm-gold); }
+
+  .cta-banner p {
+    font-family: var(--font-editorial);
+    font-size: 18px;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(250,247,242,0.65);
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-banner-btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── LOGIN MODAL ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(74,55,40,0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .login-modal {
+    background: rgba(250,247,242,0.92);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.85);
+    border-radius: 24px;
+    box-shadow: 0 32px 80px rgba(74,55,40,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
+    padding: 48px 44px;
+    width: 440px;
+    max-width: 95vw;
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-overlay.open .login-modal { transform: translateY(0) scale(1); }
+
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--deep-mahogany);
+    margin-bottom: 6px;
+  }
+
+  .modal-sub {
+    font-family: var(--font-editorial);
+    font-size: 15px;
+    font-style: italic;
+    color: var(--antique-brown);
+    margin-bottom: 28px;
+  }
+
+  .user-types {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .user-type-btn {
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: var(--antique-brown);
+    background: rgba(255,255,255,0.6);
+    border: 1.5px solid rgba(196,168,130,0.35);
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .user-type-btn:hover, .user-type-btn.active {
+    border-color: var(--antique-gold);
+    background: rgba(212,176,106,0.1);
+    color: var(--deep-mahogany);
+  }
+
+  .form-group { margin-bottom: 18px; }
+
+  .form-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--antique-brown);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .form-input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--deep-mahogany);
+    background: rgba(255,255,255,0.6);
+    border: 1.5px solid rgba(196,168,130,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-input:focus {
+    border-color: var(--antique-gold);
+    box-shadow: 0 0 0 3px rgba(184,150,74,0.15);
+  }
+
+  .btn-signin {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--off-white);
+    background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany));
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(74,55,40,0.2);
+  }
+
+  .btn-signin:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(74,55,40,0.3); }
+
+  .or-divider {
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--warm-tan);
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .or-divider::before, .or-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 24px);
+    height: 1px;
+    background: rgba(196,168,130,0.25);
+  }
+
+  .or-divider::before { left: 0; }
+  .or-divider::after { right: 0; }
+
+  .btn-google {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--antique-brown);
+    background: rgba(255,255,255,0.6);
+    border: 1.5px solid rgba(196,168,130,0.3);
+    border-radius: 10px;
+    padding: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-google:hover { background: rgba(255,255,255,0.85); border-color: rgba(196,168,130,0.5); }
+
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(196,168,130,0.25);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--antique-brown);
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,255,255,0.8); }
+  .login-modal { position: relative; }
+
+  /* ─── WHATSAPP ─── */
+
+
+  /* ─── FOOTER ─── */
+
+
+
+
+
+
+
+
+
+
+
+  /* ─── ANIMATIONS ─── */
+
+
+
+  /* ─── MOBILE MENU ─── */
+
+
+
+  /* ─── RESPONSIVE ─── */
+
+  /* Hero responsiveness lives with the hero block above. What is left
+     here is page-level padding for the sections below it. */
+  @media (max-width: 768px) {
+    section { padding: 60px 24px; }
+    .listings-section > div { padding: 60px 24px; }
+    .cta-banner { padding: 60px 24px; }
+  }
+
+  /* ─── CALCULATOR WIDGET ─── */
+  .calc-widget {
+    background: rgba(245,240,232,0.55);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.70);
+    border-radius: 20px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 8px 32px rgba(139,111,78,0.08);
+    padding: 40px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .calc-result {
+    background: linear-gradient(135deg, var(--deep-mahogany), #2a1f18);
+    border-radius: 16px;
+    padding: 28px;
+    color: var(--off-white);
+    margin-top: 20px;
+    display: none;
+  }
+
+  .calc-result.visible { display: block; }
+
+  .calc-result-num {
+    font-family: var(--font-display);
+    font-size: 36px;
+    color: var(--warm-gold);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .calc-result-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(250,247,242,0.5);
+  }
+
+  .calc-row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(200,168,130,0.15); }
+  .calc-row-label { font-family: var(--font-body); font-size: 12px; color: rgba(250,247,242,0.5); }
+  .calc-row-val { font-family: var(--font-display); font-size: 16px; color: rgba(250,247,242,0.9); }
+</style>
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+
+<!-- ─── LIQUID GLASS NAVBAR ─── -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><span>99</span>Warehousing</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="warehouses.html">Warehouses</a></li>
+    <li><a href="land-parks.html">Land &amp; Parks</a></li>
+    <li><a href="insights.html">Insights</a></li>
+    <li><a href="calculator.html">Calculator</a></li>
+    <li><a href="partners.html">Partners</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="submit-listing.html" class="btn-cta-nav">List Property</a>
+    <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html" onclick="toggleMenu()">Home</a></li>
+    <li><a href="warehouses.html" onclick="toggleMenu()">Warehouses</a></li>
+    <li><a href="land-parks.html" onclick="toggleMenu()">Land &amp; Parks</a></li>
+    <li><a href="insights.html" onclick="toggleMenu()">Insights</a></li>
+    <li><a href="calculator.html" onclick="toggleMenu()">Calculator</a></li>
+    <li><a href="partners.html" onclick="toggleMenu()">Partners</a></li>
+    <li><a href="about.html" onclick="toggleMenu()">About</a></li>
+    <li><a href="contact.html" onclick="toggleMenu()">Contact</a></li>
+  </ul>
+</div>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+
+  <div class="hero-panel soft-panel">
+
+    <!-- Search + account key. On phones this row reorders below the
+         buttons (see the 768px breakpoint) — the fixed navbar already
+         holds the top pill there. -->
+    <div class="hero-bar">
+      <form class="soft-search hero-search" role="search" action="warehouses.html" method="get">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>
+        </svg>
+        <label for="heroQ" class="sr-only">Search properties</label>
+        <input id="heroQ" name="q" type="search" placeholder="Search for properties, cities, or pin codes" autocomplete="off">
+      </form>
+      <a class="soft-icon-btn" href="account.html" aria-label="Your account">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20a7.6 7.6 0 0 1 14.4 0"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="hero-body">
+      <h1 class="hero-h1">Buy, Sell <em>&amp;</em> Rent<br>Warehouses</h1>
+      <p class="hero-sub" id="heroSub" aria-live="polite">Every square foot, verified. Grade-A warehouses across 48 cities — inspected, priced per square foot, and ready to move on.</p>
+      <div class="hero-ctas">
+        <a href="warehouses.html" class="soft-btn soft-btn-primary">Buy Property</a>
+        <a href="submit-listing.html" class="soft-btn">Sell Property</a>
+      </div>
+    </div>
+
+    <div class="hero-foot">
+      <div class="hero-stats">
+        <div class="stat-card"><span class="stat-num">2,400+</span><span class="stat-label">Listings</span></div>
+        <div class="stat-card"><span class="stat-num">₹240Cr+</span><span class="stat-label">Deals Closed</span></div>
+        <div class="stat-card"><span class="stat-num">48</span><span class="stat-label">Cities</span></div>
+        <div class="stat-card"><span class="stat-num">100%</span><span class="stat-label">Verified</span></div>
+      </div>
+
+      <!-- Dots step through the segment lines above. Real buttons, so
+           they are reachable by keyboard and announce their state. -->
+      <div class="soft-dots" id="heroDots" role="tablist" aria-label="Property segments">
+        <button class="soft-dot" type="button" role="tab" aria-selected="true"  aria-label="Warehouses"></button>
+        <button class="soft-dot" type="button" role="tab" aria-selected="false" aria-label="Cold storage"></button>
+        <button class="soft-dot" type="button" role="tab" aria-selected="false" aria-label="Logistics parks"></button>
+        <button class="soft-dot" type="button" role="tab" aria-selected="false" aria-label="Industrial land"></button>
+        <button class="soft-dot" type="button" role="tab" aria-selected="false" aria-label="Built to suit"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-rail">
+    <a class="feat-card soft-card" href="property-detail.html">
+      <div class="feat-photo feat-photo-1"><span class="feat-tag">Grade A</span>🏢</div>
+      <div>
+        <div class="feat-name">Bhiwandi Logistics Hub</div>
+        <div class="feat-loc">Bhiwandi, Mumbai MMR</div>
+      </div>
+      <div class="feat-foot">
+        <span class="feat-rate">₹28 <span>/ sq ft</span></span>
+        <span class="feat-area">45,000 sq ft</span>
+      </div>
+    </a>
+
+    <a class="feat-card soft-card" href="property-detail.html">
+      <div class="feat-photo feat-photo-2"><span class="feat-tag">Cold Chain</span>❄️</div>
+      <div>
+        <div class="feat-name">Chakan Cold Storage</div>
+        <div class="feat-loc">Chakan, Pune</div>
+      </div>
+      <div class="feat-foot">
+        <span class="feat-rate">₹45 <span>/ sq ft</span></span>
+        <span class="feat-area">18,000 sq ft</span>
+      </div>
+    </a>
+
+    <a class="feat-card soft-card" href="property-detail.html">
+      <div class="feat-photo feat-photo-3"><span class="feat-tag">Land</span>🏗️</div>
+      <div>
+        <div class="feat-name">Panvel Industrial Park</div>
+        <div class="feat-loc">Panvel, Navi Mumbai</div>
+      </div>
+      <div class="feat-foot">
+        <span class="feat-rate">₹22 <span>/ sq ft</span></span>
+        <span class="feat-area">80,000 sq ft</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ─── TRUST STRIP ───────────────────────────────────────────────
+     Every line here describes something the platform actually does, and each
+     is backed by behaviour in this codebase: listings are reviewed by an
+     admin before they go live, contact details are released only to a
+     signed-in account, pricing is stored and shown per square foot, and
+     enquiries route to the listing's own owner.
+
+     Keep it that way. No third-party company names — claiming a business as
+     a customer without its agreement is not ours to publish — and no figures
+     a visitor cannot check.
+
+     The list is repeated once because the marquee animates to -50% and the
+     second copy is what makes the loop seamless. Edit both halves together. -->
+<div class="trust-strip" id="trust">
+  <div class="trust-inner" id="trustInner">
+    <span class="trust-label">How We Work</span>
+    <span class="trust-logo">Every Listing Reviewed Before It Goes Live</span><div class="trust-divider"></div>
+    <span class="trust-logo">Transparent Per-Sq-Ft Pricing</span><div class="trust-divider"></div>
+    <span class="trust-logo">Owner-Direct Enquiries</span><div class="trust-divider"></div>
+    <span class="trust-logo">Contact Details Never Public</span><div class="trust-divider"></div>
+    <span class="trust-logo">Warehouses · Cold Storage · Logistics Parks · Land</span><div class="trust-divider"></div>
+    <span class="trust-logo">Free to Search, Free to List</span><div class="trust-divider"></div>
+    <!-- duplicate for seamless loop — .trust-dup marks it as the copy -->
+    <span class="trust-label trust-dup" aria-hidden="true">How We Work</span>
+    <span class="trust-logo trust-dup" aria-hidden="true">Every Listing Reviewed Before It Goes Live</span><div class="trust-divider trust-dup"></div>
+    <span class="trust-logo trust-dup" aria-hidden="true">Transparent Per-Sq-Ft Pricing</span><div class="trust-divider trust-dup"></div>
+    <span class="trust-logo trust-dup" aria-hidden="true">Owner-Direct Enquiries</span><div class="trust-divider trust-dup"></div>
+    <span class="trust-logo trust-dup" aria-hidden="true">Contact Details Never Public</span><div class="trust-divider trust-dup"></div>
+    <span class="trust-logo trust-dup" aria-hidden="true">Warehouses · Cold Storage · Logistics Parks · Land</span><div class="trust-divider trust-dup"></div>
+    <span class="trust-logo trust-dup" aria-hidden="true">Free to Search, Free to List</span>
+  </div>
+</div>
+
+<!-- ─── FEATURED LISTINGS ─── -->
+<div class="listings-section" id="listings">
+  <div>
+    <span class="section-label reveal">Featured Listings</span>
+    <h2 class="section-h2 reveal">Premium <em>Industrial Spaces</em></h2>
+    <p class="section-sub reveal">Hand-picked. Verified on-site. Every listing cleared our 14-point inspection protocol before it reaches you.</p>
+    <div class="listings-grid">
+      <!-- Card 1 -->
+      <div class="listing-card reveal">
+        <div class="listing-photo-inner" style="position:relative;">
+          <span style="font-size:48px;">🏭</span>
+          <div class="verified-badge">✦ 99Warehousing Verified</div>
+        </div>
+        <div class="listing-body">
+          <div class="listing-price">₹28 <span>/ sq ft / month</span></div>
+          <div class="listing-title">Grade A Warehouse</div>
+          <div class="listing-meta">
+            <span>📍 Mumbai, Bhiwandi</span>
+            <div class="listing-divider"></div>
+            <span>45,000 sq ft</span>
+            <div class="listing-divider"></div>
+            <span style="color: var(--sage-green);">● Available Now</span>
+          </div>
+          <div class="listing-tags">
+            <span class="tag">Cold Chain Ready</span>
+            <span class="tag">FSSAI Compliant</span>
+            <span class="tag">32ft Ceiling</span>
+          </div>
+          <div class="listing-footer">
+            <button class="btn-glass" data-fav-id="home-featured" data-fav-icon data-name="Featured warehouse" data-url="property-detail.html">♡</button>
+            <button class="btn-primary" onclick="window.location='property-detail.html'">View Details →</button>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="listing-card reveal">
+        <div class="listing-photo-inner" style="position:relative; background: linear-gradient(135deg, rgba(44,74,107,0.15), rgba(196,168,130,0.3));">
+          <span style="font-size:48px;">🏗️</span>
+          <div class="verified-badge">✦ 99Warehousing Verified</div>
+        </div>
+        <div class="listing-body">
+          <div class="listing-price">₹18 <span>/ sq ft / month</span></div>
+          <div class="listing-title">Logistics Park — Block C</div>
+          <div class="listing-meta">
+            <span>📍 Pune, Chakan</span>
+            <div class="listing-divider"></div>
+            <span>1,20,000 sq ft</span>
+            <div class="listing-divider"></div>
+            <span style="color: var(--sage-green);">● Available</span>
+          </div>
+          <div class="listing-tags">
+            <span class="tag">Multi-tenant</span>
+            <span class="tag">6 Docks</span>
+            <span class="tag">EV Charging</span>
+          </div>
+          <div class="listing-footer">
+            <button class="btn-glass" data-fav-id="home-featured" data-fav-icon data-name="Featured warehouse" data-url="property-detail.html">♡</button>
+            <button class="btn-primary" onclick="window.location='property-detail.html'">View Details →</button>
+          </div>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="listing-card reveal">
+        <div class="listing-photo-inner" style="position:relative; background: linear-gradient(135deg, rgba(154,175,155,0.2), rgba(200,216,228,0.4));">
+          <span style="font-size:48px;">🏢</span>
+          <div class="verified-badge">✦ 99Warehousing Verified</div>
+        </div>
+        <div class="listing-body">
+          <div class="listing-price">₹42 <span>/ sq ft / month</span></div>
+          <div class="listing-title">Premium Dark Store</div>
+          <div class="listing-meta">
+            <span>📍 Delhi, Gurugram</span>
+            <div class="listing-divider"></div>
+            <span>8,000 sq ft</span>
+            <div class="listing-divider"></div>
+            <span style="color: var(--antique-gold);">● Closing Soon</span>
+          </div>
+          <div class="listing-tags">
+            <span class="tag">Last Mile</span>
+            <span class="tag">Ground Floor</span>
+            <span class="tag">24/7 Security</span>
+          </div>
+          <div class="listing-footer">
+            <button class="btn-glass" data-fav-id="home-featured" data-fav-icon data-name="Featured warehouse" data-url="property-detail.html">♡</button>
+            <button class="btn-primary" onclick="window.location='property-detail.html'">View Details →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top: 48px;" class="reveal">
+      <button class="btn-gold" onclick="window.location='warehouses.html'">Explore All Warehouses ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SERVICES ─── -->
+<section id="services">
+  <span class="section-label reveal">What We Offer</span>
+  <h2 class="section-h2 reveal">Everything Industrial,<br><em>Under One Roof</em></h2>
+  <p class="section-sub reveal">From discovery to deal closure — 99Warehousing is the only platform built exclusively for India's industrial real estate market.</p>
+  <div class="services-grid">
+    <div class="glass-card service-card reveal">
+      <div class="service-icon">🏭</div>
+      <div class="service-title">Warehouse Listings</div>
+      <p class="service-desc">Grade A & B warehouses from 2,000–5,00,000 sq ft across 48 cities. Every listing verified on-site by our team.</p>
+    </div>
+    <div class="glass-card service-card reveal">
+      <div class="service-icon">🗺️</div>
+      <div class="service-title">Industrial Land</div>
+      <p class="service-desc">Raw parcels, SEZ plots, and MIDC zones. Built-to-suit enquiry routed to the right developer partners.</p>
+    </div>
+    <div class="glass-card service-card reveal">
+      <div class="service-icon">🤝</div>
+      <div class="service-title">Verified Brokers</div>
+      <p class="service-desc">99Warehousing verified agencies — background checked, deal-history verified, and rated by real clients. No middlemen fog.</p>
+    </div>
+    <div class="glass-card service-card reveal">
+      <div class="service-icon">📊</div>
+      <div class="service-title">Market Intelligence</div>
+      <p class="service-desc">Quarterly reports on per-sq-ft lease rates, supply indices, and demand trends across all major logistics corridors.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICE CALCULATOR ─── -->
+<div style="background: linear-gradient(135deg, rgba(200,216,228,0.15), rgba(245,240,232,0.4)); border-top: 1px solid rgba(200,168,130,0.15);">
+  <section id="calculator">
+    <span class="section-label reveal">Instant Estimate</span>
+    <h2 class="section-h2 reveal">Per Sq Ft <em>Calculator</em></h2>
+    <p class="section-sub reveal">Get a real-time estimate of your monthly lease cost, total deal value, and brokerage fee — before you speak to anyone.</p>
+    <div class="calc-widget reveal">
+      <div class="calc-inputs">
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <select class="form-input" id="calcCity" onchange="calcUpdate()">
+            <option value="mumbai">Mumbai</option>
+            <option value="delhi">Delhi NCR</option>
+            <option value="pune">Pune</option>
+            <option value="bengaluru">Bengaluru</option>
+            <option value="hyderabad">Hyderabad</option>
+            <option value="chennai">Chennai</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Warehouse Type</label>
+          <select class="form-input" id="calcType" onchange="calcUpdate()">
+            <option value="grade_a">Grade A</option>
+            <option value="grade_b">Grade B</option>
+            <option value="cold_chain">Cold Chain</option>
+            <option value="dark_store">Dark Store</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Area (sq ft)</label>
+          <input type="number" class="form-input" id="calcArea" placeholder="e.g. 50000" oninput="calcUpdate()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lease Duration</label>
+          <select class="form-input" id="calcDuration" onchange="calcUpdate()">
+            <option value="12">12 months</option>
+            <option value="24">24 months</option>
+            <option value="36">36 months</option>
+            <option value="60">60 months</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-primary" style="border-radius:8px; width:100%; padding:13px; font-size:11px; letter-spacing:2px;" onclick="calcCompute()">Calculate Estimate →</button>
+      <div class="calc-result" id="calcResult">
+        <span class="calc-result-num" id="calcMonthly">₹0</span>
+        <span class="calc-result-label">Estimated Monthly Lease</span>
+        <div class="calc-row">
+          <span class="calc-row-label">Total Deal Value</span>
+          <span class="calc-row-val" id="calcTotal">₹0</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-row-label">Brokerage Fee (est.)</span>
+          <span class="calc-row-val" id="calcBrokerage">₹0</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-row-label">Market Rate Comparison</span>
+          <span class="calc-row-val" style="color: var(--sage-green);">✓ Fair Market Rate</span>
+        </div>
+        <div style="margin-top: 20px;">
+          <button class="btn-gold" style="width:100%;" onclick="window.location='contact.html'">Talk to Our Team →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ─── MARKET INSIGHTS ─── -->
+<section id="insights">
+  <span class="section-label reveal">Market Intelligence</span>
+  <h2 class="section-h2 reveal">Latest <em>Industry Reports</em></h2>
+  <p class="section-sub reveal">Quarterly data on per-sq-ft lease rates, corridor demand, and investment flows — written for serious operators.</p>
+  <div class="insights-grid">
+    <div class="glass-card insight-card reveal">
+      <span class="insight-cat">Q1 2026 Report</span>
+      <div class="insight-title">Lease Rates Rise 12% Across Top 6 Logistics Corridors</div>
+      <p class="insight-excerpt">Per-sq-ft lease rates climbed 12% quarter-on-quarter in Mumbai, Pune, Delhi NCR, Bengaluru, Hyderabad, and Chennai — driven by constrained Grade A supply.</p>
+      <div class="insight-footer">
+        <span class="insight-date">March 2026</span>
+        <button class="btn-outline" style="padding: 7px 18px; font-size:10px;" onclick="window.location='insights.html'">Read Report</button>
+      </div>
+    </div>
+    <div class="glass-card insight-card reveal">
+      <span class="insight-cat">Analysis</span>
+      <div class="insight-title">Cold Chain Warehousing: The ₹8,000 Cr Opportunity</div>
+      <p class="insight-excerpt">India's cold chain infrastructure deficit is creating rare investment windows. We map the whitespace across 18 Tier 2 cities with growth indices.</p>
+      <div class="insight-footer">
+        <span class="insight-date">February 2026</span>
+        <button class="btn-outline" style="padding: 7px 18px; font-size:10px;" onclick="window.location='insights.html'">Read Report</button>
+      </div>
+    </div>
+    <div class="glass-card insight-card reveal">
+      <span class="insight-cat">City Focus</span>
+      <div class="insight-title">Bhiwandi vs. Panvel: Mumbai's Two Warehouse Capitals</div>
+      <p class="insight-excerpt">A side-by-side analysis of Mumbai's two primary warehousing corridors — infrastructure, connectivity, compliance history, and 5-year rate trends.</p>
+      <div class="insight-footer">
+        <span class="insight-date">January 2026</span>
+        <button class="btn-outline" style="padding: 7px 18px; font-size:10px;" onclick="window.location='insights.html'">Read Report</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA BANNER ─── -->
+<div class="cta-banner">
+  <h2>List Your <em>Industrial Property</em></h2>
+  <p>Reach India's most serious warehouse buyers and tenants. Zero listing fee to start.</p>
+  <div class="cta-banner-btns">
+    <button class="btn-gold" onclick="window.location='submit-listing.html'">List Your Property ✦</button>
+    <a href="about.html" class="btn-hero-secondary" style="border-color:rgba(255,255,255,0.3); color:rgba(250,247,242,0.7);">Learn More</a>
+  </div>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">99Warehousing</div>
+      <p class="footer-desc">India's most trusted marketplace for industrial and warehousing real estate. Every square foot, verified.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Properties</div>
+      <ul class="footer-links">
+        <li><a href="warehouses.html">Warehouses</a></li>
+        <li><a href="land-parks.html">Industrial Land</a></li>
+        <li><a href="land-parks.html">Logistics Parks</a></li>
+        <li><a href="warehouses.html">Cold Storage</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="about.html">About 99Warehousing</a></li>
+        <li><a href="partners.html">Partners</a></li>
+        <li><a href="insights.html">Market Insights</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Account</div>
+      <ul class="footer-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Register</a></li>
+        <li><a href="submit-listing.html">List Property</a></li>
+        <li><a href="terms.html">Terms of Service</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 99warehousing. All rights reserved.</span>
+    <span class="footer-copy">Made with ✦ in India</span>
+  </div>
+</footer>
+
+<!-- ─── LOGIN MODAL ─── -->
+<div class="modal-overlay" id="loginModal" onclick="closeModalOutside(event)">
+  <div class="login-modal">
+    <div class="modal-close" onclick="closeModal()">✕</div>
+    <div class="modal-title">Welcome Back</div>
+    <div class="modal-sub">Sign in to your 99Warehousing account</div>
+    <div class="user-types">
+      <button class="user-type-btn active" onclick="setUserType(this)">🏢 Buyer</button>
+      <button class="user-type-btn" onclick="setUserType(this)">🏭 Owner</button>
+      <button class="user-type-btn" onclick="setUserType(this)">🤝 Broker</button>
+      <button class="user-type-btn" onclick="setUserType(this)">🏛️ Agency</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <input type="email" class="form-input" placeholder="you@company.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" placeholder="••••••••">
+    </div>
+    <button class="btn-signin" onclick="window.location='login.html'">Sign In →</button>
+    <div class="or-divider">or</div>
+    <button class="btn-google" onclick="window.location='login.html'">Continue with Google</button>
+  </div>
+</div>
+
+<!-- ─── WHATSAPP ─── -->
+<a href="https://wa.me/919819216600?text=Hi%2C%20I%20found%20a%20listing%20on%2099%20Warehousing%20and%20would%20like%20more%20info." class="wa-btn" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" title="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<script>
+  // Navbar scroll, mobile menu and scroll reveal live in assets/site.js
+
+  // Modal
+  function openModal(e) { e.preventDefault(); document.getElementById('loginModal').classList.add('open'); }
+  function closeModal() { document.getElementById('loginModal').classList.remove('open'); }
+  function closeModalOutside(e) { if (e.target === document.getElementById('loginModal')) closeModal(); }
+
+  function setUserType(btn) {
+    document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // Calculator
+  const rates = {
+    mumbai:    { grade_a: 28, grade_b: 18, cold_chain: 45, dark_store: 55 },
+    delhi:     { grade_a: 32, grade_b: 22, cold_chain: 50, dark_store: 60 },
+    pune:      { grade_a: 22, grade_b: 14, cold_chain: 38, dark_store: 45 },
+    bengaluru: { grade_a: 30, grade_b: 20, cold_chain: 48, dark_store: 58 },
+    hyderabad: { grade_a: 20, grade_b: 13, cold_chain: 35, dark_store: 42 },
+    chennai:   { grade_a: 22, grade_b: 15, cold_chain: 36, dark_store: 44 },
+  };
+
+  function fmt(n) {
+    if (n >= 10000000) return '₹' + (n/10000000).toFixed(2) + ' Cr';
+    if (n >= 100000) return '₹' + (n/100000).toFixed(1) + ' L';
+    return '₹' + n.toLocaleString('en-IN');
+  }
+
+  function calcUpdate() { document.getElementById('calcResult').classList.remove('visible'); }
+
+  function calcCompute() {
+    const city = document.getElementById('calcCity').value;
+    const type = document.getElementById('calcType').value;
+    const area = parseFloat(document.getElementById('calcArea').value) || 0;
+    const dur = parseInt(document.getElementById('calcDuration').value);
+    if (!area) { alert('Please enter an area in sq ft'); return; }
+    const rate = rates[city][type];
+    const monthly = area * rate;
+    const total = monthly * dur;
+    const brokerage = total * 0.02;
+    document.getElementById('calcMonthly').textContent = fmt(monthly);
+    document.getElementById('calcTotal').textContent = fmt(total);
+    document.getElementById('calcBrokerage').textContent = fmt(brokerage);
+    document.getElementById('calcResult').classList.add('visible');
+  }
+</script>
+<!-- ─── HERO SEGMENT RAIL ───────────────────────────────────────
+     The dots under the stats step the headline's sub-line through the
+     five things the platform actually lists. Autoplay is a courtesy,
+     not the mechanism: every slide is reachable by click and by arrow
+     key, it pauses on hover/focus and when the tab is hidden, and it
+     never starts at all under prefers-reduced-motion. -->
+<script>
+(function () {
+  var sub  = document.getElementById('heroSub');
+  var rail = document.getElementById('heroDots');
+  if (!sub || !rail) return;
+
+  var dots = Array.prototype.slice.call(rail.querySelectorAll('.soft-dot'));
+  var lines = [
+    "Every square foot, verified. Grade-A warehouses across 48 cities \u2014 inspected, priced per square foot, and ready to move on.",
+    "Temperature-controlled cold storage with power backup and audited chain-of-custody, for food, pharma, and agri loads.",
+    "Logistics parks on the arterial corridors \u2014 dock-high bays, trailer circulation, and space to scale into.",
+    "Clear-title industrial land, zoned and serviced, with the approvals mapped out before you commit.",
+    "Built-to-suit mandates: bring the spec, and we match it to owners who will build against it."
+  ];
+
+  // The full placeholder clips inside the pill on a narrow phone, and a
+  // half-visible sentence reads as a bug. Swap it for the short form
+  // rather than shrinking the input — under 16px iOS zooms the page on
+  // focus, which is worse than a shorter prompt.
+  var q = document.getElementById('heroQ');
+  var narrow = window.matchMedia('(max-width: 560px)');
+  function fitPlaceholder() {
+    if (!q) return;
+    q.placeholder = narrow.matches ? 'Search properties' : 'Search for properties, cities, or pin codes';
+  }
+  fitPlaceholder();
+  if (narrow.addEventListener) narrow.addEventListener('change', fitPlaceholder);
+
+  var i = 0, timer = null, paused = false;
+  var STEP = 5200;
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function show(next) {
+    if (next === i) return;
+    i = (next + lines.length) % lines.length;
+    dots.forEach(function (d, n) { d.setAttribute('aria-selected', String(n === i)); });
+
+    // Fade out, swap at the far end of the transition, fade back in.
+    // The paragraph has a fixed min-height, so nothing below it moves.
+    if (still.matches) { sub.textContent = lines[i]; return; }
+    sub.classList.add('is-swapping');
+    setTimeout(function () {
+      sub.textContent = lines[i];
+      sub.classList.remove('is-swapping');
+    }, 300);
+  }
+
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+  function play() {
+    stop();
+    if (paused || still.matches || document.hidden) return;
+    timer = setInterval(function () { show(i + 1); }, STEP);
+  }
+
+  dots.forEach(function (dot, n) {
+    dot.addEventListener('click', function () { show(n); play(); });
+    dot.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      var next = (n + (e.key === 'ArrowRight' ? 1 : -1) + dots.length) % dots.length;
+      show(next);
+      dots[next].focus();
+      play();
+    });
+  });
+
+  rail.addEventListener('mouseenter', function () { paused = true; stop(); });
+  rail.addEventListener('mouseleave', function () { paused = false; play(); });
+  rail.addEventListener('focusin',    function () { paused = true; stop(); });
+  rail.addEventListener('focusout',   function () { paused = false; play(); });
+
+  // A timer running against a hidden tab is pure battery cost.
+  document.addEventListener('visibilitychange', play);
+  if (still.addEventListener) still.addEventListener('change', play);
+
+  play();
+})();
+</script>
+</body>
+</html>

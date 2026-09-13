@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>Price Calculator — 99Warehousing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.footer{margin-top:80px;}
+
+.page-wrap{padding:130px 40px 80px;max-width:1100px;margin:0 auto;}
+.page-header{text-align:center;margin-bottom:56px;}
+.page-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--antique-gold);display:block;margin-bottom:12px;}
+.page-title{font-family:var(--font-display);font-size:52px;font-weight:600;line-height:1.1;margin-bottom:14px;}
+.page-title em{font-style:italic;color:var(--antique-brown);}
+.page-sub{font-size:15px;color:var(--text-mid);line-height:1.75;max-width:560px;margin:0 auto;}
+
+/* CALC LAYOUT */
+.calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+
+/* LEFT — INPUTS */
+.calc-card{background:rgba(255,255,255,0.60);backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,0.75);border-radius:20px;box-shadow:0 12px 40px rgba(139,111,78,0.09),inset 0 1px 0 rgba(255,255,255,0.9);padding:36px;}
+.calc-card-title{font-family:var(--font-display);font-size:22px;font-weight:600;margin-bottom:24px;}
+.calc-card-title em{font-style:italic;color:var(--antique-brown);}
+.form-group{margin-bottom:20px;}
+.form-label{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--antique-gold);margin-bottom:7px;}
+.form-input{width:100%;background:rgba(250,247,242,0.85);border:1px solid rgba(200,168,130,0.25);border-radius:8px;padding:12px 14px;font-family:var(--font-body);font-size:14px;color:var(--deep-mahogany);outline:none;transition:border-color 0.25s;}
+.form-input:focus{border-color:var(--antique-gold);}
+.city-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.city-btn{background:rgba(250,247,242,0.7);border:2px solid rgba(200,168,130,0.2);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;transition:all 0.2s;}
+.city-btn.active,.city-btn:hover{border-color:var(--antique-gold);background:rgba(184,150,74,0.08);}
+.city-btn-name{font-size:12px;font-weight:500;color:var(--deep-mahogany);}
+.city-btn-rate{font-size:10px;color:var(--text-mid);margin-top:2px;}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.type-btn{background:rgba(250,247,242,0.7);border:2px solid rgba(200,168,130,0.2);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px;}
+.type-btn.active,.type-btn:hover{border-color:var(--antique-gold);background:rgba(184,150,74,0.08);}
+.type-icon{font-size:18px;}
+.type-name{font-size:12px;font-weight:500;color:var(--deep-mahogany);}
+.dur-grid{display:flex;gap:8px;flex-wrap:wrap;}
+.dur-btn{background:rgba(250,247,242,0.7);border:2px solid rgba(200,168,130,0.2);border-radius:8px;padding:9px 16px;font-size:12px;cursor:pointer;transition:all 0.2s;color:var(--deep-mahogany);}
+.dur-btn.active,.dur-btn:hover{border-color:var(--antique-gold);color:var(--antique-gold);}
+.area-row{display:flex;align-items:center;gap:12px;}
+.area-slider{flex:1;accent-color:var(--antique-brown);}
+.area-display{font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--deep-mahogany);white-space:nowrap;}
+.btn-calc{width:100%;background:linear-gradient(135deg,var(--antique-brown),var(--deep-mahogany));color:var(--off-white);border:none;border-radius:10px;padding:15px;font-family:var(--font-body);font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 20px rgba(74,55,40,0.2);transition:all 0.25s;margin-top:8px;}
+.btn-calc:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(74,55,40,0.3);}
+
+/* RIGHT — RESULTS */
+.results-card{background:rgba(245,240,232,0.65);backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,0.75);border-radius:20px;box-shadow:0 12px 40px rgba(139,111,78,0.1),inset 0 1px 0 rgba(255,255,255,0.9);padding:36px;position:sticky;top:100px;}
+.result-header{text-align:center;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid rgba(200,168,130,0.15);}
+.result-main-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--antique-gold);margin-bottom:6px;}
+.result-main-val{font-family:var(--font-display);font-size:52px;font-weight:600;color:var(--deep-mahogany);line-height:1;}
+.result-main-unit{font-size:13px;color:var(--text-mid);margin-top:4px;}
+.result-market{display:inline-flex;align-items:center;gap:6px;background:rgba(154,175,155,0.15);border:1px solid rgba(154,175,155,0.3);border-radius:100px;padding:5px 14px;font-size:11px;color:var(--sage-green);margin-top:10px;}
+.result-rows{display:flex;flex-direction:column;gap:0;margin-bottom:24px;}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(200,168,130,0.1);}
+.result-row:last-child{border-bottom:none;}
+.result-row-label{font-size:12px;color:var(--text-mid);}
+.result-row-val{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--deep-mahogany);}
+/* CHART */
+.chart-section{margin-bottom:24px;}
+.chart-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--antique-gold);margin-bottom:12px;}
+.chart-bars{display:flex;gap:6px;align-items:flex-end;height:100px;}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.chart-bar-fill{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(to top,rgba(184,150,74,0.6),rgba(212,176,106,0.3));transition:height 0.5s ease;}
+.chart-bar-fill.current{background:linear-gradient(to top,rgba(184,150,74,0.95),rgba(212,176,106,0.7));}
+.chart-bar-city{font-size:9px;color:var(--text-mid);}
+.chart-bar-price{font-size:9px;color:var(--antique-brown);font-weight:600;}
+.btn-talk{width:100%;background:linear-gradient(135deg,var(--antique-gold),var(--warm-gold));color:var(--deep-mahogany);border:none;border-radius:10px;padding:14px;font-family:var(--font-body);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;cursor:pointer;margin-bottom:8px;}
+.btn-save{width:100%;background:transparent;border:1px solid rgba(200,168,130,0.3);border-radius:10px;padding:13px;font-family:var(--font-body);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--antique-brown);cursor:pointer;}
+
+/* FAQ */
+.faq-section{margin-top:60px;}
+.faq-title{font-family:var(--font-display);font-size:32px;font-weight:600;margin-bottom:28px;}
+.faq-title em{font-style:italic;color:var(--antique-brown);}
+.faq-item{background:rgba(255,255,255,0.55);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.7);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+.faq-q{padding:18px 20px;font-size:14px;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.faq-q span{font-size:18px;color:var(--antique-gold);}
+.faq-a{padding:0 20px 16px;font-size:13px;color:var(--text-mid);line-height:1.75;display:none;}
+.faq-a.open{display:block;}
+
+@media(max-width:900px){.calc-layout{grid-template-columns:1fr;}.results-card{position:static;}}
+@media(max-width:768px){.page-wrap{padding:110px 16px 60px;}.page-title{font-size:36px;}}
+</style>
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><span>99</span>Warehousing</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="warehouses.html">Warehouses</a></li>
+    <li><a href="land-parks.html">Land &amp; Parks</a></li>
+    <li><a href="insights.html">Insights</a></li>
+    <li><a href="calculator.html" class="active">Calculator</a></li>
+    <li><a href="partners.html">Partners</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="submit-listing.html" class="btn-cta-nav">List Property</a>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html" onclick="toggleMenu()">Home</a></li>
+    <li><a href="warehouses.html" onclick="toggleMenu()">Warehouses</a></li>
+    <li><a href="land-parks.html" onclick="toggleMenu()">Land &amp; Parks</a></li>
+    <li><a href="insights.html" onclick="toggleMenu()">Insights</a></li>
+    <li><a href="calculator.html" onclick="toggleMenu()">Calculator</a></li>
+    <li><a href="partners.html" onclick="toggleMenu()">Partners</a></li>
+    <li><a href="about.html" onclick="toggleMenu()">About</a></li>
+    <li><a href="contact.html" onclick="toggleMenu()">Contact</a></li>
+    <li><a href="login.html" onclick="toggleMenu()">Login</a></li>
+  </ul>
+</div>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <span class="page-label">Instant Estimate</span>
+    <h1 class="page-title">Per Sq Ft <em>Calculator</em></h1>
+    <p class="page-sub">Get a real-time estimate of your monthly lease cost, total deal value, brokerage fee, and market average comparison — before you speak to anyone.</p>
+  </div>
+
+  <div class="calc-layout">
+    <!-- INPUTS -->
+    <div class="calc-card">
+      <div class="calc-card-title">Configure Your <em>Estimate</em></div>
+
+      <div class="form-group">
+        <label class="form-label">Select City</label>
+        <div class="city-grid" id="cityGrid">
+          <div class="city-btn active" onclick="selectCity(this,'mumbai',28)"><div class="city-btn-name">Mumbai</div><div class="city-btn-rate">Avg ₹28–42/sqft</div></div>
+          <div class="city-btn" onclick="selectCity(this,'delhi',24)"><div class="city-btn-name">Delhi NCR</div><div class="city-btn-rate">Avg ₹18–38/sqft</div></div>
+          <div class="city-btn" onclick="selectCity(this,'pune',22)"><div class="city-btn-name">Pune</div><div class="city-btn-rate">Avg ₹20–35/sqft</div></div>
+          <div class="city-btn" onclick="selectCity(this,'bengaluru',30)"><div class="city-btn-name">Bengaluru</div><div class="city-btn-rate">Avg ₹26–44/sqft</div></div>
+          <div class="city-btn" onclick="selectCity(this,'hyderabad',20)"><div class="city-btn-name">Hyderabad</div><div class="city-btn-rate">Avg ₹18–32/sqft</div></div>
+          <div class="city-btn" onclick="selectCity(this,'chennai',22)"><div class="city-btn-name">Chennai</div><div class="city-btn-rate">Avg ₹20–34/sqft</div></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Warehouse Type</label>
+        <div class="type-grid" id="typeGrid">
+          <div class="type-btn active" onclick="selectType(this,1.0)"><div class="type-icon">🏭</div><div class="type-name">Grade A</div></div>
+          <div class="type-btn" onclick="selectType(this,0.7)"><div class="type-icon">🏗️</div><div class="type-name">Grade B</div></div>
+          <div class="type-btn" onclick="selectType(this,1.5)"><div class="type-icon">❄️</div><div class="type-name">Cold Chain</div></div>
+          <div class="type-btn" onclick="selectType(this,1.8)"><div class="type-icon">⚡</div><div class="type-name">Dark Store</div></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Area Required</label>
+        <div class="area-row">
+          <input type="range" class="area-slider" min="1000" max="500000" step="1000" value="50000" oninput="setArea(this.value)">
+          <div class="area-display" id="areaDisplay">50,000 sqft</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Lease Duration</label>
+        <div class="dur-grid" id="durGrid">
+          <button class="dur-btn" onclick="selectDur(this,12)">12 months</button>
+          <button class="dur-btn" onclick="selectDur(this,24)">24 months</button>
+          <button class="dur-btn active" onclick="selectDur(this,36)">36 months</button>
+          <button class="dur-btn" onclick="selectDur(this,60)">60 months</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Custom Rate Override (optional)</label>
+        <input type="number" class="form-input" id="customRate" placeholder="Override with a specific ₹/sqft rate" oninput="calc()">
+      </div>
+
+      <button class="btn-calc" onclick="calc()">Calculate Estimate →</button>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-card">
+      <div class="result-header">
+        <div class="result-main-label">Estimated Monthly Lease</div>
+        <div class="result-main-val" id="rMonthly">₹14.0L</div>
+        <div class="result-main-unit">Based on 50,000 sq ft @ ₹28/sqft · Mumbai</div>
+        <div class="result-market">✓ Fair Market Rate</div>
+      </div>
+
+      <div class="result-rows">
+        <div class="result-row">
+          <span class="result-row-label">Total Lease Value (36 months)</span>
+          <span class="result-row-val" id="rTotal">₹5.04Cr</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label">Security Deposit (3 months)</span>
+          <span class="result-row-val" id="rDeposit">₹42.0L</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label">Brokerage Fee (est. 1 month)</span>
+          <span class="result-row-val" id="rBrokerage">₹14.0L</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label">GST on Lease (18%)</span>
+          <span class="result-row-val" id="rGST">₹2.52L/mo</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label">Rate Used</span>
+          <span class="result-row-val" id="rRate">₹28/sqft</span>
+        </div>
+      </div>
+
+      <div class="chart-section">
+        <div class="chart-title">Market Rate Comparison</div>
+        <div class="chart-bars" id="chartBars">
+          <div class="chart-bar-col"><div class="chart-bar-fill current" style="height:70%;"></div><div class="chart-bar-city">Mumbai</div><div class="chart-bar-price">₹28</div></div>
+          <div class="chart-bar-col"><div class="chart-bar-fill" style="height:55%;"></div><div class="chart-bar-city">Delhi</div><div class="chart-bar-price">₹24</div></div>
+          <div class="chart-bar-col"><div class="chart-bar-fill" style="height:50%;"></div><div class="chart-bar-city">Pune</div><div class="chart-bar-price">₹22</div></div>
+          <div class="chart-bar-col"><div class="chart-bar-fill" style="height:75%;"></div><div class="chart-bar-city">BLR</div><div class="chart-bar-price">₹30</div></div>
+          <div class="chart-bar-col"><div class="chart-bar-fill" style="height:45%;"></div><div class="chart-bar-city">HYD</div><div class="chart-bar-price">₹20</div></div>
+          <div class="chart-bar-col"><div class="chart-bar-fill" style="height:50%;"></div><div class="chart-bar-city">CHN</div><div class="chart-bar-price">₹22</div></div>
+        </div>
+      </div>
+
+      <button class="btn-talk" onclick="window.location='warehouses.html'">Browse Matching Warehouses →</button>
+      <button class="btn-save" onclick="window.print()">⬇ Save Estimate as PDF</button>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <div class="faq-title">Frequently Asked <em>Questions</em></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How accurate is this calculator? <span>+</span></div><div class="faq-a">This calculator uses 99Warehousing's proprietary dataset of 2,400+ verified transactions across 48 cities, updated quarterly. Rates are median market rates for each city-type combination. Actual rates may vary based on micro-location, lease term, and specific facility conditions.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What does the brokerage estimate include? <span>+</span></div><div class="faq-a">Industry standard brokerage for industrial leases in India is typically 1 month's rent for transactions up to 5 years. For longer-term deals or BTS projects, the brokerage is separately negotiated. 99Warehousing brokers are transparent about their fees upfront.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is GST applicable on industrial warehouse lease? <span>+</span></div><div class="faq-a">Yes. GST at 18% applies on rent paid for commercial/industrial property. However, if you are registered under GST, you can claim input tax credit on this GST. The calculator shows the GST amount separately for your planning purposes.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What is included in the security deposit? <span>+</span></div><div class="faq-a">Security deposits for industrial warehouses are typically 3 months' rent, though Grade A parks and premium properties may require up to 6 months. The deposit is fully refundable at lease end, subject to property condition.</div></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">99Warehousing</div>
+      <p class="footer-desc">India's most trusted marketplace for industrial and warehousing real estate. Every square foot, verified.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Properties</div>
+      <ul class="footer-links">
+        <li><a href="warehouses.html">Warehouses</a></li>
+        <li><a href="land-parks.html">Industrial Land</a></li>
+        <li><a href="land-parks.html">Logistics Parks</a></li>
+        <li><a href="warehouses.html">Cold Storage</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="about.html">About 99Warehousing</a></li>
+        <li><a href="partners.html">Partners</a></li>
+        <li><a href="insights.html">Market Insights</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Account</div>
+      <ul class="footer-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Register</a></li>
+        <li><a href="submit-listing.html">List Property</a></li>
+        <li><a href="terms.html">Terms of Service</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 99warehousing. All rights reserved.</span>
+    <span class="footer-copy">Made with ✦ in India</span>
+  </div>
+</footer>
+
+<script>
+let city='mumbai',baseRate=28,typeMultiplier=1.0,area=50000,duration=36;
+const cityRates={mumbai:28,delhi:24,pune:22,bengaluru:30,hyderabad:20,chennai:22};
+function selectCity(btn,c,r){document.querySelectorAll('.city-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');city=c;baseRate=r;calc();}
+function selectType(btn,m){document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');typeMultiplier=m;calc();}
+function selectDur(btn,d){document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');duration=d;calc();}
+function setArea(v){area=parseInt(v);document.getElementById('areaDisplay').textContent=parseInt(v).toLocaleString('en-IN')+' sqft';calc();}
+function calc(){
+  const custom=parseFloat(document.getElementById('customRate').value);
+  const rate=custom||Math.round(baseRate*typeMultiplier);
+  const monthly=area*rate;
+  const total=monthly*duration;
+  const deposit=monthly*3;
+  const brokerage=monthly;
+  const gst=monthly*0.18;
+  const fmt=v=>v>=10000000?'₹'+(v/10000000).toFixed(2)+'Cr':v>=100000?'₹'+(v/100000).toFixed(1)+'L':'₹'+v.toLocaleString('en-IN');
+  document.getElementById('rMonthly').textContent=fmt(monthly);
+  document.getElementById('rTotal').textContent=fmt(total);
+  document.getElementById('rDeposit').textContent=fmt(deposit);
+  document.getElementById('rBrokerage').textContent=fmt(brokerage);
+  document.getElementById('rGST').textContent=fmt(gst)+'/mo';
+  document.getElementById('rRate').textContent='₹'+rate+'/sqft';
+}
+function toggleFaq(el){const a=el.nextElementSibling;a.classList.toggle('open');el.querySelector('span').textContent=a.classList.contains('open')?'−':'+';}
+calc();
+</script>
+</body>
+</html>

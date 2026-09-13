@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>Market Insights — 99Warehousing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.footer{margin-top:20px;}
+
+.page-header{padding:140px 40px 60px;background:linear-gradient(135deg,rgba(200,216,228,0.3),rgba(245,240,232,0.7));border-bottom:1px solid rgba(200,168,130,0.15);}
+.header-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--antique-gold);display:block;margin-bottom:12px;}
+.header-title{font-family:var(--font-display);font-size:44px;font-weight:600;line-height:1.1;margin-bottom:14px;}
+.header-title em{font-style:italic;color:var(--antique-brown);}
+.header-sub{font-size:14px;color:var(--text-mid);line-height:1.75;max-width:560px;}
+
+.main{padding:56px 40px;max-width:1300px;margin:0 auto;}
+
+/* FEATURED REPORT */
+.featured-report{background:linear-gradient(135deg,var(--deep-mahogany),rgba(44,74,107,0.85));border-radius:20px;padding:48px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;margin-bottom:56px;position:relative;overflow:hidden;}
+.featured-report::before{content:'📊';position:absolute;right:200px;top:-20px;font-size:200px;opacity:0.05;}
+.report-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(212,176,106,0.8);margin-bottom:10px;}
+.report-title{font-family:var(--font-display);font-size:32px;font-weight:600;color:white;line-height:1.2;margin-bottom:10px;}
+.report-title em{font-style:italic;color:var(--warm-gold);}
+.report-desc{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.75;margin-bottom:20px;}
+.report-meta{display:flex;gap:16px;flex-wrap:wrap;}
+.report-meta-item{font-size:11px;color:rgba(255,255,255,0.5);}
+.report-meta-item b{color:rgba(255,255,255,0.85);}
+.report-download-box{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:28px;text-align:center;min-width:240px;}
+.download-icon{font-size:40px;margin-bottom:12px;}
+.download-title{font-size:12px;font-weight:600;color:white;margin-bottom:4px;}
+.download-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:16px;}
+.btn-download{background:linear-gradient(135deg,var(--antique-gold),var(--warm-gold));color:var(--deep-mahogany);border:none;border-radius:8px;padding:11px 24px;font-family:var(--font-body);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;cursor:pointer;width:100%;}
+.email-note{font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px;}
+
+/* STATS STRIP */
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:rgba(255,255,255,0.55);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.7);border-radius:16px;overflow:hidden;margin-bottom:48px;box-shadow:0 8px 24px rgba(139,111,78,0.07);}
+.sstat{padding:24px;text-align:center;border-right:1px solid rgba(200,168,130,0.15);}
+.sstat:last-child{border-right:none;}
+.sstat-num{font-family:var(--font-display);font-size:32px;font-weight:600;color:var(--deep-mahogany);}
+.sstat-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-mid);margin-top:4px;}
+.sstat-trend{font-size:11px;color:var(--sage-green);margin-top:4px;}
+
+/* BLOG GRID */
+.section-title{font-family:var(--font-display);font-size:28px;font-weight:600;margin-bottom:28px;}
+.section-title em{font-style:italic;color:var(--antique-brown);}
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:56px;}
+.blog-card{background:rgba(245,240,232,0.55);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.70);border-radius:16px;overflow:hidden;transition:all 0.3s;cursor:pointer;}
+.blog-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(139,111,78,0.12);}
+.blog-thumb{height:160px;display:flex;align-items:center;justify-content:center;font-size:60px;}
+.blog-thumb.t1{background:linear-gradient(135deg,#c8d8e4,#e8ddd0);}
+.blog-thumb.t2{background:linear-gradient(135deg,#d4e8d4,#e8ddd0);}
+.blog-thumb.t3{background:linear-gradient(135deg,#e8ddc8,#c8d8e4);}
+.blog-body{padding:20px;}
+.blog-tag{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--antique-gold);margin-bottom:8px;}
+.blog-title{font-family:var(--font-display);font-size:18px;font-weight:600;line-height:1.3;margin-bottom:8px;}
+.blog-excerpt{font-size:12px;color:var(--text-mid);line-height:1.65;margin-bottom:14px;}
+.blog-meta{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--text-mid);}
+.blog-author{display:flex;align-items:center;gap:6px;}
+.author-dot{width:20px;height:20px;background:linear-gradient(135deg,var(--antique-gold),var(--warm-gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;}
+
+/* SUBSCRIBE */
+.subscribe-band{background:linear-gradient(135deg,rgba(184,150,74,0.08),rgba(200,216,228,0.2));border:1px solid rgba(184,150,74,0.15);border-radius:20px;padding:48px;text-align:center;margin-bottom:48px;}
+.sub-title{font-family:var(--font-display);font-size:32px;font-weight:600;margin-bottom:8px;}
+.sub-title em{font-style:italic;color:var(--antique-brown);}
+.sub-text{font-size:14px;color:var(--text-mid);line-height:1.75;max-width:480px;margin:0 auto 24px;}
+.sub-form{display:flex;gap:10px;max-width:440px;margin:0 auto;}
+.sub-input{flex:1;background:rgba(255,255,255,0.7);border:1px solid rgba(200,168,130,0.25);border-radius:8px;padding:12px 16px;font-family:var(--font-body);font-size:13px;color:var(--deep-mahogany);outline:none;}
+.sub-btn{background:linear-gradient(135deg,var(--antique-brown),var(--deep-mahogany));color:var(--off-white);border:none;border-radius:8px;padding:12px 24px;font-family:var(--font-body);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
+
+/* RATE CHART */
+.rate-chart{background:rgba(255,255,255,0.55);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.7);border-radius:16px;padding:28px;margin-bottom:48px;}
+.rate-chart-title{font-family:var(--font-display);font-size:22px;font-weight:600;margin-bottom:20px;}
+.rate-chart-title em{font-style:italic;color:var(--antique-brown);}
+.rate-rows{display:flex;flex-direction:column;gap:10px;}
+.rate-row{display:flex;align-items:center;gap:16px;}
+.rate-city{width:100px;font-size:12px;font-weight:500;color:var(--deep-mahogany);}
+.rate-bar-wrap{flex:1;background:rgba(200,168,130,0.1);border-radius:4px;height:10px;overflow:hidden;}
+.rate-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--antique-gold),var(--warm-gold));transition:width 0.6s ease;}
+.rate-val{font-size:12px;font-weight:600;color:var(--antique-brown);width:80px;text-align:right;}
+.rate-trend{font-size:10px;width:50px;text-align:right;}
+.rate-trend.up{color:var(--sage-green);}
+.rate-trend.dn{color:#e07070;}
+
+@media(max-width:900px){.blog-grid{grid-template-columns:1fr 1fr;}.featured-report{grid-template-columns:1fr;}.stats-strip{grid-template-columns:1fr 1fr;}}
+@media(max-width:768px){.page-header,.main{padding-left:16px;padding-right:16px;}.blog-grid{grid-template-columns:1fr;}}
+
+/* Phone icon pass — both of these are emoji standing in for artwork, and
+   both were drawn well above the resolution their bitmap actually carries. */
+@media (max-width: 560px) {
+  .blog-thumb { font-size: 44px; height: 130px; }
+  .download-icon { font-size: 30px; margin-bottom: 8px; }
+}
+</style>
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><span>99</span>Warehousing</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="warehouses.html">Warehouses</a></li>
+    <li><a href="land-parks.html">Land &amp; Parks</a></li>
+    <li><a href="insights.html" class="active">Insights</a></li>
+    <li><a href="calculator.html">Calculator</a></li>
+    <li><a href="partners.html">Partners</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="submit-listing.html" class="btn-cta-nav">List Property</a>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html" onclick="toggleMenu()">Home</a></li>
+    <li><a href="warehouses.html" onclick="toggleMenu()">Warehouses</a></li>
+    <li><a href="land-parks.html" onclick="toggleMenu()">Land &amp; Parks</a></li>
+    <li><a href="insights.html" onclick="toggleMenu()">Insights</a></li>
+    <li><a href="calculator.html" onclick="toggleMenu()">Calculator</a></li>
+    <li><a href="partners.html" onclick="toggleMenu()">Partners</a></li>
+    <li><a href="about.html" onclick="toggleMenu()">About</a></li>
+    <li><a href="contact.html" onclick="toggleMenu()">Contact</a></li>
+    <li><a href="login.html" onclick="toggleMenu()">Login</a></li>
+  </ul>
+</div>
+
+<div class="page-header">
+  <span class="header-label">Intelligence & Research</span>
+  <h1 class="header-title">Market <em>Insights</em></h1>
+  <p class="header-sub">Quarterly reports, per-sq-ft rate trends, and deep analysis on India's industrial real estate market — from the team that processes 2,400+ verified listings daily.</p>
+</div>
+
+<div class="main">
+
+  <!-- FEATURED REPORT -->
+  <div class="featured-report">
+    <div>
+      <div class="report-label">✦ Latest Report</div>
+      <div class="report-title">India Warehousing <em>Report Q4 2024</em></div>
+      <div class="report-desc">Comprehensive analysis of per-sq-ft lease rates across 48 cities, supply pipeline, demand drivers, and 2025 forecast. 68 pages, research-grade methodology.</div>
+      <div class="report-meta">
+        <span class="report-meta-item">📄 <b>68 pages</b></span>
+        <span class="report-meta-item">📅 <b>Published Dec 2024</b></span>
+        <span class="report-meta-item">🏙️ <b>48 cities covered</b></span>
+        <span class="report-meta-item">📊 <b>2,400+ data points</b></span>
+      </div>
+    </div>
+    <div class="report-download-box">
+      <div class="download-icon">📑</div>
+      <div class="download-title">Download Full Report</div>
+      <div class="download-sub">PDF · 68 pages · Free</div>
+      <button class="btn-download" onclick="showGate()">Download Free →</button>
+      <div class="email-note">Email required · No spam</div>
+    </div>
+  </div>
+
+  <!-- STATS STRIP -->
+  <div class="stats-strip">
+    <div class="sstat"><div class="sstat-num">₹28</div><div class="sstat-label">Avg Mumbai Rate/sqft</div><div class="sstat-trend">↑ 6% YoY</div></div>
+    <div class="sstat"><div class="sstat-num">340M</div><div class="sstat-label">sqft Supply Pipeline</div><div class="sstat-trend">↑ 22% YoY</div></div>
+    <div class="sstat"><div class="sstat-num">94%</div><div class="sstat-label">Grade A Occupancy</div><div class="sstat-trend">↑ 2pts QoQ</div></div>
+    <div class="sstat"><div class="sstat-num">₹42Cr</div><div class="sstat-label">Avg Deal Size Q4</div><div class="sstat-trend">↑ 11% QoQ</div></div>
+  </div>
+
+  <!-- MARKET RATE CHART -->
+  <div class="rate-chart">
+    <div class="rate-chart-title">City-wise Average Lease Rates — <em>Q4 2024</em></div>
+    <div class="rate-rows" id="rateRows"></div>
+  </div>
+
+  <!-- BLOG GRID -->
+  <div class="section-title">Latest <em>Articles</em></div>
+  <div class="blog-grid">
+    <div class="blog-card">
+      <div class="blog-thumb t1">📈</div>
+      <div class="blog-body">
+        <div class="blog-tag">Market Analysis</div>
+        <div class="blog-title">Why Bhiwandi Remains India's Most Resilient Logistics Hub</div>
+        <div class="blog-excerpt">Despite new logistics parks emerging across MMR, Bhiwandi's combination of price, connectivity, and depth of Grade B stock keeps vacancy at historic lows...</div>
+        <div class="blog-meta"><div class="blog-author"><div class="author-dot">A</div><span>Ananya Mehta · Research</span></div><span>Dec 14, 2024</span></div>
+      </div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-thumb t2">🏗️</div>
+      <div class="blog-body">
+        <div class="blog-tag">Supply Watch</div>
+        <div class="blog-title">340 Million sq ft in the Pipeline: What It Means for Tenants</div>
+        <div class="blog-excerpt">India's industrial supply pipeline hit a record 340 million sq ft in 2024. We break down where it's coming, when it's ready, and which cities will see the biggest impact...</div>
+        <div class="blog-meta"><div class="blog-author"><div class="author-dot">R</div><span>Rohit Kapoor · Data</span></div><span>Nov 28, 2024</span></div>
+      </div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-thumb t3">❄️</div>
+      <div class="blog-body">
+        <div class="blog-tag">Cold Chain</div>
+        <div class="blog-title">Cold Chain Real Estate: India's ₹15,000Cr Opportunity</div>
+        <div class="blog-excerpt">India's food supply chain loses 30% of produce annually. The cold chain warehousing sector is attracting global institutional capital at unprecedented scale...</div>
+        <div class="blog-meta"><div class="blog-author"><div class="author-dot">S</div><span>Supriya Rao · Analyst</span></div><span>Nov 15, 2024</span></div>
+      </div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-thumb t1" style="background:linear-gradient(135deg,#d4d0e8,#e8ddd0);">🤖</div>
+      <div class="blog-body">
+        <div class="blog-tag">Technology</div>
+        <div class="blog-title">How Automation is Reshaping Industrial Real Estate Demand</div>
+        <div class="blog-excerpt">As companies invest in warehouse automation, clear height and column-free spans matter more than ever. Here's what the spec shift means for new supply...</div>
+        <div class="blog-meta"><div class="blog-author"><div class="author-dot">V</div><span>Varun Singh · Tech</span></div><span>Oct 30, 2024</span></div>
+      </div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-thumb t2" style="background:linear-gradient(135deg,#ddd4c8,#c8d8e4);">🏛️</div>
+      <div class="blog-body">
+        <div class="blog-tag">Policy</div>
+        <div class="blog-title">DMIC Phase 2: What It Means for Industrial Land Buyers</div>
+        <div class="blog-excerpt">The Delhi-Mumbai Industrial Corridor's second phase unlocks 14 new industrial cities. Early land positions in anchor nodes could see 40–60% appreciation...</div>
+        <div class="blog-meta"><div class="blog-author"><div class="author-dot">P</div><span>Priya Iyer · Policy</span></div><span>Oct 18, 2024</span></div>
+      </div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-thumb t3" style="background:linear-gradient(135deg,#c8e4d4,#e8ddc8);">📦</div>
+      <div class="blog-body">
+        <div class="blog-tag">E-Commerce</div>
+        <div class="blog-title">Quick Commerce's Dark Store Boom: A Landlord's Guide</div>
+        <div class="blog-excerpt">Q-commerce companies are leasing dark stores at ₹45–65/sqft in prime urban locations. We map demand hotspots and the lease terms they actually want...</div>
+        <div class="blog-meta"><div class="blog-author"><div class="author-dot">A</div><span>Aditya Kumar · Research</span></div><span>Oct 5, 2024</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBSCRIBE -->
+  <div class="subscribe-band">
+    <div class="sub-title">Stay <em>Ahead</em> of the Market</div>
+    <p class="sub-text">Receive our quarterly research reports, monthly rate updates, and weekly market alerts — delivered to your inbox.</p>
+    <div class="sub-form">
+      <input class="sub-input" type="email" placeholder="Your work email address">
+      <button class="sub-btn" onclick="subscribe()">Subscribe →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- EMAIL GATE MODAL -->
+<div id="gateModal" style="display:none;position:fixed;inset:0;background:rgba(74,55,40,0.6);backdrop-filter:blur(12px);z-index:2000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:rgba(250,247,242,0.97);backdrop-filter:blur(40px);border:1px solid rgba(255,255,255,0.85);border-radius:24px;box-shadow:0 32px 80px rgba(74,55,40,0.2);max-width:440px;width:100%;padding:36px;position:relative;">
+    <button onclick="document.getElementById('gateModal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-mid);">✕</button>
+    <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--antique-gold);margin-bottom:10px;">Free Download</div>
+    <div style="font-family:var(--font-display);font-size:24px;font-weight:600;margin-bottom:8px;">India Warehousing Report Q4 2024</div>
+    <p style="font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:20px;">Enter your email to get instant access to the full 68-page report. No spam — ever.</p>
+    <input type="text" placeholder="Your Name" style="width:100%;background:rgba(250,247,242,0.85);border:1px solid rgba(200,168,130,0.25);border-radius:8px;padding:11px 14px;font-family:var(--font-body);font-size:13px;color:var(--deep-mahogany);outline:none;margin-bottom:10px;">
+    <input type="email" placeholder="Work Email" style="width:100%;background:rgba(250,247,242,0.85);border:1px solid rgba(200,168,130,0.25);border-radius:8px;padding:11px 14px;font-family:var(--font-body);font-size:13px;color:var(--deep-mahogany);outline:none;margin-bottom:10px;">
+    <input type="text" placeholder="Company Name" style="width:100%;background:rgba(250,247,242,0.85);border:1px solid rgba(200,168,130,0.25);border-radius:8px;padding:11px 14px;font-family:var(--font-body);font-size:13px;color:var(--deep-mahogany);outline:none;margin-bottom:16px;">
+    <button onclick="downloadReport()" style="width:100%;background:linear-gradient(135deg,var(--antique-gold),var(--warm-gold));color:var(--deep-mahogany);border:none;border-radius:8px;padding:14px;font-family:var(--font-body);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;cursor:pointer;">Get Free Report →</button>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">99Warehousing</div>
+      <p class="footer-desc">India's most trusted marketplace for industrial and warehousing real estate. Every square foot, verified.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Properties</div>
+      <ul class="footer-links">
+        <li><a href="warehouses.html">Warehouses</a></li>
+        <li><a href="land-parks.html">Industrial Land</a></li>
+        <li><a href="land-parks.html">Logistics Parks</a></li>
+        <li><a href="warehouses.html">Cold Storage</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="about.html">About 99Warehousing</a></li>
+        <li><a href="partners.html">Partners</a></li>
+        <li><a href="insights.html">Market Insights</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Account</div>
+      <ul class="footer-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Register</a></li>
+        <li><a href="submit-listing.html">List Property</a></li>
+        <li><a href="terms.html">Terms of Service</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 99warehousing. All rights reserved.</span>
+    <span class="footer-copy">Made with ✦ in India</span>
+  </div>
+</footer>
+
+<script>
+const cityRates=[
+  {city:'Mumbai MMR',rate:28,max:42,trend:'+6%',up:true},
+  {city:'Delhi NCR',rate:24,max:38,trend:'+4%',up:true},
+  {city:'Bengaluru',rate:30,max:44,trend:'+8%',up:true},
+  {city:'Pune',rate:22,max:35,trend:'+3%',up:true},
+  {city:'Hyderabad',rate:20,max:32,trend:'+5%',up:true},
+  {city:'Chennai',rate:22,max:34,trend:'+2%',up:true},
+  {city:'Ahmedabad',rate:18,max:28,trend:'-1%',up:false},
+  {city:'Kolkata',rate:16,max:26,trend:'+1%',up:true},
+];
+const rr=document.getElementById('rateRows');
+cityRates.forEach(d=>{
+  const pct=Math.round((d.rate/44)*100);
+  rr.innerHTML+=`<div class="rate-row"><div class="rate-city">${d.city}</div><div class="rate-bar-wrap"><div class="rate-bar" style="width:${pct}%;"></div></div><div class="rate-val">₹${d.rate}–${d.max}/sqft</div><div class="rate-trend ${d.up?'up':'dn'}">${d.trend}</div></div>`;
+});
+function showGate(){document.getElementById('gateModal').style.display='flex';}
+function downloadReport(){document.getElementById('gateModal').style.display='none';alert('Report download link sent to your email!');}
+function subscribe(){
+  var box=document.querySelector('.sub-input');
+  var email=box?box.value.trim():'';
+  if(!/S+@S+.S+/.test(email)){ alert('Enter a valid email address to subscribe.'); if(box) box.focus(); return; }
+  if(box) box.value='';
+  if(window.BPSF) BPSF.toast('Subscribed. Quarterly reports will arrive in your inbox.');
+  else alert('Subscribed.');
+}
+</script>
+</body>
+</html>

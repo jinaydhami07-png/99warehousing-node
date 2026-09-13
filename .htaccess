@@ -1,0 +1,24 @@
+# Deny all web access to the Node application root.
+#
+# This folder is meant to live OUTSIDE public_html. If it ends up inside —
+# which is easy to do by accident — Apache would serve every file in it as
+# plain text, including server/env with the database password, and the API
+# source with it.
+#
+# Node reads these files from disk and never goes through Apache, so denying
+# HTTP access costs the application nothing. Passenger starts the app from
+# this directory regardless of this rule.
+#
+# public/ is served by Express, not by Apache, so nothing here blocks the
+# website.
+
+# Apache 2.4
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+
+# Apache 2.2 and older
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>

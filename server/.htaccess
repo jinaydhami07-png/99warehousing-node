@@ -1,0 +1,20 @@
+# Deny all web access to the API source directory.
+#
+# The app root is meant to live outside public_html. When it doesn't — and on
+# a cPanel account it often doesn't, because the Node app and the website are
+# easier to manage side by side — every file here is served by Apache as
+# plain text, including the settings file with the database password in it.
+#
+# Node itself reads these files from disk and never goes through Apache, so
+# denying HTTP access costs the application nothing.
+
+# Apache 2.4
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+
+# Apache 2.2 and older
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>

@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>Submit a Listing — 99Warehousing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+
+/* NAVBAR */
+
+/* PAGE LAYOUT */
+.page-wrap { padding: 120px 40px 80px; max-width: 900px; margin: 0 auto; }
+
+.page-header { margin-bottom: 40px; }
+.page-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--antique-gold); display: block; margin-bottom: 10px; }
+.page-title { font-family: var(--font-display); font-size: 44px; font-weight: 600; line-height: 1.1; margin-bottom: 12px; }
+.page-title em { font-style: italic; color: var(--antique-brown); }
+.page-sub { font-size: 14px; color: var(--text-mid); line-height: 1.75; max-width: 600px; }
+
+/* STEPPER */
+.stepper { display: flex; align-items: center; gap: 0; margin-bottom: 48px; }
+.step { display: flex; align-items: center; flex: 1; }
+.step-circle {
+  width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-body); font-size: 14px; font-weight: 600; flex-shrink: 0;
+  transition: all 0.35s ease; position: relative; z-index: 1;
+}
+.step-circle.completed { background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold)); color: var(--deep-mahogany); box-shadow: 0 4px 16px rgba(184,150,74,0.3); }
+.step-circle.active { background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany)); color: white; box-shadow: 0 4px 20px rgba(74,55,40,0.3); }
+.step-circle.pending { background: rgba(255,255,255,0.6); backdrop-filter: blur(16px); border: 1px solid rgba(200,168,130,0.3); color: var(--text-mid); }
+.step-info { padding: 0 12px; }
+.step-num { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-mid); }
+.step-name { font-size: 12px; font-weight: 500; color: var(--deep-mahogany); margin-top: 1px; }
+.step-line { flex: 1; height: 1px; background: rgba(200,168,130,0.2); margin: 0; }
+.step-line.done { background: var(--antique-gold); }
+
+/* FORM PANEL */
+.form-panel { display: none; }
+.form-panel.active { display: block; animation: fadeSlide 0.4s ease; }
+@keyframes fadeSlide { from { opacity:0; transform: translateX(24px); } to { opacity:1; transform: translateX(0); } }
+
+.form-card {
+  background: rgba(255,255,255,0.60); backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.75); border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(139,111,78,0.09), inset 0 1px 0 rgba(255,255,255,0.9);
+  padding: 36px; margin-bottom: 20px;
+}
+.form-card-title { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+.form-card-sub { font-size: 13px; color: var(--text-mid); margin-bottom: 28px; }
+
+/* FORM ELEMENTS */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.form-row.full { grid-template-columns: 1fr; }
+.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--antique-gold); }
+.form-hint { font-size: 11px; color: var(--text-mid); }
+.form-input {
+  background: rgba(250,247,242,0.85); border: 1px solid rgba(200,168,130,0.25);
+  border-radius: 8px; padding: 11px 14px; font-family: var(--font-body); font-size: 13px;
+  color: var(--deep-mahogany); outline: none; transition: border-color 0.25s, box-shadow 0.25s;
+  width: 100%;
+}
+.form-input:focus { border-color: var(--antique-gold); box-shadow: 0 0 0 3px rgba(184,150,74,0.1); }
+.form-input::placeholder { color: rgba(107,87,68,0.4); }
+textarea.form-input { resize: vertical; min-height: 100px; line-height: 1.6; }
+select.form-input { cursor: pointer; }
+
+/* CHECKBOX GRID */
+.checkbox-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.checkbox-item { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 12px; background: rgba(250,247,242,0.6); border: 1px solid rgba(200,168,130,0.2); border-radius: 8px; transition: all 0.2s; }
+.checkbox-item:hover { background: rgba(255,255,255,0.8); border-color: rgba(184,150,74,0.3); }
+.checkbox-item input[type=checkbox] { accent-color: var(--antique-brown); width: 15px; height: 15px; }
+.checkbox-item span { font-size: 12px; color: var(--text-mid); }
+
+/* SIGN-IN GATE */
+.signin-gate {
+  background: rgba(255,255,255,0.62); backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.78); border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(139,111,78,0.10), inset 0 1px 0 rgba(255,255,255,0.9);
+  padding: 52px 40px; text-align: center; max-width: 560px; margin: 0 auto;
+}
+.signin-gate-icon { font-size: 42px; margin-bottom: 14px; }
+.signin-gate-title { font-family: var(--font-display); font-size: 30px; font-weight: 600; margin-bottom: 12px; }
+.signin-gate-text { font-size: 14px; color: var(--text-mid); line-height: 1.75; margin-bottom: 26px; }
+.signin-gate-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-gate-primary, .btn-gate-secondary {
+  display: inline-block; border-radius: 100px; padding: 13px 34px;
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.btn-gate-primary {
+  background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany));
+  color: var(--off-white); box-shadow: 0 4px 18px rgba(74,55,40,0.22);
+}
+.btn-gate-secondary {
+  background: rgba(255,255,255,0.7); color: var(--antique-brown);
+  border: 1px solid rgba(200,168,130,0.45);
+}
+.btn-gate-primary:hover, .btn-gate-secondary:hover { transform: translateY(-1px); }
+.signin-gate-note { font-size: 11.5px; color: var(--text-mid); opacity: .75; margin-top: 20px; }
+
+/* UPLOAD ZONE */
+.upload-zone {
+  border: 2px dashed rgba(200,168,130,0.35); border-radius: 12px;
+  padding: 40px 20px; text-align: center; cursor: pointer;
+  background: rgba(250,247,242,0.5); transition: all 0.25s;
+  position: relative;
+}
+.upload-zone:hover, .upload-zone.dragover { border-color: var(--antique-gold); background: rgba(255,255,255,0.7); }
+.upload-icon { font-size: 36px; margin-bottom: 12px; }
+.upload-title { font-size: 14px; font-weight: 500; color: var(--deep-mahogany); margin-bottom: 4px; }
+.upload-sub { font-size: 12px; color: var(--text-mid); }
+.upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+/* The visible affordance. The real <input type=file> is stretched invisibly
+   across the whole zone, so this is styled as a button but must never be a
+   <button> — a nested button would swallow the click before it reached the
+   input. */
+.upload-btn {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+  background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold));
+  border: none; border-radius: 9px; padding: 11px 22px;
+  font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; font-weight: 600;
+  color: var(--deep-mahogany); cursor: pointer;
+  box-shadow: 0 2px 8px rgba(160,120,60,0.22);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.upload-zone:hover .upload-btn { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(160,120,60,0.3); }
+.upload-zone:active .upload-btn { transform: translateY(0); }
+.upload-btn svg { width: 14px; height: 14px; }
+
+/* Busy state — the zone is inert while bytes are in flight. */
+.upload-zone.busy { pointer-events: none; opacity: .68; }
+.upload-zone.busy .upload-btn { filter: grayscale(.4); }
+
+/* Signed-out state: uploading needs an account, so say so where the user is
+   looking instead of leaving a grey line of text under the box. */
+.upload-lock {
+  margin-top: 14px; display: flex; align-items: center; gap: 10px;
+  background: rgba(200,168,130,0.12); border: 1px solid rgba(200,168,130,0.4);
+  border-radius: 9px; padding: 11px 14px; font-size: 12.5px; color: var(--deep-mahogany);
+  text-align: left;
+}
+.upload-lock a { color: var(--antique-brown); font-weight: 600; text-decoration: underline; }
+
+.upload-status { margin-top: 12px; font-size: 12px; color: var(--text-mid); min-height: 16px; }
+.upload-status.error { color: #A6362D; font-weight: 500; }
+.upload-status.ok { color: #2E6B3C; }
+
+/* Thumbnail grid — photographs read better as pictures than as filenames. */
+.uploaded-files {
+  margin-top: 16px; display: grid; gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+}
+.photo-tile {
+  position: relative; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden;
+  border: 1px solid rgba(200,168,130,0.35); background: rgba(255,255,255,0.6);
+  box-shadow: 0 1px 4px rgba(90,70,50,0.09);
+}
+.photo-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-tile .file-remove {
+  position: absolute; top: 5px; right: 5px; width: 21px; height: 21px; padding: 0;
+  border: none; border-radius: 50%; background: rgba(30,22,16,0.62); color: #fff;
+  font-size: 11px; line-height: 21px; cursor: pointer; opacity: 0; transition: opacity .18s;
+}
+.photo-tile:hover .file-remove, .photo-tile:focus-within .file-remove { opacity: 1; }
+.photo-tile .file-remove:hover { background: #A6362D; }
+.photo-cover {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 3px 0;
+  background: linear-gradient(to top, rgba(30,22,16,0.78), rgba(30,22,16,0));
+  color: #fff; font-size: 9.5px; letter-spacing: 1.2px; text-transform: uppercase; text-align: center;
+}
+/* Keyboard users need the remove button too, not just hover. */
+.photo-tile .file-remove:focus-visible { opacity: 1; outline: 2px solid var(--antique-gold); }
+
+/* REVIEW PANEL */
+.review-section { margin-bottom: 24px; }
+.review-section-title { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--antique-gold); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(200,168,130,0.15); }
+.review-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid rgba(200,168,130,0.08); }
+.review-row:last-child { border-bottom: none; }
+.review-key { font-size: 11px; letter-spacing: 0.5px; color: var(--text-mid); }
+.review-val { font-size: 13px; font-weight: 500; color: var(--deep-mahogany); text-align: right; max-width: 60%; }
+.review-edit { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--antique-gold); background: none; border: none; cursor: pointer; margin-left: 12px; }
+
+/* PRICING CARD */
+.pricing-card { background: linear-gradient(135deg, rgba(200,216,228,0.25), rgba(245,240,232,0.5)); border: 1px solid rgba(200,168,130,0.2); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+.pricing-card-title { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--antique-gold); margin-bottom: 16px; }
+.pricing-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.pricing-option { border: 2px solid rgba(200,168,130,0.2); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.25s; background: rgba(255,255,255,0.5); }
+.pricing-option.selected { border-color: var(--antique-gold); background: rgba(184,150,74,0.08); }
+.pricing-option:hover { border-color: rgba(184,150,74,0.5); }
+.po-name { font-size: 13px; font-weight: 600; color: var(--deep-mahogany); margin-bottom: 4px; }
+.po-price { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--antique-brown); }
+.po-price-label { font-size: 10px; color: var(--text-mid); }
+.po-features { margin-top: 10px; text-align: left; }
+.po-feature { font-size: 11px; color: var(--text-mid); margin-bottom: 4px; }
+.po-feature::before { content: '✓ '; color: var(--sage-green); }
+
+/* TERMS */
+.terms-box { background: rgba(250,247,242,0.6); border: 1px solid rgba(200,168,130,0.2); border-radius: 10px; padding: 16px; font-size: 12px; color: var(--text-mid); line-height: 1.7; margin-bottom: 16px; }
+.terms-check { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text-mid); cursor: pointer; margin-bottom: 12px; }
+.terms-check input { accent-color: var(--antique-brown); width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; }
+
+/* NAVIGATION BUTTONS */
+.form-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 32px; }
+.btn-back { background: rgba(255,255,255,0.6); border: 1px solid rgba(200,168,130,0.3); border-radius: 8px; padding: 12px 28px; font-family: var(--font-body); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--antique-brown); cursor: pointer; transition: all 0.25s; }
+.btn-back:hover { background: rgba(255,255,255,0.85); }
+.btn-next { background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany)); color: var(--off-white); border: none; border-radius: 8px; padding: 13px 36px; font-family: var(--font-body); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 16px rgba(74,55,40,0.2); transition: all 0.25s; }
+.btn-next:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(74,55,40,0.3); }
+.btn-submit { background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold)); color: var(--deep-mahogany); border: none; border-radius: 8px; padding: 14px 40px; font-family: var(--font-body); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(184,150,74,0.3); transition: all 0.25s; }
+.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(184,150,74,0.4); }
+.step-save { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-mid); background: none; border: none; cursor: pointer; }
+
+/* SUCCESS */
+.success-page { display: none; text-align: center; padding: 60px 40px; }
+.success-page.active { display: block; animation: fadeSlide 0.5s ease; }
+.success-icon-lg { font-size: 72px; margin-bottom: 24px; }
+.success-title-lg { font-family: var(--font-display); font-size: 40px; font-weight: 600; margin-bottom: 12px; }
+.success-title-lg em { font-style: italic; color: var(--antique-brown); }
+.success-sub-lg { font-size: 15px; color: var(--text-mid); line-height: 1.75; max-width: 480px; margin: 0 auto 32px; }
+.success-ref { background: rgba(255,255,255,0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; padding: 16px 24px; display: inline-block; margin-bottom: 32px; }
+.success-ref-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-mid); margin-bottom: 4px; }
+.success-ref-val { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--antique-gold); }
+.success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-dash { background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany)); color: var(--off-white); border: none; border-radius: 8px; padding: 13px 32px; font-family: var(--font-body); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 16px rgba(74,55,40,0.2); }
+.btn-ghost { background: transparent; border: 1px solid rgba(200,168,130,0.35); border-radius: 8px; padding: 12px 28px; font-family: var(--font-body); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--antique-brown); cursor: pointer; }
+
+/* PROGRESS BAR */
+.progress-bar-wrap { height: 3px; background: rgba(200,168,130,0.15); border-radius: 100px; margin-bottom: 40px; }
+.progress-bar-fill { height: 100%; background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold)); border-radius: 100px; transition: width 0.5s ease; }
+
+@media (max-width: 768px) {  .page-wrap { padding: 100px 16px 60px; } .form-row { grid-template-columns: 1fr; } .form-row.three { grid-template-columns: 1fr; } .checkbox-grid { grid-template-columns: 1fr 1fr; } .pricing-options { grid-template-columns: 1fr; } .stepper { flex-wrap: wrap; gap: 12px; }  }
+
+/* ─── Uploaded document rows ────────────────────────────────────
+   These share `.uploaded-files` with the photo thumbnails, so they were
+   inheriting a grid built for 104px picture tiles — and `.uploaded-file`,
+   `.file-icon`, `.file-name` and `.file-size` had no styling anywhere in the
+   project. A filename needs a full row, not a thumbnail cell: at 375px each
+   row wanted 211px inside a 130px column and spilled past the viewport,
+   clipped only by body{overflow-x:hidden}. */
+.uploaded-files .uploaded-file {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+  padding: 9px 11px; font-size: 12px;
+  border: 1px solid rgba(200,168,130,0.28); border-radius: 9px;
+  background: rgba(250,247,242,0.6);
+}
+.uploaded-files .file-icon { flex: none; font-size: 15px; line-height: 1; }
+/* The filename is the only part that may shrink; min-width:0 is what lets
+   it, since a flex item defaults to min-width:auto and refuses to ellipse. */
+.uploaded-files .file-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uploaded-files .file-size { flex: none; font-size: 11px; color: var(--text-mid); }
+.uploaded-files .uploaded-file .file-remove {
+  flex: none; width: 30px; height: 30px; padding: 0;
+  border: none; border-radius: 50%; background: rgba(30,22,16,0.10);
+  color: var(--text-mid); font-size: 12px; line-height: 30px; cursor: pointer;
+}
+.uploaded-files .uploaded-file .file-remove:hover { background: #A6362D; color: #fff; }
+
+/* ─── PHONE ICON PASS ───────────────────────────────────────────
+   Colour-emoji fonts ship bitmap strikes that top out around 32–36px, so
+   every glyph set above that was being upscaled — which is what reads as
+   rough on a phone. These sizes bring them back under the strike. */
+@media (max-width: 560px) {
+  .signin-gate-icon { font-size: 32px; margin-bottom: 10px; }
+  .upload-icon { font-size: 28px; margin-bottom: 8px; }
+  .success-icon-lg { font-size: 52px; margin-bottom: 16px; }
+
+  /* 40px badges forced the stepper to two per row with the labels wrapping
+     to different heights, so the badges sat at mismatched baselines. */
+  .step-circle { width: 30px; height: 30px; font-size: 12px; }
+  /* Once the stepper wraps, the connecting rails join badges that are no
+     longer in a line — an orphan stub on one row, an overlong span on the
+     next. They are decorative, so they go rather than mislead. */
+  .step-line { display: none; }
+}
+
+/* No hover on a touch screen, so this sat at opacity:0 and a user who
+   picked the wrong photo had no visible way to remove it. */
+@media (hover: none) {
+  .photo-tile .file-remove {
+    opacity: 1; top: 4px; right: 4px;
+    width: 30px; height: 30px; line-height: 30px;
+    font-size: 14px; background: rgba(30,22,16,0.72);
+  }
+}
+</style>
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><span>99</span>Warehousing</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="warehouses.html">Warehouses</a></li>
+    <li><a href="land-parks.html">Land &amp; Parks</a></li>
+    <li><a href="insights.html">Insights</a></li>
+    <li><a href="calculator.html">Calculator</a></li>
+    <li><a href="partners.html">Partners</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="warehouses.html" class="btn-cta-nav">Browse Listings</a>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html" onclick="toggleMenu()">Home</a></li>
+    <li><a href="warehouses.html" onclick="toggleMenu()">Warehouses</a></li>
+    <li><a href="land-parks.html" onclick="toggleMenu()">Land &amp; Parks</a></li>
+    <li><a href="insights.html" onclick="toggleMenu()">Insights</a></li>
+    <li><a href="calculator.html" onclick="toggleMenu()">Calculator</a></li>
+    <li><a href="partners.html" onclick="toggleMenu()">Partners</a></li>
+    <li><a href="about.html" onclick="toggleMenu()">About</a></li>
+    <li><a href="contact.html" onclick="toggleMenu()">Contact</a></li>
+    <li><a href="login.html" onclick="toggleMenu()">Login</a></li>
+  </ul>
+</div>
+
+<div class="page-wrap">
+
+  <!-- Sign-in gate. Shown instead of the wizard when signed out, so nobody
+       fills in four steps and only then discovers an account is required. -->
+  <div class="signin-gate" id="signinGate" hidden>
+    <div class="signin-gate-icon">🔒</div>
+    <h2 class="signin-gate-title">Sign in to list a property</h2>
+    <p class="signin-gate-text">
+      Listings are tied to your account so you can edit them, track enquiries and see
+      when they go live. Creating an account is free and takes a moment.
+    </p>
+    <div class="signin-gate-actions">
+      <a class="btn-gate-primary" id="gateSignIn" href="login.html">Sign In</a>
+      <a class="btn-gate-secondary" id="gateRegister" href="register.html">Create Account</a>
+    </div>
+    <p class="signin-gate-note">Browsing listings does not require an account.</p>
+  </div>
+
+  <div class="page-header">
+    <span class="page-label">Property Owners & Brokers</span>
+    <h1 class="page-title">Submit Your <em>Listing</em></h1>
+    <p class="page-sub">List your industrial property on India's most trusted warehousing platform. 99Warehousing verification ensures your listing reaches verified, serious buyers.</p>
+  </div>
+
+  <!-- STEPPER -->
+  <div class="stepper" id="stepper">
+    <div class="step">
+      <div class="step-circle active" id="s1">1</div>
+      <div class="step-info"><div class="step-num">Step 1</div><div class="step-name">Basic Details</div></div>
+    </div>
+    <div class="step-line" id="l1"></div>
+    <div class="step">
+      <div class="step-circle pending" id="s2">2</div>
+      <div class="step-info"><div class="step-num">Step 2</div><div class="step-name">Infrastructure</div></div>
+    </div>
+    <div class="step-line" id="l2"></div>
+    <div class="step">
+      <div class="step-circle pending" id="s3">3</div>
+      <div class="step-info"><div class="step-num">Step 3</div><div class="step-name">Media & Docs</div></div>
+    </div>
+    <div class="step-line" id="l3"></div>
+    <div class="step">
+      <div class="step-circle pending" id="s4">4</div>
+      <div class="step-info"><div class="step-num">Step 4</div><div class="step-name">Review & Submit</div></div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill" style="width: 25%;"></div></div>
+
+  <!-- STEP 1: BASIC DETAILS -->
+  <div class="form-panel active" id="step1">
+    <div class="form-card">
+      <div class="form-card-title">Basic Property Details</div>
+      <div class="form-card-sub">Tell us the essential facts about your property. All fields marked are required for listing approval.</div>
+
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Property Title *</label>
+          <input class="form-input" type="text" placeholder="e.g. Bhiwandi Grade A Logistics Hub — Block C" id="propTitle">
+          <span class="form-hint">Be specific — include location and key feature in the title.</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Property Type *</label>
+          <select class="form-input" id="propType">
+            <option value="">Select type…</option>
+            <option>Grade A Warehouse</option>
+            <option>Grade B Warehouse</option>
+            <option>Cold Chain Facility</option>
+            <option>Dark Store</option>
+            <option>Built-to-Suit</option>
+            <option>Industrial Shed</option>
+            <option>SEZ / Free Trade Zone</option>
+            <option>MIDC Industrial Unit</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Listing Type *</label>
+          <select class="form-input">
+            <option>For Lease</option>
+            <option>For Sale</option>
+            <option>Lease + Sale (BTS)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row three">
+        <div class="form-group">
+          <label class="form-label">City *</label>
+          <select class="form-input" id="propCity">
+            <option value="">Select city…</option>
+            <option>Mumbai</option>
+            <option>Delhi NCR</option>
+            <option>Pune</option>
+            <option>Bengaluru</option>
+            <option>Hyderabad</option>
+            <option>Chennai</option>
+            <option>Ahmedabad</option>
+            <option>Kolkata</option>
+            <option>Surat</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Locality / Area *</label>
+          <input class="form-input" type="text" placeholder="e.g. Bhiwandi MIDC" id="propLocality">
+        </div>
+        <div class="form-group">
+          <label class="form-label">PIN Code</label>
+          <input class="form-input" type="text" placeholder="421302" maxlength="10" id="propPincode">
+        </div>
+      </div>
+
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Full Address</label>
+          <input class="form-input" type="text" placeholder="Plot No. 14, MIDC Bhiwandi Industrial Area, Thane, Maharashtra" id="propAddress">
+          <div class="form-hint">Shared with enquirers, not shown on the public listing.</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Google Maps Link</label>
+          <input class="form-input" type="url" placeholder="https://maps.google.com/…" id="propMapsUrl">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Available From</label>
+          <input class="form-input" type="date" id="propAvailable">
+          <div class="form-hint">Leave blank if it is available now.</div>
+        </div>
+      </div>
+
+      <!-- This is what fills "About This Property" on the listing page. The
+           page used to carry a fixed paragraph about a Bhiwandi warehouse
+           regardless of which listing was open, because nothing here ever
+           asked the owner to describe their own building. -->
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Property Description</label>
+          <textarea class="form-input" rows="5" id="propDescription" maxlength="5000"
+                    placeholder="Describe the building, its access, who it suits, and anything a tenant should know before visiting."></textarea>
+          <div class="form-hint">Appears under “About This Property”. Up to 5,000 characters.</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Price (₹ / sq ft / month) *</label>
+          <input class="form-input" type="number" placeholder="28" id="propRate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Security Deposit (months)</label>
+          <select class="form-input">
+            <option>3 Months</option>
+            <option>6 Months</option>
+            <option>12 Months</option>
+            <option>Negotiable</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Property Description *</label>
+          <textarea class="form-input" rows="5" placeholder="Describe your property in detail — key highlights, surroundings, tenant profile, unique advantages…"></textarea>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">RERA Registration Number</label>
+          <input class="form-input" type="text" placeholder="RERA/MH/2024/XXXXXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Role *</label>
+          <select class="form-input">
+            <option>Property Owner</option>
+            <option>Authorised Broker</option>
+            <option>Developer / Builder</option>
+            <option>Agency Partner</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="step-save" onclick="saveDraft()">Save Draft</button>
+      <button class="btn-next" onclick="nextStep(1)">Continue to Infrastructure →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: INFRASTRUCTURE SPECS -->
+  <div class="form-panel" id="step2">
+    <div class="form-card">
+      <div class="form-card-title">Infrastructure Specifications</div>
+      <!-- Every input on this panel used to be decorative: no id, nothing
+           read it, and submitListing() sent only the title, city, type, rate
+           and area. Whatever an owner typed here was discarded on submit, and
+           the listing page then displayed a fixed set of specifications that
+           belonged to no property at all.
+
+           Only Total Area is required — a plot of land has no clear height
+           and a small shed has no column grid. Blank fields are simply not
+           sent, and the listing page omits the cards it has no value for. -->
+      <div class="form-card-sub">Only the total area is required. Fill in whatever applies — anything you leave blank is left off your listing rather than guessed at.</div>
+
+      <div class="form-row three">
+        <div class="form-group">
+          <label class="form-label">Total Area (sq ft) *</label>
+          <input class="form-input" type="number" placeholder="85000" id="propArea" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Clear Height (metres)</label>
+          <input class="form-input" type="number" placeholder="12" step="0.5" id="propClearHeight" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Number of Loading Docks</label>
+          <input class="form-input" type="number" placeholder="8" id="propDocks" min="0">
+        </div>
+      </div>
+
+      <div class="form-row three">
+        <div class="form-group">
+          <label class="form-label">Floor Strength (T/m²)</label>
+          <input class="form-input" type="number" placeholder="5" step="0.5" id="propFloorStrength" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Column Spacing</label>
+          <input class="form-input" type="text" placeholder="12 × 24 m" id="propColumnSpacing" maxlength="40">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Office Area (sq ft)</label>
+          <input class="form-input" type="number" placeholder="3200" id="propOfficeArea" min="0">
+        </div>
+      </div>
+
+      <div class="form-row three">
+        <div class="form-group">
+          <label class="form-label">Power Supply (kVA)</label>
+          <input class="form-input" type="number" placeholder="750" id="propPower" min="0">
+          <div class="form-hint">Sanctioned load, in kVA.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Truck Turning Radius (m)</label>
+          <input class="form-input" type="number" placeholder="32" id="propTruckTurning" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deposit (months of rent)</label>
+          <input class="form-input" type="number" placeholder="3" id="propDeposit" min="0" max="24">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Fire Suppression System</label>
+          <select class="form-input" id="propFireSystem">
+            <option value="">Not specified</option>
+            <option>VESDA + Sprinkler</option>
+            <option>Sprinkler Only</option>
+            <option>Fire Extinguishers Only</option>
+            <option>None</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Key Distances</label>
+          <textarea class="form-input" rows="3" id="propDistances"
+                    placeholder="NH-48: 3.2&#10;JNPT Port: 42&#10;Airport: 28"></textarea>
+          <div class="form-hint">One per line, as <code>place: km</code>. Optional.</div>
+        </div>
+      </div>
+
+      <!-- The checkboxes are read by value, not by position, so the list can
+           be edited without touching the submit code. Certifications sit in
+           the same array — they are self-declared amenities like the rest. -->
+      <div style="margin-bottom: 20px;">
+        <label class="form-label" style="margin-bottom: 14px; display:block;">Features &amp; Amenities</label>
+        <div class="checkbox-grid" id="propFeatures">
+          <label class="checkbox-item"><input type="checkbox" value="24×7 Manned Security"> <span>24×7 Manned Security</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="CCTV Surveillance"> <span>CCTV Surveillance</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Dock Levellers"> <span>Dock Levellers</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="100% Power Backup"> <span>100% Power Backup</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Rainwater Harvesting"> <span>Rainwater Harvesting</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Solar Panels"> <span>Solar Panels</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="EV Charging Bays"> <span>EV Charging Bays</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Canteen Facility"> <span>Canteen Facility</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="AC Office Space"> <span>AC Office Space</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Leased Line Internet"> <span>Leased Line Internet</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Mezzanine Level"> <span>Mezzanine Level</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Drive-in Facility"> <span>Drive-in Facility</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="LEED Gold Certified"> <span>LEED Gold</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="LEED Platinum Certified"> <span>LEED Platinum</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="ISO 9001"> <span>ISO 9001</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="ISO 14001"> <span>ISO 14001</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="RERA Registered"> <span>RERA Registered</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="FSSAI Approved"> <span>FSSAI Approved</span></label>
+        </div>
+        <div class="form-hint" style="margin-top:10px;">Add anything not listed here in the description on the previous step.</div>
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="prevStep(2)">← Back</button>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <button class="step-save" onclick="saveDraft()">Save Draft</button>
+        <button class="btn-next" onclick="nextStep(2)">Continue to Media →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: PHOTOS & DOCS -->
+  <div class="form-panel" id="step3">
+    <div class="form-card">
+      <div class="form-card-title">Photos & Documents</div>
+      <div class="form-card-sub">High-quality photos and verified documents dramatically increase enquiry rates. Minimum 5 photos required.</div>
+
+      <!-- PHOTOS -->
+      <div style="margin-bottom: 28px;">
+        <label class="form-label" style="margin-bottom: 12px; display:block;">Property Photos * <span style="font-size:11px; color:var(--text-mid); text-transform:none; letter-spacing:0;">(Min 5, Max 20 · JPG/PNG · Max 10MB each)</span></label>
+        <div class="upload-zone" id="photoZone" ondragover="dragOver(event, 'photoZone')" ondragleave="dragLeave('photoZone')" ondrop="handleDrop(event, 'photoZone')">
+          <input type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif,image/avif" onchange="addFiles(this, 'photos')" aria-label="Choose property photos">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-title">Drag & drop photos here</div>
+          <div class="upload-sub">JPG, PNG or WebP · up to 10 MB each · resized automatically · first photo becomes the cover</div>
+          <span class="upload-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 17V3"/><path d="m6 9 6-6 6 6"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>
+            </svg>
+            Upload Photos
+          </span>
+        </div>
+        <div id="photoLock"></div>
+        <div class="upload-status" id="photoStatus"></div>
+        <div class="uploaded-files" id="photoFiles"></div>
+      </div>
+
+      <!-- FLOOR PLAN — optional, and it now actually uploads. The zone used
+           to accept PDF and DWG, which the image endpoint rejects on a
+           magic-byte check, so those picks failed silently. -->
+      <div style="margin-bottom: 28px;">
+        <label class="form-label" style="margin-bottom: 12px; display:block;">Floor Plan <span style="font-size:11px; color:var(--text-mid); text-transform:none; letter-spacing:0;">(Optional · JPG, PNG or WebP · Max 10MB)</span></label>
+        <div class="upload-zone" id="fpZone" ondragover="dragOver(event, 'fpZone')" ondragleave="dragLeave('fpZone')" ondrop="handleDrop(event, 'fpZone')">
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" onchange="addFiles(this, 'floorplan')" aria-label="Choose a floor plan image">
+          <div class="upload-icon">🗂️</div>
+          <div class="upload-title">Upload Floor Plan</div>
+          <div class="upload-sub">An image of the plan — export a PDF or DWG to PNG first</div>
+          <span class="upload-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 17V3"/><path d="m6 9 6-6 6 6"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>
+            </svg>
+            Browse File
+          </span>
+        </div>
+        <div class="upload-status" id="fpStatus"></div>
+        <div class="uploaded-files" id="floorPlanFiles"></div>
+      </div>
+
+      <!-- VERIFICATION DOCUMENTS
+           This panel used to show an upload zone plus two document rows that
+           were written into the HTML — RERA_Certificate_MH2024.pdf and
+           Property_Ownership_Deed.pdf appeared already uploaded to every
+           visitor, on a form nobody had filled in yet. The API stores images
+           only, so there was no endpoint behind the zone either. Until
+           document storage exists, this says what actually happens. -->
+      <div style="margin-bottom: 28px;">
+        <label class="form-label" style="margin-bottom: 12px; display:block;">Verification Documents</label>
+        <div style="background: rgba(184,150,74,0.05); border: 1px solid rgba(184,150,74,0.2); border-radius: 10px; padding: 14px 16px; font-size: 12px; color: var(--text-mid); line-height: 1.7;">
+          ✦ <strong>99Warehousing Verified</strong> requires a RERA certificate, proof of ownership or lease, and a structural clearance certificate.
+          We will email you for these once your listing has been reviewed — please don't send them here.
+        </div>
+      </div>
+
+      <!-- VIDEO -->
+      <div>
+        <label class="form-label" style="margin-bottom: 12px; display:block;">Property Video / Virtual Tour <span style="font-size:11px; color:var(--text-mid); text-transform:none; letter-spacing:0;">(Optional · YouTube / Vimeo / Google Drive link)</span></label>
+        <input class="form-input" type="url" placeholder="https://youtube.com/watch?v=…">
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="prevStep(3)">← Back</button>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <button class="step-save" onclick="saveDraft()">Save Draft</button>
+        <button class="btn-next" onclick="nextStep(3)">Review Listing →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: REVIEW & SUBMIT -->
+  <div class="form-panel" id="step4">
+    <div class="form-card">
+      <div class="form-card-title">Review Your Listing</div>
+      <div class="form-card-sub">Everything looks good? Check the details below, choose your listing plan, and submit for 99Warehousing review.</div>
+
+      <!-- REVIEW -->
+      <div class="review-section">
+        <div class="review-section-title">Basic Details</div>
+        <div class="review-row">
+          <span class="review-key">Title</span>
+          <span class="review-val">Bhiwandi Logistics Hub — Block C<button class="review-edit" onclick="goToStep(1)">Edit</button></span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Type</span>
+          <span class="review-val">Grade A Warehouse</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Location</span>
+          <span class="review-val">MIDC Bhiwandi, Thane, Maharashtra — 421302</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Listing Type</span>
+          <span class="review-val">For Lease</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Price</span>
+          <span class="review-val">₹28 / sq ft / month</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Availability</span>
+          <span class="review-val">Immediately Available</span>
+        </div>
+      </div>
+
+      <div class="review-section">
+        <div class="review-section-title">Infrastructure</div>
+        <div class="review-row">
+          <span class="review-key">Total Area</span>
+          <span class="review-val">85,000 sq ft</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Clear Height</span>
+          <span class="review-val">12 metres</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Loading Docks</span>
+          <span class="review-val">8 Dock Doors</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Power</span>
+          <span class="review-val">3 MW + 100% DG Backup</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Key Features</span>
+          <span class="review-val">Security, CCTV, VESDA Fire, EV Charging, Solar</span>
+        </div>
+      </div>
+
+      <div class="review-section">
+        <div class="review-section-title">Media & Documents</div>
+        <div class="review-row">
+          <span class="review-key">Photos Uploaded</span>
+          <span class="review-val" style="color: var(--sage-green);">✓ 2 of 5 minimum (add 3 more)</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Floor Plan</span>
+          <span class="review-val" style="color: var(--sage-green);">✓ Uploaded</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">RERA Certificate</span>
+          <span class="review-val" style="color: var(--sage-green);">✓ Uploaded</span>
+        </div>
+        <div class="review-row">
+          <span class="review-key">Ownership Deed</span>
+          <span class="review-val" style="color: var(--sage-green);">✓ Uploaded</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRICING PLAN -->
+    <div class="form-card">
+      <div class="form-card-title">Choose Your Listing Plan</div>
+      <div class="form-card-sub">Boost your visibility with a premium listing plan.</div>
+      <div class="pricing-options">
+        <div class="pricing-option" onclick="selectPlan(this)">
+          <div class="po-name">Standard</div>
+          <div class="po-price">Free</div>
+          <div class="po-price-label">No charge</div>
+          <div class="po-features" style="margin-top:12px;">
+            <div class="po-feature">Listed in search results</div>
+            <div class="po-feature">Up to 5 photos</div>
+            <div class="po-feature">Standard enquiry form</div>
+          </div>
+        </div>
+        <div class="pricing-option selected" onclick="selectPlan(this)">
+          <div class="po-name">Featured ✦</div>
+          <div class="po-price">₹4,999</div>
+          <div class="po-price-label">per month</div>
+          <div class="po-features" style="margin-top:12px;">
+            <div class="po-feature">Priority search placement</div>
+            <div class="po-feature">Up to 20 photos</div>
+            <div class="po-feature">99Warehousing Featured Badge</div>
+            <div class="po-feature">Broker matching</div>
+          </div>
+        </div>
+        <div class="pricing-option" onclick="selectPlan(this)">
+          <div class="po-name">Premium ✦✦</div>
+          <div class="po-price">₹9,999</div>
+          <div class="po-price-label">per month</div>
+          <div class="po-features" style="margin-top:12px;">
+            <div class="po-feature">Top of search results</div>
+            <div class="po-feature">Unlimited photos + video</div>
+            <div class="po-feature">99Warehousing Verified Fast-track</div>
+            <div class="po-feature">Dedicated account manager</div>
+            <div class="po-feature">WhatsApp lead routing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TERMS -->
+    <div class="form-card">
+      <div class="form-card-title">Declaration & Terms</div>
+      <div class="terms-box">
+        By submitting this listing, you confirm that: (a) all information provided is accurate and complete to the best of your knowledge; (b) you are authorised to list this property — either as owner, registered broker, or authorised agent; (c) the property does not violate any applicable RERA, municipal, or environmental regulations; (d) 99Warehousing reserves the right to verify all submitted documents and reject listings that do not meet platform standards.
+      </div>
+      <label class="terms-check">
+        <input type="checkbox" id="termsCheck">
+        I confirm all information is accurate and I am authorised to list this property. I agree to the 99Warehousing Listing Terms & Conditions and Privacy Policy.
+      </label>
+      <label class="terms-check">
+        <input type="checkbox" id="verifyCheck">
+        I consent to 99Warehousing conducting an on-site verification visit and contacting me to complete the 99Warehousing Verified badge process.
+      </label>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="prevStep(4)">← Back</button>
+      <button class="btn-submit" onclick="submitListing()">Submit for 99Warehousing Review ✦</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-page" id="successPage">
+    <div class="success-icon-lg">🎉</div>
+    <h2 class="success-title-lg">Listing <em>Submitted!</em></h2>
+    <p class="success-sub-lg">Your property has been submitted for 99Warehousing review. Our team will verify the details within 2–3 business days and reach out for the on-site verification visit.</p>
+    <div class="success-ref">
+      <div class="success-ref-label">Your Listing Reference</div>
+      <div class="success-ref-val">99Warehousing-MH-2025-00842</div>
+    </div>
+    <p style="font-size: 13px; color: var(--text-mid); margin-bottom: 28px;">A confirmation has been sent to your registered email. You'll be notified once our admin team reviews your submission.</p>
+    <div class="success-actions">
+      <button class="btn-dash" onclick="window.location='warehouses.html'">Browse Listings →</button>
+      <button class="btn-ghost" onclick="window.location='index.html'">Back to Home</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let currentStep = 1;
+
+  function nextStep(from) {
+    if (from === currentStep) {
+      goToStep(from + 1);
+    }
+  }
+
+  function prevStep(from) {
+    if (from === currentStep) {
+      goToStep(from - 1);
+    }
+  }
+
+  function goToStep(step) {
+    if (step < 1 || step > 4) return;
+    document.getElementById('step' + currentStep).classList.remove('active');
+
+    // Update stepper
+    for (let i = 1; i <= 4; i++) {
+      const sc = document.getElementById('s' + i);
+      if (i < step) { sc.className = 'step-circle completed'; sc.textContent = '✓'; }
+      else if (i === step) { sc.className = 'step-circle active'; sc.textContent = i; }
+      else { sc.className = 'step-circle pending'; sc.textContent = i; }
+    }
+    for (let i = 1; i <= 3; i++) {
+      const line = document.getElementById('l' + i);
+      if (line) line.className = 'step-line' + (i < step ? ' done' : '');
+    }
+
+    document.getElementById('progressFill').style.width = (step * 25) + '%';
+    currentStep = step;
+    document.getElementById('step' + step).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* Keeps whatever is typed so far in localStorage, so a refresh mid-form
+     doesn't lose the work. Cleared once the listing is submitted. */
+  function saveDraft() {
+    var draft = {};
+    ['propTitle','propType','propCity','propLocality','propRate','propArea'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) draft[id] = el.value;
+    });
+    try { localStorage.setItem('bpsf.listing_draft', JSON.stringify(draft)); } catch (e) {}
+    if (window.BPSF) BPSF.toast('Draft saved on this device.');
+  }
+
+  function restoreDraft() {
+    var raw;
+    try { raw = localStorage.getItem('bpsf.listing_draft'); } catch (e) { return; }
+    if (!raw) return;
+    try {
+      var draft = JSON.parse(raw);
+      Object.keys(draft).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && !el.value) el.value = draft[id];
+      });
+    } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', restoreDraft);
+
+  /* Drops undefined, empty strings and empty arrays. The create schema is
+     .strict() about types but happy to receive nothing at all, so sending
+     only what exists keeps a half-filled form from failing validation. */
+  function prune(obj) {
+    var out = {};
+    Object.keys(obj).forEach(function (k) {
+      var v = obj[k];
+      if (v === undefined || v === null || v === '') return;
+      if (Array.isArray(v) && !v.length) return;
+      out[k] = v;
+    });
+    return out;
+  }
+
+  function checkedFeatures() {
+    return [].slice.call(document.querySelectorAll('#propFeatures input[type=checkbox]:checked'))
+      .map(function (c) { return c.value; });
+  }
+
+  /* "NH-48: 3.2" per line. Anything that is not a label/number pair is
+     skipped rather than sent as a malformed entry the server would reject —
+     a typo in an optional field should not block the whole submission. */
+  function parseDistances(text) {
+    if (!text) return [];
+    return text.split('\n').map(function (line) {
+      var m = line.match(/^\s*(.+?)\s*[:–-]\s*([\d.]+)\s*(?:km)?\s*$/i);
+      if (!m) return null;
+      var km = parseFloat(m[2]);
+      if (isNaN(km)) return null;
+      return { label: m[1].slice(0, 60), km: km };
+    }).filter(Boolean).slice(0, 8);
+  }
+
+  function submitListing() {
+    const terms = document.getElementById('termsCheck').checked;
+    const verify = document.getElementById('verifyCheck').checked;
+    if (!terms || !verify) {
+      alert('Please agree to the terms and verification consent before submitting.');
+      return;
+    }
+
+    const val = id => { const el = document.getElementById(id); return el ? String(el.value).trim() : ''; };
+    const title = val('propTitle');
+    if (!title) { alert('Please give your property a title before submitting.'); goToStep(1); return; }
+
+    /* Listing a property requires an account — the server ties the listing
+       to req.user, so there is no anonymous submission path. */
+    if (!API.isAuthed()) {
+      alert('Please sign in to submit a listing. Redirecting you to the login page.');
+      sessionStorage.setItem('bpsf.after_login', 'submit-listing.html');
+      window.location = 'login.html';
+      return;
+    }
+
+    const btn = document.querySelector('.btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    /* The form's type labels are more granular than the API enum, so map
+       them down and derive the grade from the same label. */
+    const rawType = val('propType');
+    const typeMap = {
+      'Grade A Warehouse': 'Warehouse', 'Grade B Warehouse': 'Warehouse',
+      'Cold Storage': 'Cold Storage', 'Dark Store': 'Dark Store',
+      'Industrial Land': 'Industrial Land', 'Logistics Park': 'Logistics Park'
+    };
+
+    /* Only send what was actually filled in. An empty string would fail the
+       coercion on the server, and a zero would publish "0 m clear height" as
+       though it were a measurement rather than a blank. */
+    var num = function (id) {
+      var raw = val(id);
+      if (raw === '') return undefined;
+      var n = parseFloat(raw);
+      return isNaN(n) ? undefined : n;
+    };
+    var str = function (id) { return val(id) || undefined; };
+
+    var specs = prune({
+      clearHeight: num('propClearHeight'),
+      loadingDocks: num('propDocks'),
+      power: num('propPower'),
+      floorStrength: num('propFloorStrength'),
+      officeArea: num('propOfficeArea'),
+      columnSpacing: str('propColumnSpacing'),
+      truckTurning: num('propTruckTurning'),
+      fireSystem: str('propFireSystem'),
+      features: checkedFeatures(),
+    });
+
+    var payload = prune({
+      name: title,
+      city: val('propCity'),
+      locality: val('propLocality'),
+      type: typeMap[rawType] || 'Warehouse',
+      grade: /grade b/i.test(rawType) ? 'Grade B' : /cold/i.test(rawType) ? 'Cold Chain' : 'Grade A',
+      rate: parseFloat(val('propRate')) || 0,
+      area: parseFloat(val('propArea')) || 0,
+      description: str('propDescription'),
+      address: str('propAddress'),
+      pincode: str('propPincode'),
+      mapsUrl: str('propMapsUrl'),
+      availableFrom: str('propAvailable'),
+      depositMonths: num('propDeposit'),
+      distances: parseDistances(val('propDistances')),
+      specs: Object.keys(specs).length ? specs : undefined,
+      floorPlan: uploadedFloorPlan
+        ? API.media.descriptor(uploadedFloorPlan)
+        : undefined,
+      /* Photos were uploaded as they were picked; only the descriptors
+         travel with the listing — the bytes are already in storage. Each
+         one carries its renditions and its placeholder, which is what lets
+         the listing page load them at the right size later. First one is
+         the cover image. */
+      images: uploadedPhotos.map(function (p, i) {
+        return API.media.descriptor(p, { isPrimary: i === 0 });
+      }).filter(Boolean),
+    });
+
+    API.properties.create(payload)
+      .then(() => {
+        document.getElementById('stepper').style.display = 'none';
+        document.querySelector('.progress-bar-wrap').style.display = 'none';
+        document.getElementById('step4').classList.remove('active');
+        document.getElementById('successPage').classList.add('active');
+        try { localStorage.removeItem('bpsf.listing_draft'); } catch (e) {}
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.textContent = 'Submit for 99Warehousing Review ✦';
+        const first = err.details && err.details[0];
+        alert(first ? `${first.field}: ${first.message}` : err.message);
+      });
+  }
+
+  function selectPlan(el) {
+    document.querySelectorAll('.pricing-option').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function dragOver(e, id) { e.preventDefault(); document.getElementById(id).classList.add('dragover'); }
+  function dragLeave(id) { document.getElementById(id)?.classList.remove('dragover'); }
+  /* ── Photo upload ─────────────────────────────────────────────
+     Files go to POST /api/v1/upload, which stores the bytes in MongoDB and
+     returns [{ url, publicId }]. Those descriptors are held here and sent
+     with the listing, so the photos are already saved by the time the form
+     is submitted — a slow upload never blocks the submit button.
+     ───────────────────────────────────────────────────────────── */
+  var uploadedPhotos = [];
+
+  /* Matches MAX_BYTES in server/src/models/image.model.js. Rejecting here
+     saves the user the wait of uploading a file the server will refuse —
+     but the server's limit is the real one, and the two must not drift. */
+  var MAX_PHOTO_BYTES = 10 * 1024 * 1024;
+  var MAX_PHOTOS = 20;
+
+  function humanSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  }
+
+  function photoStatus(msg, kind) {
+    var el = document.getElementById('photoStatus');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.className = 'upload-status' + (kind ? ' ' + kind : '');
+  }
+
+  /* Uploading writes to the account, so it needs a session. Rather than
+     refusing with a line of grey text under the box — which is what people
+     were missing — show the reason in the flow, with a link that comes
+     straight back here afterwards. */
+  function renderPhotoLock() {
+    var el = document.getElementById('photoLock');
+    if (!el) return;
+    if (!window.API || API.isAuthed()) { el.innerHTML = ''; return; }
+    el.innerHTML =
+      '<div class="upload-lock">' +
+        '<span aria-hidden="true">🔒</span>' +
+        '<span>Photos are saved to your account, so you need to be signed in. ' +
+        '<a href="#" id="photoSignIn">Sign in or create an account</a> — your draft is kept.</span>' +
+      '</div>';
+    document.getElementById('photoSignIn').onclick = function (e) {
+      e.preventDefault();
+      try { sessionStorage.setItem('bpsf.after_login', 'submit-listing.html'); } catch (err) {}
+      window.location = 'login.html';
+    };
+  }
+
+  /* Keep the prompt in step if the visitor signs in elsewhere in the tab. */
+  window.addEventListener('bpsf:auth', renderPhotoLock);
+  document.addEventListener('DOMContentLoaded', renderPhotoLock);
+
+  /* ── Sign-in gate ──────────────────────────────────────────────
+     The server has always refused an unauthenticated POST /properties, so
+     nothing could actually be created — but the wizard let a signed-out
+     visitor fill in all four steps and press Submit before saying so, which
+     both reads as "no login needed" and throws away their work.
+
+     The gate replaces the wizard until there is a session. It is applied on
+     load and re-applied on the auth event, so signing in elsewhere in the
+     same tab reveals the form without a reload. */
+  function applySigninGate() {
+    var gate = document.getElementById('signinGate');
+    if (!gate || !window.API) return;
+
+    var authed = API.isAuthed();
+    gate.hidden = authed;
+
+    /* Everything that makes up the wizard. Hidden rather than removed so the
+       draft-restore logic still finds its fields. */
+    ['stepper', 'step1', 'step2', 'step3', 'step4'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.style.display = authed ? '' : 'none';
+    });
+    var bar = document.querySelector('.progress-bar-wrap');
+    if (bar) bar.style.display = authed ? '' : 'none';
+
+    if (!authed) {
+      /* Come back here after signing in rather than dumping the user on the
+         listings page. */
+      try { sessionStorage.setItem('bpsf.after_login', 'submit-listing.html'); } catch (e) {}
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', applySigninGate);
+  window.addEventListener('bpsf:auth', applySigninGate);
+
+  function renderPhotos() {
+    var wrap = document.getElementById('photoFiles');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    uploadedPhotos.forEach(function (p, i) {
+      var tile = document.createElement('div');
+      tile.className = 'photo-tile';
+
+      var thumb = document.createElement('img');
+      /* The smallest rendition — this tile is about 120px wide, and the
+         photo the user just picked may well have been 4000px. */
+      thumb.src = API.media.src(p, 320);
+      thumb.alt = p.originalName || ('Photo ' + (i + 1));
+      thumb.decoding = 'async';
+      /* Deliberately NOT loading="lazy": these tiles sit inside the wizard's
+         step 3, which is display:none until the user gets there, and a lazy
+         image in a hidden subtree never starts loading. The user has just
+         picked these — they should be on screen the moment the step opens. */
+
+      var del = document.createElement('button');
+      del.className = 'file-remove';
+      del.type = 'button';
+      del.textContent = '✕';
+      del.title = 'Remove ' + (p.originalName || 'photo');
+      del.setAttribute('aria-label', del.title);
+      del.onclick = function () { removePhoto(p.publicId); };
+
+      tile.appendChild(thumb);
+      tile.appendChild(del);
+
+      if (i === 0) {
+        var tag = document.createElement('span');
+        tag.className = 'photo-cover';
+        tag.textContent = 'Cover';
+        tile.appendChild(tag);
+      }
+      wrap.appendChild(tile);
+    });
+
+    if (uploadedPhotos.length) {
+      var total = uploadedPhotos.reduce(function (n, p) { return n + (p.size || 0); }, 0);
+      photoStatus(uploadedPhotos.length + ' photo' + (uploadedPhotos.length > 1 ? 's' : '')
+        + ' uploaded · ' + humanSize(total), 'ok');
+    } else {
+      photoStatus('');
+    }
+  }
+
+  function removePhoto(publicId) {
+    uploadedPhotos = uploadedPhotos.filter(function (p) { return p.publicId !== publicId; });
+    renderPhotos();
+    // Delete the stored bytes too, so a discarded photo doesn't linger.
+    if (window.API && API.images) API.images.remove(publicId).catch(function () {});
+  }
+
+  function uploadPhotos(fileList) {
+    var files = Array.prototype.slice.call(fileList || []);
+    if (!files.length) return;
+
+    if (!window.API || !API.isAuthed()) {
+      renderPhotoLock();
+      photoStatus('Sign in to upload photos.', 'error');
+      var lock = document.querySelector('.upload-lock');
+      if (lock) lock.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      return;
+    }
+
+    // Reject locally rather than making the user wait for a server round-trip.
+    var tooBig = files.filter(function (f) { return f.size > MAX_PHOTO_BYTES; });
+    if (tooBig.length) {
+      photoStatus(tooBig[0].name + ' is ' + humanSize(tooBig[0].size) + ' — the limit is 10 MB per photo.', 'error');
+      files = files.filter(function (f) { return f.size <= MAX_PHOTO_BYTES; });
+      if (!files.length) return;
+    }
+    if (uploadedPhotos.length + files.length > MAX_PHOTOS) {
+      photoStatus('You can upload at most ' + MAX_PHOTOS + ' photos.', 'error');
+      return;
+    }
+
+    var fd = new FormData();
+    files.forEach(function (f) { fd.append('files', f); });
+
+    /* Lock the zone while bytes are in flight, so a second click cannot
+       queue a duplicate upload of the same files. */
+    var zone = document.getElementById('photoZone');
+    if (zone) zone.classList.add('busy');
+    photoStatus('Uploading ' + files.length + ' photo' + (files.length > 1 ? 's' : '') + '…');
+
+    API.upload(fd)
+      .then(function (res) {
+        uploadedPhotos = uploadedPhotos.concat(res.files || []);
+        renderPhotos();
+      })
+      .catch(function (err) {
+        photoStatus(err.message || 'Upload failed. Please try again.', 'error');
+      })
+      .then(function () { if (zone) zone.classList.remove('busy'); });
+  }
+
+  function handleDrop(e, id) {
+    e.preventDefault();
+    dragLeave(id);
+    if (!e.dataTransfer) return;
+    if (id === 'photoZone') uploadPhotos(e.dataTransfer.files);
+    if (id === 'fpZone') uploadFloorPlan(e.dataTransfer.files);
+  }
+
+  function removeFile(btn) { btn.closest('.uploaded-file').remove(); }
+
+  function addFiles(input, type) {
+    if (type === 'photos') uploadPhotos(input.files);
+    if (type === 'floorplan') uploadFloorPlan(input.files);
+    input.value = '';   // let the same file be re-picked after a removal
+  }
+
+  /* ── Floor plan ──────────────────────────────────────────────────
+     One image, entirely optional. It goes through the same upload endpoint
+     as the photos, so the same 10 MB cap and magic-byte check apply. */
+  var uploadedFloorPlan = null;
+
+  function fpStatus(msg, kind) {
+    var el = document.getElementById('fpStatus');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.className = 'upload-status' + (kind ? ' ' + kind : '');
+  }
+
+  function uploadFloorPlan(fileList) {
+    var file = (fileList || [])[0];
+    if (!file) return;
+
+    if (!window.API || !API.isAuthed()) {
+      fpStatus('Sign in to upload a floor plan.', 'error');
+      return;
+    }
+    if (file.size > MAX_PHOTO_BYTES) {
+      fpStatus(file.name + ' is ' + humanSize(file.size) + ' — the limit is 10 MB.', 'error');
+      return;
+    }
+
+    var fd = new FormData();
+    fd.append('files', file);
+
+    var zone = document.getElementById('fpZone');
+    if (zone) zone.classList.add('busy');
+    fpStatus('Uploading floor plan…');
+
+    API.upload(fd, 'floorplan')
+      .then(function (res) {
+        uploadedFloorPlan = (res.files || [])[0] || null;
+        renderFloorPlan();
+        fpStatus('');
+      })
+      .catch(function (err) { fpStatus(err.message || 'Upload failed.', 'error'); })
+      .then(function () { if (zone) zone.classList.remove('busy'); });
+  }
+
+  function renderFloorPlan() {
+    var box = document.getElementById('floorPlanFiles');
+    if (!box) return;
+    if (!uploadedFloorPlan) { box.innerHTML = ''; return; }
+    box.innerHTML =
+      '<div class="photo-tile">' +
+        '<img src="' + API.media.src(uploadedFloorPlan, 320) + '" alt="Floor plan preview" decoding="async">' +
+        '<button type="button" class="file-remove" onclick="removeFloorPlan()" aria-label="Remove floor plan">✕</button>' +
+      '</div>';
+  }
+
+  function removeFloorPlan() {
+    var publicId = uploadedFloorPlan && uploadedFloorPlan.publicId;
+    uploadedFloorPlan = null;
+    renderFloorPlan();
+    /* Best-effort cleanup so an abandoned upload does not sit in the
+       database forever; the listing is already free of it either way. */
+    if (publicId && window.API && API.images) API.images.remove(publicId).catch(function () {});
+  }
+</script>
+</body>
+</html>

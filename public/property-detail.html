@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>Bhiwandi Logistics Hub — 99Warehousing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+
+/* NAVBAR */
+
+/* BREADCRUMB */
+.breadcrumb { padding: 110px 40px 0; display: flex; align-items: center; gap: 8px; }
+.breadcrumb a { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--antique-gold); text-decoration: none; }
+.breadcrumb span { font-size: 11px; color: var(--text-mid); }
+
+/* GALLERY */
+.gallery-section { padding: 20px 40px 0; }
+.gallery-main { width: 100%; height: 480px; background: linear-gradient(135deg, var(--linen-beige) 0%, var(--powder-blue) 100%); border-radius: 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.gallery-main-emoji { font-size: 120px; opacity: 0.2; }
+.gallery-main-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(74,55,40,0.5) 0%, transparent 50%); }
+.gallery-main-info { position: absolute; bottom: 24px; left: 28px; right: 28px; display: flex; align-items: flex-end; justify-content: space-between; }
+.gallery-badge { background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold)); color: var(--deep-mahogany); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; padding: 8px 18px; border-radius: 100px; display: inline-flex; align-items: center; gap: 6px; animation: badgePulse 2s infinite; }
+@keyframes badgePulse { 0%,100%{box-shadow:0 0 0 0 rgba(184,150,74,0.4);} 50%{box-shadow:0 0 0 8px rgba(184,150,74,0);} }
+.gallery-controls { display: flex; gap: 8px; }
+.gallery-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); border: none; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
+.gallery-btn:hover { background: white; transform: scale(1.05); }
+.gallery-thumbs { display: flex; gap: 12px; margin-top: 12px; overflow-x: auto; padding-bottom: 4px; }
+.gallery-thumb { width: 100px; height: 68px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 28px; transition: all 0.2s; flex-shrink: 0; }
+.gallery-thumb:hover, .gallery-thumb.active { border-color: var(--antique-gold); }
+.gallery-thumb:nth-child(1) { background: linear-gradient(135deg, #e8ddd0, #c8d8e4); }
+.gallery-thumb:nth-child(2) { background: linear-gradient(135deg, #d4e8d4, #e8ddd0); }
+.gallery-thumb:nth-child(3) { background: linear-gradient(135deg, #c8d8e4, #e8e0c8); }
+.gallery-thumb:nth-child(4) { background: linear-gradient(135deg, #e8d4d0, #d0e8d4); }
+.gallery-thumb:nth-child(5) { background: linear-gradient(135deg, #d4c8e8, #e8ddd0); }
+
+/* DETAIL LAYOUT */
+.detail-layout { display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 40px; max-width: 1400px; margin: 0 auto; align-items: start; }
+
+/* LEFT COLUMN */
+.detail-left {}
+
+.property-header { margin-bottom: 28px; }
+.property-tag { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--antique-gold); margin-bottom: 8px; display: block; }
+.property-title { font-family: var(--font-display); font-size: 36px; font-weight: 600; color: var(--deep-mahogany); line-height: 1.15; margin-bottom: 10px; }
+.property-title em { font-style: italic; color: var(--antique-brown); }
+.property-location { font-size: 13px; color: var(--text-mid); display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
+.property-meta { display: flex; gap: 12px; flex-wrap: wrap; }
+.property-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 100px; padding: 5px 12px; font-size: 11px; color: var(--antique-brown); letter-spacing: 0.5px; }
+
+/* PRICE BLOCK */
+.price-block { background: rgba(255,255,255,0.55); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; padding: 24px; box-shadow: 0 8px 32px rgba(139,111,78,0.08); margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+.price-main .price-num { font-family: var(--font-display); font-size: 48px; font-weight: 600; color: var(--deep-mahogany); line-height: 1; }
+.price-main .price-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-mid); margin-top: 4px; }
+.price-breakdowns { display: flex; gap: 24px; }
+.price-sub { text-align: center; }
+.price-sub-val { font-size: 18px; font-weight: 600; color: var(--antique-brown); }
+.price-sub-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-mid); margin-top: 2px; }
+.price-market { background: rgba(154,175,155,0.15); border: 1px solid rgba(154,175,155,0.3); border-radius: 8px; padding: 6px 12px; font-size: 11px; color: var(--sage-green); }
+
+/* SPEC GRID */
+.section-title { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin-bottom: 20px; color: var(--deep-mahogany); }
+.spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+.spec-card { background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; padding: 16px; box-shadow: 0 4px 16px rgba(139,111,78,0.05); }
+.spec-card-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--antique-gold); margin-bottom: 6px; }
+.spec-card-val { font-size: 18px; font-weight: 600; color: var(--deep-mahogany); }
+.spec-card-sub { font-size: 11px; color: var(--text-mid); margin-top: 2px; }
+
+/* DESCRIPTION */
+.description-block { margin-bottom: 32px; }
+.description-text { font-size: 14px; line-height: 1.85; color: var(--text-mid); }
+.description-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.description-text.expanded { -webkit-line-clamp: unset; display: block; overflow: visible; }
+.read-more-btn { background: none; border: none; color: var(--antique-gold); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; margin-top: 8px; }
+
+/* FEATURES */
+.features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px; }
+.feature-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-mid); }
+.feature-check { width: 22px; height: 22px; background: rgba(154,175,155,0.2); border: 1px solid rgba(154,175,155,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--sage-green); flex-shrink: 0; }
+
+/* FLOOR PLAN */
+.floor-plan { background: rgba(255,255,255,0.55); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; padding: 24px; margin-bottom: 32px; }
+.floor-plan-img { width: 100%; height: 280px; background: linear-gradient(135deg, rgba(200,216,228,0.3), rgba(232,221,208,0.5)); border-radius: 12px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.fp-grid { position: absolute; inset: 0; }
+.fp-room { position: absolute; border: 2px solid rgba(139,111,78,0.3); border-radius: 4px; background: rgba(245,240,232,0.5); display: flex; align-items: center; justify-content: center; }
+.fp-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--antique-brown); text-align: center; }
+.floor-plan-actions { display: flex; gap: 12px; margin-top: 16px; }
+.btn-outline { background: transparent; border: 1px solid rgba(200,168,130,0.4); border-radius: 8px; padding: 10px 20px; font-family: var(--font-body); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--antique-brown); cursor: pointer; transition: all 0.25s; }
+.btn-outline:hover { background: rgba(255,255,255,0.6); border-color: var(--antique-brown); }
+
+/* MAP SECTION */
+.map-section { background: rgba(255,255,255,0.55); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; padding: 24px; margin-bottom: 32px; }
+.map-embed { width: 100%; height: 240px; background: linear-gradient(135deg, rgba(200,216,228,0.4), rgba(232,221,208,0.5)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px; color: rgba(139,111,78,0.3); position: relative; overflow: hidden; }
+.map-embed::after { content: '◉ Bhiwandi, Maharashtra'; position: absolute; bottom: 12px; left: 12px; font-family: var(--font-body); font-size: 11px; color: var(--deep-mahogany); background: rgba(250,247,242,0.9); backdrop-filter: blur(12px); padding: 4px 10px; border-radius: 6px; }
+.distance-chips { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.dist-chip { background: rgba(245,240,232,0.7); border: 1px solid rgba(200,168,130,0.2); border-radius: 8px; padding: 6px 12px; font-size: 11px; color: var(--text-mid); }
+.dist-chip b { color: var(--deep-mahogany); }
+
+/* REVIEWS */
+.reviews-section { margin-bottom: 32px; }
+.review-card { background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; padding: 20px; margin-bottom: 12px; }
+.review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.reviewer-name { font-weight: 500; font-size: 14px; }
+.reviewer-role { font-size: 11px; color: var(--text-mid); }
+.review-stars { color: var(--antique-gold); font-size: 13px; }
+.review-text { font-size: 13px; color: var(--text-mid); line-height: 1.7; font-family: var(--font-editorial); font-style: italic; }
+.review-date { font-size: 11px; color: var(--warm-tan); margin-top: 8px; }
+.reviews-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+.reviews-summary { font-size: 13px; color: var(--text-mid); }
+.reviews-summary b { font-family: var(--font-display); font-size: 19px; color: var(--deep-mahogany); }
+.reviews-summary .stars { color: var(--antique-gold); letter-spacing: 1px; }
+.reviews-empty { font-size: 13px; color: var(--text-mid); padding: 18px 0 4px; }
+
+.review-signin { background: rgba(255,255,255,0.5); border: 1px dashed rgba(200,168,130,0.5); border-radius: 12px; padding: 20px; text-align: center; }
+.review-signin p { font-size: 13px; color: var(--text-mid); margin-bottom: 12px; }
+
+.review-form { background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; padding: 20px; margin-top: 16px; }
+.review-form-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+.review-form .form-input { width: 100%; margin-bottom: 10px; }
+.review-form textarea.form-input { resize: vertical; font-family: inherit; }
+.review-form-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.review-note { font-size: 11px; color: var(--text-mid); }
+.review-status { margin-top: 12px; font-size: 12.5px; border-radius: 8px; padding: 10px 12px; }
+.review-status.ok { background: rgba(154,175,155,0.18); color: #4A6B4F; }
+.review-status.error { background: rgba(194,69,60,0.12); color: #9C2F26; }
+
+/* Star picker. Radios rather than buttons so a keyboard can arrow through
+   them and a screen reader announces the group as a single choice. */
+.rating-input { display: flex; gap: 4px; margin-bottom: 12px; }
+.rating-input input { position: absolute; opacity: 0; width: 0; height: 0; }
+.rating-input label { font-size: 26px; line-height: 1; color: rgba(184,150,74,0.3); cursor: pointer; transition: color .15s; }
+.rating-input label:hover, .rating-input label.on { color: var(--antique-gold); }
+.rating-input input:focus-visible + label { outline: 2px solid var(--antique-gold); outline-offset: 2px; border-radius: 4px; }
+
+/* Floor plan is a real uploaded image now, not a CSS block diagram. */
+#pdFloorPlanImg img { width: 100%; height: auto; display: block; border-radius: 12px; }
+
+/* RIGHT COLUMN — STICKY */
+.detail-right { position: sticky; top: 100px; }
+
+/* ENQUIRY CARD */
+.enquiry-card { background: rgba(245,240,232,0.7); backdrop-filter: blur(28px); border: 1px solid rgba(255,255,255,0.75); border-radius: 20px; box-shadow: 0 12px 40px rgba(139,111,78,0.12), inset 0 1px 0 rgba(255,255,255,0.9); padding: 28px; margin-bottom: 20px; }
+.enquiry-card-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+.enquiry-card-sub { font-size: 12px; color: var(--text-mid); margin-bottom: 20px; }
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--antique-gold); margin-bottom: 6px; }
+.form-input { width: 100%; background: rgba(250,247,242,0.8); border: 1px solid rgba(200,168,130,0.25); border-radius: 8px; padding: 10px 14px; font-family: var(--font-body); font-size: 13px; color: var(--deep-mahogany); outline: none; transition: border-color 0.25s; }
+.form-input:focus { border-color: var(--antique-gold); }
+textarea.form-input { resize: vertical; min-height: 80px; }
+.btn-primary { width: 100%; background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany)); color: var(--off-white); border: none; border-radius: 8px; padding: 13px; font-family: var(--font-body); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 16px rgba(74,55,40,0.2); transition: all 0.25s; margin-bottom: 10px; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(74,55,40,0.3); }
+.btn-gold { width: 100%; background: linear-gradient(135deg, var(--antique-gold), var(--warm-gold)); color: var(--deep-mahogany); border: none; border-radius: 8px; padding: 12px; font-family: var(--font-body); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; cursor: pointer; transition: all 0.25s; }
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(184,150,74,0.3); }
+.enquiry-trust { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 14px; font-size: 11px; color: var(--text-mid); }
+
+/* BROKER CARD */
+.broker-card { background: rgba(255,255,255,0.55); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(139,111,78,0.07); margin-bottom: 20px; }
+.broker-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.broker-avatar-large { width: 56px; height: 56px; background: linear-gradient(135deg, var(--linen-beige), var(--powder-blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+.broker-info-name { font-weight: 600; font-size: 15px; color: var(--deep-mahogany); }
+.broker-info-title { font-size: 11px; color: var(--antique-gold); letter-spacing: 0.5px; }
+.broker-info-stars { font-size: 12px; color: var(--antique-gold); }
+.broker-stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.bstat { text-align: center; background: rgba(250,247,242,0.7); border: 1px solid rgba(200,168,130,0.15); border-radius: 8px; padding: 8px 4px; }
+.bstat-num { font-size: 16px; font-weight: 600; color: var(--deep-mahogany); display: block; }
+.bstat-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-mid); }
+.broker-actions { display: flex; gap: 8px; }
+.btn-broker-call { flex: 1; background: linear-gradient(135deg, var(--antique-brown), var(--deep-mahogany)); color: var(--off-white); border: none; border-radius: 8px; padding: 10px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.25s; }
+.btn-broker-msg { flex: 1; background: #25D366; color: white; border: none; border-radius: 8px; padding: 10px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.25s; }
+
+/* LIVE SQFT WIDGET */
+.sqft-widget { background: rgba(200,216,228,0.3); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.65); border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(139,111,78,0.07); }
+.widget-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+.widget-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+.widget-input { flex: 1; background: rgba(250,247,242,0.8); border: 1px solid rgba(200,168,130,0.25); border-radius: 8px; padding: 9px 12px; font-size: 13px; color: var(--deep-mahogany); outline: none; font-family: var(--font-body); }
+.widget-results { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.widget-result { background: rgba(250,247,242,0.7); border-radius: 8px; padding: 10px; }
+.wr-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-mid); margin-bottom: 3px; }
+.wr-val { font-size: 16px; font-weight: 600; color: var(--deep-mahogany); }
+
+/* ENQUIRY MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(74,55,40,0.6); backdrop-filter: blur(12px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.enquiry-modal { background: rgba(250,247,242,0.97); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.85); border-radius: 24px; box-shadow: 0 32px 80px rgba(74,55,40,0.2); max-width: 520px; width: 100%; padding: 36px; position: relative; }
+.modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-mid); }
+.modal-title { font-family: var(--font-display); font-size: 26px; font-weight: 600; margin-bottom: 6px; }
+.modal-sub { font-size: 13px; color: var(--text-mid); margin-bottom: 24px; }
+.success-state { display: none; text-align: center; padding: 20px 0; }
+.success-icon { font-size: 48px; margin-bottom: 12px; }
+.success-title { font-family: var(--font-display); font-size: 22px; font-weight: 600; color: var(--sage-green); margin-bottom: 8px; }
+.success-text { font-size: 13px; color: var(--text-mid); line-height: 1.7; }
+
+/* FOOTER */
+
+@keyframes pulse { 0%,100%{box-shadow:0 4px 20px rgba(37,211,102,0.4);} 50%{box-shadow:0 4px 32px rgba(37,211,102,0.6);} }
+
+@media (max-width: 1100px) { .detail-layout { grid-template-columns: 1fr; } .detail-right { position: static; } }
+@media (max-width: 768px) {  .gallery-section, .breadcrumb { padding-left: 16px; padding-right: 16px; } .detail-layout { padding: 20px 16px; } .spec-grid { grid-template-columns: 1fr 1fr; }  }
+
+/* ─── PHONE ICON PASS ─────────────────────────────────────────── */
+@media (max-width: 560px) {
+  /* 120px rendered a 165px-wide glyph — half the width of a 343px gallery,
+     and drawn past the resolution a colour-emoji bitmap actually holds,
+     which is why it looked rough rather than merely large. */
+  .gallery-main-emoji { font-size: 76px; }
+
+  /* The three round controls will not shrink below their 136px min-content,
+     which squeezed the verified badge to 151px and wrapped its text to three
+     lines inside the pill. Stacking gives the badge a full line and leaves
+     the buttons at their full tap size on their own. */
+  .gallery-main-info { flex-direction: column; align-items: flex-end; gap: 10px; }
+
+  /* Two columns left 134px for each label, so all twelve wrapped to two
+     lines — and because the rows centre their contents, every check circle
+     floated to the middle of its two-line label and the icon column read as
+     ragged the whole way down. One column puts each label on one line. */
+  .features-grid { grid-template-columns: 1fr; gap: 8px; }
+
+  .broker-avatar-large { width: 46px; height: 46px; font-size: 21px; }
+
+  /* Once revealed these become <a> elements, which do not inherit a button's
+     centring — the glyph and label sat hard against the left padding of a
+     centred pill, so the icons looked off-axis next to each other. */
+  .btn-broker-call,
+  .btn-broker-msg {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 44px; padding: 11px 10px; text-align: center;
+  }
+
+  /* Side by side, both labels wrapped and stranded their glyph alone on the
+     first line, so the icon stopped reading as part of its label. */
+  .floor-plan-actions { flex-direction: column; gap: 8px; }
+  .floor-plan-actions .btn-outline { padding: 14px 16px; }
+
+  .map-embed { font-size: 34px; }
+
+  .modal-close {
+    width: 40px; height: 40px; top: 12px; right: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+}
+</style>
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><span>99</span>Warehousing</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="warehouses.html" class="active">Warehouses</a></li>
+    <li><a href="land-parks.html">Land &amp; Parks</a></li>
+    <li><a href="insights.html">Insights</a></li>
+    <li><a href="calculator.html">Calculator</a></li>
+    <li><a href="partners.html">Partners</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="submit-listing.html" class="btn-cta-nav">List Property</a>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html" onclick="toggleMenu()">Home</a></li>
+    <li><a href="warehouses.html" onclick="toggleMenu()">Warehouses</a></li>
+    <li><a href="land-parks.html" onclick="toggleMenu()">Land &amp; Parks</a></li>
+    <li><a href="insights.html" onclick="toggleMenu()">Insights</a></li>
+    <li><a href="calculator.html" onclick="toggleMenu()">Calculator</a></li>
+    <li><a href="partners.html" onclick="toggleMenu()">Partners</a></li>
+    <li><a href="about.html" onclick="toggleMenu()">About</a></li>
+    <li><a href="contact.html" onclick="toggleMenu()">Contact</a></li>
+    <li><a href="login.html" onclick="toggleMenu()">Login</a></li>
+  </ul>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="index.html">Home</a>
+  <span>›</span>
+  <a href="warehouses.html">Warehouses</a>
+  <span>›</span>
+  <span style="color: var(--deep-mahogany);" id="pdCrumb">Bhiwandi Logistics Hub — Block C</span>
+</div>
+
+<!-- GALLERY -->
+<div class="gallery-section">
+  <div class="gallery-main">
+    <div class="gallery-main-emoji" id="pdIcon">🏭</div>
+    <img id="pdPhoto" alt="" hidden
+         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+    <div class="gallery-main-overlay"></div>
+    <div class="gallery-main-info">
+      <div class="gallery-badge">✦ 99Warehousing Verified</div>
+      <div class="gallery-controls">
+        <button class="gallery-btn" onclick="prevPhoto()">‹</button>
+        <button class="gallery-btn" onclick="nextPhoto()">›</button>
+        <button class="gallery-btn" title="Full screen" onclick="toggleFullscreen()">⛶</button>
+      </div>
+    </div>
+  </div>
+  <div class="gallery-thumbs" id="pdThumbs"></div>
+</div>
+
+<!-- DETAIL LAYOUT -->
+<div class="detail-layout">
+  <!-- LEFT COLUMN -->
+  <div class="detail-left">
+
+    <!-- HEADER -->
+    <div class="property-header">
+      <span class="property-tag" id="pdTag">Grade A Warehouse · Bhiwandi, MMR</span>
+      <h1 class="property-title" id="pdTitle">Bhiwandi Logistics Hub<br><em>Block C — 85,000 sq ft</em></h1>
+      <div class="property-location" id="pdLoc">📍 MIDC Bhiwandi Industrial Area, Thane, Maharashtra — 421302</div>
+      <div class="property-meta">
+        <span class="property-pill">🏗️ Immediately Available</span>
+        <span class="property-pill">📅 Listed 3 days ago</span>
+        <span class="property-pill" id="pdViews">👁️ 148 views</span>
+        <span class="property-pill">✦ 99Warehousing Verified</span>
+      </div>
+    </div>
+
+    <!-- PRICE BLOCK -->
+    <div class="price-block">
+      <div class="price-main">
+        <div class="price-num" id="pdRate">₹28</div>
+        <div class="price-label">Per sq ft / month</div>
+      </div>
+      <div class="price-breakdowns">
+        <div class="price-sub">
+          <div class="price-sub-val" id="pdMonthly">₹23.8L</div>
+          <div class="price-sub-label">Monthly Lease</div>
+        </div>
+        <div class="price-sub">
+          <div class="price-sub-val" id="pdAnnual">₹2.86Cr</div>
+          <div class="price-sub-label">Annual Value</div>
+        </div>
+        <div class="price-sub">
+          <div class="price-sub-val" id="pdDeposit">₹35.7L</div>
+          <div class="price-sub-label">Security Deposit</div>
+        </div>
+      </div>
+      <div class="price-market">✓ Fair Market Rate</div>
+    </div>
+
+    <!-- ─── EVERYTHING BELOW IS RENDERED FROM THE LISTING ─────────────
+         These sections used to be written into the HTML: nine specification
+         cards, a paragraph about Bhiwandi, twelve amenities, a block-diagram
+         floor plan and five road distances. Only two of those cards were ever
+         fed from the database, so every property on the site claimed a 3 MW
+         supply, a 3,200 sq ft office and a VESDA fire system.
+
+         Each block is now filled by renderProperty() from what the owner
+         actually entered, and hidden outright when there is nothing to show.
+         An absent section is honest; an invented one is not. -->
+
+    <!-- SPECIFICATIONS -->
+    <div id="pdSpecSection" hidden>
+      <h3 class="section-title">Property Specifications</h3>
+      <div class="spec-grid" id="pdSpecGrid"></div>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="description-block" id="pdDescSection" hidden>
+      <h3 class="section-title">About This Property</h3>
+      <p class="description-text" id="pdDesc"></p>
+      <button class="read-more-btn" id="pdReadMore" onclick="toggleReadMore(this)" hidden>Read More ↓</button>
+    </div>
+
+    <!-- FEATURES -->
+    <div id="pdFeatureSection" hidden>
+      <h3 class="section-title">Features &amp; Amenities</h3>
+      <div class="features-grid" style="margin-bottom: 32px;" id="pdFeatures"></div>
+    </div>
+
+    <!-- FLOOR PLAN — optional, and most listings will not have one. -->
+    <div class="floor-plan" id="pdFloorPlanSection" hidden>
+      <h3 class="section-title" style="margin-bottom: 16px;">Floor Plan</h3>
+      <div class="floor-plan-img" id="pdFloorPlanImg"></div>
+      <div class="floor-plan-actions">
+        <a class="btn-outline" id="pdFloorPlanOpen" target="_blank" rel="noopener noreferrer">⛶ Open Full Size</a>
+      </div>
+    </div>
+
+    <!-- LOCATION -->
+    <div class="map-section" id="pdLocationSection" hidden>
+      <h3 class="section-title" style="margin-bottom: 16px;">Location &amp; Connectivity</h3>
+      <div class="map-embed" id="pdMapEmbed">🗺️</div>
+      <div class="distance-chips" id="pdDistances"></div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="reviews-section">
+      <div class="reviews-head">
+        <h3 class="section-title" style="margin-bottom:0;">Reviews</h3>
+        <div class="reviews-summary" id="pdReviewSummary"></div>
+      </div>
+      <div id="pdReviewList"></div>
+
+      <!-- Signed out, or not yet reviewed: whichever applies is unhidden. -->
+      <div class="review-signin" id="pdReviewSignin" hidden>
+        <p>Reviews come from signed-in accounts, so you know a real person wrote them.</p>
+        <a class="btn-outline" href="login.html" id="pdReviewSigninLink">Sign in to write a review</a>
+      </div>
+
+      <form class="review-form" id="pdReviewForm" hidden onsubmit="submitReview(event)">
+        <div class="review-form-title" id="pdReviewFormTitle">Write a review</div>
+        <div class="rating-input" id="pdRatingInput" role="radiogroup" aria-label="Your rating"></div>
+        <input class="form-input" id="pdReviewRole" type="text" maxlength="120"
+               placeholder="Your role, e.g. Operations Manager (optional)" autocomplete="organization-title">
+        <textarea class="form-input" id="pdReviewComment" rows="4" maxlength="1500" required
+                  placeholder="What was this property like to visit, lease or operate from?"></textarea>
+        <div class="review-form-foot">
+          <span class="review-note" id="pdReviewNote">Published after a moderator reads it.</span>
+          <button class="btn-gold" type="submit" id="pdReviewSubmit">Submit review</button>
+        </div>
+        <div class="review-status" id="pdReviewStatus" hidden></div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="detail-right">
+
+    <!-- ENQUIRY CARD -->
+    <div class="enquiry-card">
+      <div class="enquiry-card-title">Request a Callback</div>
+      <div class="enquiry-card-sub">Our advisor will contact you within 2 business hours.</div>
+      <div class="form-group">
+        <label class="form-label" for="eqName">Your Name</label>
+        <input class="form-input" type="text" id="eqName" placeholder="Rajesh Kumar" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="eqEmail">Email</label>
+        <input class="form-input" type="email" id="eqEmail" placeholder="you@company.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="eqMobile">Mobile Number</label>
+        <input class="form-input" type="tel" id="eqMobile" placeholder="+91 98765 43210" autocomplete="tel">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="eqCompany">Company Name</label>
+        <input class="form-input" type="text" id="eqCompany" placeholder="Your Company Pvt Ltd" autocomplete="organization">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="eqArea">Area Required (sq ft)</label>
+        <input class="form-input" type="number" id="eqArea" placeholder="e.g. 50,000">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="eqMessage">Message (optional)</label>
+        <textarea class="form-input" id="eqMessage" placeholder="Tell us your specific requirements…"></textarea>
+      </div>
+      <div class="enquiry-trust" id="eqError" hidden style="color:#A6362D;margin-bottom:8px;"></div>
+      <button class="btn-primary" id="eqSend" onclick="submitEnquiry()">Send Enquiry →</button>
+      <!-- Direct WhatsApp is owner contact, so it goes through the same gate. -->
+      <button class="btn-gold" type="button" onclick="revealContact()">💬 WhatsApp Directly</button>
+      <div class="enquiry-trust">🔒 Your details are never shared without consent</div>
+    </div>
+
+    <!-- LISTING CONTACT — gated -->
+    <!--
+      The phone number is deliberately NOT in this markup. It is fetched from
+      GET /properties/:id/contact, which requires a session, so a signed-out
+      visitor cannot read it from the page source either.
+    -->
+    <div class="broker-card" id="contactCard">
+      <div style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--antique-gold); margin-bottom: 12px;">Listing Contact</div>
+
+      <div id="contactLocked">
+        <div class="broker-header">
+          <div class="broker-avatar-large">🔒</div>
+          <div>
+            <div class="broker-info-name">Contact details hidden</div>
+            <div class="broker-info-title">Sign in to view the owner's phone and email</div>
+          </div>
+        </div>
+        <div class="broker-actions">
+          <button class="btn-broker-call" type="button" onclick="revealContact()">🔓 Show Contact Details</button>
+        </div>
+        <div class="enquiry-trust" style="margin-top:10px;">Free account · protects owners from spam callers</div>
+      </div>
+
+      <div id="contactRevealed" hidden>
+        <div class="broker-header">
+          <div class="broker-avatar-large">🏢</div>
+          <div>
+            <div class="broker-info-name" id="cName">—</div>
+            <div class="broker-info-title" id="cCompany"></div>
+            <div class="broker-info-stars" id="cEmail" style="letter-spacing:0;"></div>
+          </div>
+        </div>
+        <div class="broker-actions">
+          <a class="btn-broker-call" id="cCall" href="#">📞 Call</a>
+          <a class="btn-broker-msg" id="cWhats" href="#" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+        </div>
+      </div>
+
+      <div id="contactError" class="enquiry-trust" hidden style="color:#A6362D;margin-top:10px;"></div>
+    </div>
+
+    <!-- LIVE CALCULATOR WIDGET -->
+    <div class="sqft-widget">
+      <div class="widget-title">Live Cost Calculator</div>
+      <div class="widget-input-row">
+        <input class="widget-input" type="number" id="wArea" placeholder="Area (sq ft)" oninput="calcWidget()" value="85000">
+        <select class="widget-input" onchange="calcWidget()" id="wDur" style="max-width: 110px;">
+          <option value="12">12 mo</option>
+          <option value="24">24 mo</option>
+          <option value="36" selected>36 mo</option>
+          <option value="60">60 mo</option>
+        </select>
+      </div>
+      <div class="widget-results">
+        <div class="widget-result">
+          <div class="wr-label">Monthly Lease</div>
+          <div class="wr-val" id="wMonthly">₹23.8L</div>
+        </div>
+        <div class="widget-result">
+          <div class="wr-label">Total Deal</div>
+          <div class="wr-val" id="wTotal">₹8.57Cr</div>
+        </div>
+        <div class="widget-result">
+          <div class="wr-label">Security Deposit</div>
+          <div class="wr-val" id="wDeposit">₹71.4L</div>
+        </div>
+        <div class="widget-result">
+          <div class="wr-label">Brokerage (Est.)</div>
+          <div class="wr-val" id="wBrokerage">₹71.4L</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- WHATSAPP -->
+<a href="https://wa.me/919819216600" class="whatsapp-bubble" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" title="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- ENQUIRY MODAL (success) -->
+<div class="modal-overlay" id="successModal">
+  <div class="enquiry-modal">
+    <button class="modal-close" onclick="document.getElementById('successModal').classList.remove('open')">✕</button>
+    <div class="success-state" style="display: block;">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Enquiry Sent!</div>
+      <p class="success-text">Rajiv Mehta will call you within 2 business hours. You'll also receive a confirmation on your registered email and WhatsApp.</p>
+      <div style="margin-top: 20px;">
+        <button class="btn-gold" onclick="document.getElementById('successModal').classList.remove('open')" style="width: auto; padding: 12px 32px;">Back to Listing</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">99Warehousing</div>
+      <p class="footer-desc">India's most trusted marketplace for industrial and warehousing real estate. Every square foot, verified.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Properties</div>
+      <ul class="footer-links">
+        <li><a href="warehouses.html">Warehouses</a></li>
+        <li><a href="land-parks.html">Industrial Land</a></li>
+        <li><a href="land-parks.html">Logistics Parks</a></li>
+        <li><a href="warehouses.html">Cold Storage</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="about.html">About 99Warehousing</a></li>
+        <li><a href="partners.html">Partners</a></li>
+        <li><a href="insights.html">Market Insights</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Account</div>
+      <ul class="footer-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Register</a></li>
+        <li><a href="submit-listing.html">List Property</a></li>
+        <li><a href="terms.html">Terms of Service</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 99warehousing. All rights reserved.</span>
+    <span class="footer-copy">Made with ✦ in India</span>
+  </div>
+</footer>
+
+<script>
+  /* Uses the loaded property's real rate (PD.rate), not a fixed number,
+     so the estimate matches whichever listing is open. */
+  function calcWidget() {
+    var areaEl = document.getElementById('wArea');
+    var durEl = document.getElementById('wDur');
+    if (!areaEl) return;
+
+    var area = parseFloat(areaEl.value) || PD.area || 85000;
+    var dur = parseInt(durEl && durEl.value, 10) || 36;
+    var monthly = area * (PD.rate || 28);
+
+    setText('wMonthly', fmtINR(monthly));
+    setText('wTotal', fmtINR(monthly * dur));
+    setText('wDeposit', fmtINR(monthly * (PD.deposit || 3)));
+    setText('wBrokerage', fmtINR(monthly));
+  }
+
+
+  /* The description is clamped in CSS; this releases it. */
+
+  /* ── Load the property named in ?id= ────────────────────────
+     Without this the page always showed the same hard-coded listing,
+     no matter which card was clicked. Falls back to the static markup
+     if no id is supplied. */
+  var PD = { rate: 28, area: 85000, deposit: 3 };
+
+  function fmtINR(v) {
+    if (v >= 10000000) return '₹' + (v / 10000000).toFixed(2) + 'Cr';
+    if (v >= 100000) return '₹' + (v / 100000).toFixed(1) + 'L';
+    return '₹' + Math.round(v).toLocaleString('en-IN');
+  }
+
+  function setText(id, text) {
+    var el = document.getElementById(id);
+    if (el && text != null) el.textContent = text;
+  }
+
+  function renderProperty(p) {
+    PD.rate = p.rate;
+    PD.area = p.area;
+    PD.deposit = p.depositMonths || 3;
+    /* The enquiry form and the contact reveal both need to know which
+       listing this is, so keep the identity on PD alongside the numbers. */
+    PD.id = p.id;
+    PD.name = p.name;
+
+    document.title = p.name + ' — 99Warehousing';
+    setText('pdCrumb', p.name);
+    setText('pdIcon', p.icon || '🏭');
+    renderGallery(p);
+    setText('pdTag', p.grade + ' ' + p.type + ' · ' + p.location);
+    setText('pdLoc', '📍 ' + p.location);
+    setText('pdRate', '₹' + p.rate);
+    setText('pdViews', '👁️ ' + (p.views || 0).toLocaleString('en-IN') + ' views');
+
+    renderSpecs(p);
+    renderDescription(p);
+    renderFeatures(p);
+    renderFloorPlan(p);
+    renderLocation(p);
+    loadReviews(p.id);
+
+    var title = document.getElementById('pdTitle');
+    if (title) {
+      title.innerHTML = '';
+      title.appendChild(document.createTextNode(p.name));
+      var em = document.createElement('em');
+      em.textContent = Number(p.area).toLocaleString('en-IN') + ' sq ft';
+      title.appendChild(document.createElement('br'));
+      title.appendChild(em);
+    }
+
+    var monthly = p.rate * p.area;
+    setText('pdMonthly', fmtINR(monthly));
+    setText('pdAnnual', fmtINR(monthly * 12));
+    setText('pdDeposit', fmtINR(monthly * PD.deposit));
+
+    var areaBox = document.getElementById('wArea');
+    if (areaBox) { areaBox.value = p.area; }
+    calcWidget();
+  }
+
+  /* ── Data-driven detail sections ────────────────────────────────
+     Each of these draws only what the listing carries and hides its own
+     section when there is nothing. Nothing here invents a value. */
+
+  function show(id, on) { var el = document.getElementById(id); if (el) el.hidden = !on; }
+
+  function specCard(label, value, sub) {
+    return '<div class="spec-card">' +
+      '<div class="spec-card-label">' + esc(label) + '</div>' +
+      '<div class="spec-card-val">' + esc(value) + '</div>' +
+      (sub ? '<div class="spec-card-sub">' + esc(sub) + '</div>' : '') +
+      '</div>';
+  }
+
+  function renderSpecs(p) {
+    var s = p.specs || {};
+    var num = function (v) { return v !== undefined && v !== null && v !== '' && !isNaN(v) && +v > 0; };
+    var cards = [];
+
+    /* Area is always present — it is required to create a listing. */
+    cards.push(specCard('Total Area', Number(p.area).toLocaleString('en-IN'), 'sq ft gross leasable'));
+
+    if (num(s.clearHeight)) cards.push(specCard('Clear Height', s.clearHeight + ' m', 'Floor to truss'));
+    if (num(s.loadingDocks)) cards.push(specCard('Loading Docks', s.loadingDocks + (s.loadingDocks == 1 ? ' Door' : ' Doors'), null));
+    if (num(s.power)) cards.push(specCard('Power Supply', Number(s.power).toLocaleString('en-IN') + ' kVA', 'Sanctioned load'));
+    if (num(s.floorStrength)) cards.push(specCard('Floor Strength', s.floorStrength + ' T/m²', null));
+    if (num(s.officeArea)) cards.push(specCard('Office Space', Number(s.officeArea).toLocaleString('en-IN'), 'sq ft'));
+    if (s.columnSpacing) cards.push(specCard('Column Spacing', s.columnSpacing, null));
+    if (num(s.truckTurning)) cards.push(specCard('Truck Turning', s.truckTurning + ' m', 'Yard radius'));
+    if (s.fireSystem) cards.push(specCard('Fire System', s.fireSystem, null));
+    if (num(p.depositMonths)) cards.push(specCard('Deposit', p.depositMonths + (p.depositMonths == 1 ? ' month' : ' months'), 'Of rent'));
+    if (p.availableFrom) {
+      var d = new Date(p.availableFrom);
+      if (!isNaN(d)) cards.push(specCard('Available From', d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }), null));
+    }
+
+    document.getElementById('pdSpecGrid').innerHTML = cards.join('');
+    /* Area alone is not a specification table worth a heading. */
+    show('pdSpecSection', cards.length > 1);
+  }
+
+  function renderDescription(p) {
+    if (!p.description) { show('pdDescSection', false); return; }
+    setText('pdDesc', p.description);
+    show('pdDescSection', true);
+    /* The Read More toggle only earns its place on a description long enough
+       to be clipped. */
+    var btn = document.getElementById('pdReadMore');
+    if (btn) btn.hidden = p.description.length < 420;
+  }
+
+  function renderFeatures(p) {
+    var list = (p.specs && p.specs.features) || [];
+    document.getElementById('pdFeatures').innerHTML = list.map(function (f) {
+      return '<div class="feature-item"><div class="feature-check">✓</div> ' + esc(f) + '</div>';
+    }).join('');
+    show('pdFeatureSection', list.length > 0);
+  }
+
+  function renderFloorPlan(p) {
+    var fp = p.floorPlan;
+    if (!fp || !fp.url) { show('pdFloorPlanSection', false); return; }
+
+    /* Inline at a readable width, but the "open" link goes to the largest
+       rendition — a floor plan is the one image on this page people zoom
+       into, so the full resolution has to be reachable. */
+    document.getElementById('pdFloorPlanImg').innerHTML = API.media.tag(fp, {
+      alt: 'Floor plan for ' + p.name,
+      sizes: '(max-width: 900px) 100vw, 860px',
+      min: 1280
+    });
+    document.getElementById('pdFloorPlanOpen').href = API.media.full(fp);
+    show('pdFloorPlanSection', true);
+  }
+
+  function renderLocation(p) {
+    var d = p.distances || [];
+    document.getElementById('pdDistances').innerHTML = d.map(function (x) {
+      return '<span class="dist-chip">' + esc(x.label) + ': <b>' + esc(x.km) + ' km</b></span>';
+    }).join('');
+    /* The map tile is a placeholder graphic, so with no distances to show
+       there is nothing in this section but a decorative emoji. */
+    show('pdLocationSection', d.length > 0);
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function loadProperty() {
+    var id = new URLSearchParams(location.search).get('id');
+    if (!id) { calcWidget(); return; }
+
+    API.properties.get(id)
+      .then(function (res) { renderProperty(res.item); })
+      .catch(function (err) {
+        console.warn('[99Warehousing] Could not load property ' + id + ': ' + err.message);
+        var crumb = document.getElementById('pdCrumb');
+        if (crumb) crumb.textContent = 'Property unavailable';
+        var t = document.getElementById('pdTitle');
+        if (t) t.textContent = 'This property is no longer available';
+        var d = document.getElementById('pdDesc');
+        if (d) d.textContent = 'It may have been removed or is awaiting review. Browse all current listings instead.';
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', loadProperty);
+
+  /* ── Reviews ────────────────────────────────────────────────────
+     Two hand-written testimonials used to sit here, signed by named people
+     at named logistics companies, identical on every listing. They are gone.
+     What shows now is whatever real signed-in accounts have written and a
+     moderator has published — often nothing, which is the honest state of a
+     new listing. */
+  var REVIEW_PROPERTY_ID = null;
+  var myRating = 0;
+
+  function stars(n) {
+    var full = Math.round(n || 0);
+    return '★★★★★'.slice(0, full) + '☆☆☆☆☆'.slice(0, 5 - full);
+  }
+
+  function loadReviews(propertyId) {
+    REVIEW_PROPERTY_ID = propertyId;
+
+    API.reviews.forProperty(propertyId)
+      .then(function (res) {
+        var items = res.items || [];
+        var summary = document.getElementById('pdReviewSummary');
+        summary.innerHTML = res.count
+          ? '<b>' + res.average.toFixed(1) + '</b> <span class="stars">' + stars(res.average) + '</span> · ' +
+            res.count + (res.count === 1 ? ' review' : ' reviews')
+          : '';
+
+        document.getElementById('pdReviewList').innerHTML = items.length
+          ? items.map(reviewCard).join('')
+          : '<div class="reviews-empty">No reviews yet. If you have visited or leased this property, yours would be the first.</div>';
+      })
+      .catch(function () {
+        document.getElementById('pdReviewList').innerHTML =
+          '<div class="reviews-empty">Reviews could not be loaded right now.</div>';
+      })
+      .then(function () { setUpReviewForm(propertyId); });
+  }
+
+  function reviewCard(r) {
+    var when = new Date(r.createdAt);
+    return '<div class="review-card">' +
+      '<div class="review-header">' +
+        '<div>' +
+          '<div class="reviewer-name">' + esc(r.authorName) + '</div>' +
+          (r.authorRole ? '<div class="reviewer-role">' + esc(r.authorRole) + '</div>' : '') +
+        '</div>' +
+        '<div class="review-stars" aria-label="' + r.rating + ' out of 5">' + stars(r.rating) + '</div>' +
+      '</div>' +
+      '<p class="review-text">' + esc(r.comment) + '</p>' +
+      (isNaN(when) ? '' : '<div class="review-date">' +
+        when.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) + '</div>') +
+      '</div>';
+  }
+
+  function setUpReviewForm(propertyId) {
+    var signedIn = window.API && API.isAuthed();
+
+    if (!signedIn) {
+      show('pdReviewSignin', true);
+      show('pdReviewForm', false);
+      /* Come back here after signing in rather than dumping them on the
+         home page having lost what they were doing. */
+      try { sessionStorage.setItem('bpsf.after_login', location.pathname + location.search); } catch (e) {}
+      return;
+    }
+
+    show('pdReviewSignin', false);
+    show('pdReviewForm', true);
+    buildStarPicker();
+
+    /* If they have already reviewed this property, load it into the form so
+       submitting again reads as editing rather than duplicating. */
+    API.reviews.mine(propertyId)
+      .then(function (res) {
+        var mine = res.item;
+        if (!mine) return;
+        setText('pdReviewFormTitle', 'Your review');
+        document.getElementById('pdReviewComment').value = mine.comment || '';
+        document.getElementById('pdReviewRole').value = mine.authorRole || '';
+        setRating(mine.rating);
+        document.getElementById('pdReviewSubmit').textContent = 'Update review';
+        var note = { pending: 'Awaiting moderation.', published: 'Published.',
+                     rejected: 'Not published' + (mine.rejectionReason ? ': ' + mine.rejectionReason : '.') };
+        setText('pdReviewNote', note[mine.status] || '');
+      })
+      .catch(function () { /* no existing review, or the call failed — the blank form is fine */ });
+  }
+
+  function buildStarPicker() {
+    var box = document.getElementById('pdRatingInput');
+    if (box.childElementCount) return;
+    var html = '';
+    for (var i = 1; i <= 5; i++) {
+      html += '<input type="radio" name="pdRating" id="pdStar' + i + '" value="' + i + '" ' +
+              'onchange="setRating(' + i + ')"><label for="pdStar' + i + '" ' +
+              'title="' + i + ' star' + (i > 1 ? 's' : '') + '">★</label>';
+    }
+    box.innerHTML = html;
+  }
+
+  function setRating(n) {
+    myRating = n;
+    var labels = document.querySelectorAll('#pdRatingInput label');
+    for (var i = 0; i < labels.length; i++) labels[i].classList.toggle('on', i < n);
+    var input = document.getElementById('pdStar' + n);
+    if (input) input.checked = true;
+  }
+
+  function reviewStatus(msg, kind) {
+    var el = document.getElementById('pdReviewStatus');
+    el.textContent = msg;
+    el.className = 'review-status ' + (kind || '');
+    el.hidden = !msg;
+  }
+
+  function submitReview(e) {
+    e.preventDefault();
+    var comment = document.getElementById('pdReviewComment').value.trim();
+    var role = document.getElementById('pdReviewRole').value.trim();
+
+    if (!myRating) { reviewStatus('Please choose a star rating.', 'error'); return; }
+    if (comment.length < 10) { reviewStatus('Please write at least 10 characters.', 'error'); return; }
+
+    var btn = document.getElementById('pdReviewSubmit');
+    btn.disabled = true;
+    var original = btn.textContent;
+    btn.textContent = 'Sending…';
+    reviewStatus('');
+
+    var payload = { rating: myRating, comment: comment };
+    if (role) payload.authorRole = role;
+
+    API.reviews.create(REVIEW_PROPERTY_ID, payload)
+      .then(function () {
+        reviewStatus('Thank you. Your review will appear once a moderator has read it.', 'ok');
+        btn.textContent = 'Update review';
+        setText('pdReviewFormTitle', 'Your review');
+        setText('pdReviewNote', 'Awaiting moderation.');
+      })
+      .catch(function (err) {
+        reviewStatus(err.message || 'Could not send your review.', 'error');
+        btn.textContent = original;
+      })
+      .then(function () { btn.disabled = false; });
+  }
+
+  function toggleReadMore(btn) {
+    var p = document.querySelector('.description-text');
+    if (!p) return;
+    var open = p.classList.toggle('expanded');
+    btn.textContent = open ? 'Show Less ↑' : 'Read More ↓';
+  }
+
+  function toggleFullscreen() {
+    var el = document.querySelector('.gallery-section') || document.documentElement;
+    if (!document.fullscreenElement) {
+      if (el.requestFullscreen) {
+        el.requestFullscreen().catch(function () {
+          if (window.BPSF) BPSF.toast('Full screen is not available here.');
+        });
+      } else if (window.BPSF) {
+        BPSF.toast('Full screen is not supported in this browser.');
+      }
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  /* openWhatsApp() lived here with the owner's number baked into the source.
+     Anyone could read it without signing in, which defeated the gate, so the
+     WhatsApp link is now built at reveal time from the number the server
+     returns to an authenticated caller. */
+  /* Previously this only opened the success modal — the enquiry was never
+     sent anywhere, so every lead from this page was silently lost. */
+  function submitEnquiry() {
+    var val = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+    var err = document.getElementById('eqError');
+    var btn = document.getElementById('eqSend');
+
+    var fail = function (msg, focus) {
+      err.textContent = msg; err.hidden = false;
+      var f = document.getElementById(focus); if (f) f.focus();
+    };
+    err.hidden = true;
+
+    var name = val('eqName');
+    var email = val('eqEmail');
+    if (name.length < 2) return fail('Please enter your name.', 'eqName');
+    if (!/^\S+@\S+\.\S+$/.test(email)) return fail('Please enter a valid email address.', 'eqEmail');
+
+    /* The server requires a message; build one from the form when the
+       optional box is left empty, so a valid enquiry is never rejected for
+       a field the user was told was optional. */
+    var area = val('eqArea');
+    var message = val('eqMessage') ||
+      ('Enquiry about ' + (PD.name || 'this property') +
+       (area ? ' — area required: ' + area + ' sq ft.' : '.'));
+
+    btn.disabled = true;
+    var label = btn.textContent;
+    btn.textContent = 'Sending…';
+
+    API.enquiries.create({
+      name: name,
+      email: email,
+      mobile: val('eqMobile'),
+      company: val('eqCompany'),
+      subject: 'Property enquiry — ' + (PD.name || 'listing'),
+      message: message,
+      property: PD.id || undefined,
+    })
+      .then(function () {
+        document.getElementById('successModal').classList.add('open');
+        ['eqName', 'eqEmail', 'eqMobile', 'eqCompany', 'eqArea', 'eqMessage']
+          .forEach(function (id) { var e = document.getElementById(id); if (e) e.value = ''; });
+      })
+      .catch(function (e) { fail(e.message || 'Could not send your enquiry.', 'eqName'); })
+      .then(function () { btn.disabled = false; btn.textContent = label; });
+  }
+
+  /* ── Contact reveal ───────────────────────────────────────────
+     The owner's phone and email are not in this page's markup. They come
+     from an endpoint that requires a session, so a signed-out visitor
+     cannot obtain them by reading the source either. A 401 here is the
+     expected path for a logged-out user, not an error to apologise for. */
+  var contactShown = false;
+
+  function revealContact() {
+    if (contactShown) return;
+    var errEl = document.getElementById('contactError');
+    errEl.hidden = true;
+
+    if (!window.API || !API.isAuthed()) return promptSignIn();
+
+    API.properties.contact(PD.id)
+      .then(function (res) {
+        var c = res.contact || {};
+        document.getElementById('cName').textContent = c.name || 'Listing owner';
+        document.getElementById('cCompany').textContent = c.company || '';
+        document.getElementById('cEmail').textContent = c.email || '';
+
+        var call = document.getElementById('cCall');
+        var whats = document.getElementById('cWhats');
+        if (c.mobile) {
+          var digits = String(c.mobile).replace(/[^\d]/g, '');
+          call.href = 'tel:' + c.mobile;
+          whats.href = 'https://wa.me/' + digits + '?text=' +
+            encodeURIComponent('Hi, I am interested in ' + (PD.name || 'your listing') + ' on 99%20Warehousing.');
+        } else {
+          // No number on file — offer the channels that do work.
+          call.href = c.email ? 'mailto:' + c.email : '#';
+          call.textContent = '✉ Email';
+          whats.style.display = 'none';
+        }
+
+        document.getElementById('contactLocked').hidden = true;
+        document.getElementById('contactRevealed').hidden = false;
+        contactShown = true;
+      })
+      .catch(function (e) {
+        if (e.status === 401) return promptSignIn();
+        errEl.textContent = e.message || 'Could not load contact details.';
+        errEl.hidden = false;
+      });
+  }
+
+  function promptSignIn() {
+    try { sessionStorage.setItem('bpsf.after_login', location.pathname + location.search); } catch (e) {}
+    var errEl = document.getElementById('contactError');
+    errEl.innerHTML = 'Please <a href="login.html" style="text-decoration:underline;font-weight:600;">sign in</a> ' +
+                      'to see the owner\'s contact details.';
+    errEl.hidden = false;
+  }
+
+  /* ── Gallery ──────────────────────────────────────────────────
+     Photos come from THIS listing's images[] and nowhere else — the array
+     arrives on the property document, so a photo can only appear on the
+     property it was attached to. Listings with no photos (the seeded ones)
+     keep the emoji placeholder and hide the thumbnail strip entirely,
+     rather than showing an empty row.
+
+     Each photo carries several renditions. The main image asks for a large
+     one and the thumbnails ask for the smallest, so a strip of twelve
+     thumbnails costs a few kilobytes rather than twelve full photographs —
+     which is what it cost when every <img> pointed at the same file.
+     ───────────────────────────────────────────────────────────── */
+  var galleryPhotos = [];
+  var galleryIndex = 0;
+
+  function renderGallery(p) {
+    var imgs = (p && p.images ? p.images : []).filter(function (i) { return i && i.url; });
+    // Cover photo leads, whatever its position in the array.
+    imgs.sort(function (a, b) { return (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0); });
+    galleryPhotos = imgs;
+    galleryIndex = 0;
+
+    var thumbs = document.getElementById('pdThumbs');
+    var main = document.getElementById('pdPhoto');
+    var icon = document.getElementById('pdIcon');
+    if (!thumbs || !main || !icon) return;
+
+    thumbs.innerHTML = '';
+
+    if (!galleryPhotos.length) {          // no photos on this listing
+      thumbs.style.display = 'none';
+      main.hidden = true;
+      icon.hidden = false;
+      return;
+    }
+
+    thumbs.style.display = galleryPhotos.length > 1 ? 'flex' : 'none';
+    icon.hidden = true;
+    main.hidden = false;
+
+    galleryPhotos.forEach(function (img, i) {
+      var t = document.createElement('img');
+      t.className = 'gallery-thumb' + (i === 0 ? ' active' : '');
+      /* The 320px rendition — a thumbnail is displayed at about 90px, so
+         anything larger is bytes spent on detail nobody can see. */
+      t.src = API.media.src(img, 320);
+      t.alt = 'Photo ' + (i + 1);
+      t.loading = 'lazy';
+      t.decoding = 'async';
+      t.style.objectFit = 'cover';
+      /* Paint the placeholder underneath, so the strip appears filled
+         immediately instead of as a row of empty boxes. */
+      if (img.blur) {
+        t.style.backgroundImage = 'url(' + img.blur + ')';
+        t.style.backgroundSize = 'cover';
+        t.style.backgroundPosition = 'center';
+      }
+      t.onclick = function () { selectPhoto(i); };
+      thumbs.appendChild(t);
+    });
+
+    selectPhoto(0);
+  }
+
+  function selectPhoto(i) {
+    if (!galleryPhotos.length) return;
+    // Wrap around, so prev from the first lands on the last.
+    galleryIndex = (i + galleryPhotos.length) % galleryPhotos.length;
+
+    var photo = galleryPhotos[galleryIndex];
+    var main = document.getElementById('pdPhoto');
+    if (main) {
+      /* srcset over a fixed src: the same markup then serves a 640px file
+         to a phone and a 1280px one to a desktop, decided by the browser
+         from the rendered size rather than guessed here. */
+      var srcset = API.media.srcset(photo);
+      if (srcset) {
+        main.srcset = srcset;
+        main.sizes = '(max-width: 900px) 100vw, 760px';
+      } else {
+        main.removeAttribute('srcset');
+      }
+      main.src = API.media.src(photo, 1280);
+      main.alt = photo.caption || 'Property photo';
+      main.decoding = 'async';
+      /* The photo the visitor opened on is the largest thing above the
+         fold; letting it load lazily delays the one image they came for. */
+      main.loading = 'eager';
+      /* No width/height attributes here on purpose: .gallery-main is a fixed
+         480px box and the image is absolutely positioned to fill it, so
+         there is no reflow to guard against and the attributes would be
+         overridden by the CSS anyway. */
+      main.style.backgroundImage = photo.blur ? 'url(' + photo.blur + ')' : '';
+      main.style.backgroundSize = 'cover';
+      main.style.backgroundPosition = 'center';
+    }
+
+    /* Give the browser a head start on the next photo, so clicking the
+       arrow shows it immediately rather than after a round trip. One
+       neighbour only — preloading the whole gallery would defeat the point
+       of not downloading it in the first place. */
+    if (galleryPhotos.length > 1) {
+      var next = galleryPhotos[(galleryIndex + 1) % galleryPhotos.length];
+      var warm = new Image();
+      warm.src = API.media.src(next, 1280);
+    }
+
+    document.querySelectorAll('.gallery-thumb').forEach(function (t, idx) {
+      t.classList.toggle('active', idx === galleryIndex);
+    });
+  }
+
+  function prevPhoto() { selectPhoto(galleryIndex - 1); }
+  function nextPhoto() { selectPhoto(galleryIndex + 1); }
+
+  calcWidget();
+</script>
+</body>
+</html>

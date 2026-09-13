@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo-original.png">
+<title>Create Account — 99Warehousing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/auth.css">
+<!-- No Node on this host, so there is no API to reach. Permit the bundled
+     sample catalogue; api.js still prefers a real API whenever one answers. -->
+<script>window.BPSF_DEMO = true;</script>
+<script src="assets/api.js" defer></script>
+<script src="assets/demo-data.js" defer></script>
+<script src="assets/demo-banner.js" defer></script>
+<script src="assets/site.js" defer></script>
+<script src="assets/bpsf-store.js" defer></script>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-left">
+    <a href="index.html" class="auth-logo"><span>99</span>Warehousing</a>
+    <div class="auth-left-content">
+      <div class="auth-left-title">Join India's<br><em>Industrial Platform</em></div>
+      <div class="auth-left-sub">Free to join. Access verified listings, connect with verified agencies, and get real-time market intelligence.</div>
+      <div class="auth-perks">
+        <div class="perk"><div class="perk-dot">✓</div>Free access to 2,400+ verified listings</div>
+        <div class="perk"><div class="perk-dot">✓</div>Save searches and set price alerts</div>
+        <div class="perk"><div class="perk-dot">✓</div>Direct enquiry to owners and agencies</div>
+        <div class="perk"><div class="perk-dot">✓</div>Quarterly market reports in your inbox</div>
+        <div class="perk"><div class="perk-dot">✓</div>Dashboard with deal tracking and CRM</div>
+      </div>
+    </div>
+    <div class="auth-left-quote">"The best decision I made as a logistics head was getting a 99Warehousing account. The per-sq-ft transparency alone saved us 18% on our last lease." — Supply Chain Director, Reliance Retail</div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-card-title">Create Your <em>Account</em></div>
+      <div class="auth-card-sub">Free forever for buyers. Join 12,000+ companies on 99Warehousing.</div>
+
+      <span class="type-section-title">I am a…</span>
+      <div class="user-types">
+        <div class="utype active" onclick="selectType(this,'buyer')"><div class="utype-icon">🏭</div><div class="utype-name">Buyer / Tenant</div><div class="utype-desc">Looking to lease or buy warehouse space</div></div>
+        <div class="utype" onclick="selectType(this,'owner')"><div class="utype-icon">🏗️</div><div class="utype-name">Owner / Seller</div><div class="utype-desc">I have industrial property to list</div></div>
+        <div class="utype" onclick="selectType(this,'agency')"><div class="utype-icon">🏢</div><div class="utype-name">Agency</div><div class="utype-desc">I represent a real estate agency</div><div class="utype-badge">Partner</div></div>
+      </div>
+
+      <div class="broker-notice" id="brokerNotice">
+        Agency accounts require verification. After registration you'll complete the agency verification flow, including licence upload and deal history review.
+      </div>
+
+      <button class="btn-google" type="button" onclick="window.location=API.auth.googleUrl()"><span>G</span> Continue with Google</button>
+      <div class="divider"><div class="div-line"></div><span class="div-text">or with email</span><div class="div-line"></div></div>
+
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" type="text" placeholder="Ravi" id="rFirst"></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" type="text" placeholder="Kumar" id="rLast"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Work Email</label><input class="form-input" type="email" placeholder="ravi@company.com" id="rEmail"></div>
+      <div class="form-group"><label class="form-label">Mobile Number</label><input class="form-input" type="tel" placeholder="+91 98765 43210" id="rMobile"></div>
+      <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" type="text" placeholder="Your Company Pvt Ltd" id="rCompany"></div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pw-row">
+          <input class="form-input" type="password" placeholder="Min 8 characters" id="pw">
+          <button class="pw-toggle" onclick="document.getElementById('pw').type=document.getElementById('pw').type==='password'?'text':'password'">👁</button>
+        </div>
+      </div>
+      <div class="terms-row">
+        <input type="checkbox" id="terms">
+        <label for="terms">I agree to 99Warehousing's <a href="terms.html">Terms of Service</a>, <a href="privacy.html">Privacy Policy</a>, and consent to receiving market updates.</label>
+      </div>
+      <div class="admin-error" id="regError" role="alert" hidden></div>
+      <button class="btn-auth" id="regBtn" onclick="submitReg()">Create Account →</button>
+      <div class="auth-switch">Already have an account? <a href="login.html">Sign in</a></div>
+    </div>
+  </div>
+</div>
+<script>
+let userType='buyer';
+function selectType(el,t){
+  document.querySelectorAll('.utype').forEach(u=>u.classList.remove('active'));
+  el.classList.add('active');userType=t;
+  document.getElementById('brokerNotice').classList.toggle('show',t==='agency');
+}
+function regErr(msg){
+  const el=document.getElementById('regError');
+  el.textContent=msg; el.hidden=false;
+}
+
+function submitReg(){
+  const val = id => { const el=document.getElementById(id); return el ? el.value.trim() : ''; };
+  const btn = document.getElementById('regBtn');
+  document.getElementById('regError').hidden = true;
+
+  const name = [val('rFirst'), val('rLast')].filter(Boolean).join(' ');
+  const email = val('rEmail');
+  const password = document.getElementById('pw').value;
+
+  if (!name) { regErr('Enter your name.'); return; }
+  if (!email) { regErr('Enter your work email.'); return; }
+  if (password.length < 8) { regErr('Password must be at least 8 characters.'); return; }
+  if (!document.getElementById('terms').checked) { regErr('Please accept the terms to continue.'); return; }
+
+  btn.disabled = true; btn.textContent = 'Creating account…';
+
+  /* accountType — not `role`. The server strips `role` from the body so a
+     crafted request cannot self-assign admin. */
+  API.auth.register({
+    name, email, password,
+    mobile: val('rMobile'),
+    company: val('rCompany'),
+    accountType: userType,
+  })
+    .then(() => { window.location = 'warehouses.html'; })
+    .catch(e => {
+      btn.disabled = false; btn.textContent = 'Create Account →';
+      const first = e.details && e.details[0];
+      regErr(first ? first.message : e.message);
+    });
+}
+</script>
+</body>
+</html>

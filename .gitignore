@@ -1,0 +1,25 @@
+# Built on the server by cPanel's "Run NPM Install" — never committed.
+# It holds compiled binaries that must match the server's own Linux.
+node_modules/
+
+# Settings files. This repository is PUBLIC: nothing that holds a password,
+# key or secret belongs in it. server/env lives on the server only, uploaded
+# once by hand, and survives every deployment because Git never tracks it.
+#
+# The glob is wide on purpose — this project has produced .env, a dot-less
+# "env" (cPanel File Manager strips the dot), and an "api.env". Matching only
+# the names seen so far would miss the next variant.
+*.env
+.env
+.env.*
+!.env.example
+env
+
+# Runtime
+logs/
+*.log
+public/uploads/
+
+# OS noise
+.DS_Store
+._*

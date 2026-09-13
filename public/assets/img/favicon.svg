@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="99warehouses">
+  <title>99warehouses</title>
+  <!--
+    Deliberately simplified. The full mark's conveyor rollers and bay doors
+    are ~1px each at 16×16 and collapse into noise, so the favicon keeps only
+    what survives: the shed roofline and the numerals.
+
+    Colours are literal rather than currentColor — a favicon has no
+    surrounding CSS to inherit from.
+  -->
+  <rect width="64" height="64" rx="14" fill="#4A3728"/>
+  <path d="M14 30l9-8h27v22H14z" fill="none" stroke="#C8A882" stroke-width="3"
+        stroke-linejoin="round"/>
+  <text x="32" y="46" text-anchor="middle" fill="#F5F0E8"
+        font-family="Jost, 'Segoe UI', system-ui, Arial, sans-serif"
+        font-size="30" font-weight="700" letter-spacing="-1.5">99</text>
+</svg>
