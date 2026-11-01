@@ -48,9 +48,19 @@ if [ -z "$NODE_BIN" ]; then
   exit 1
 fi
 
-# Healthy: nothing to do. This is the overwhelmingly common path, so it stays
-# cheap — one local request, no process listing.
-if curl -fsS --max-time 10 "$HEALTH" >/dev/null 2>&1; then
+# Answering at all: nothing to do. Deliberately *any* HTTP status, not only a
+# 2xx. /health reports 503 when a dependency such as the database is
+# unreachable, and that is a process doing its job, not a dead one —
+# restarting it cannot fix a database on the far side of a firewall, so
+# treating 503 as dead gives an endless kill-and-restart loop at exactly the
+# moment the site most needs to stay up and serve its cached pages.
+# 000 means curl got no response at all: refused, or accepted and then
+# silent. That is the wedged case this watchdog exists for.
+# No `|| echo 000` here: curl already prints 000 when it cannot connect, so a
+# fallback would append a second value and the comparison would never match.
+CODE="$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$HEALTH" 2>/dev/null)"
+[ -n "$CODE" ] || CODE=000
+if [ "$CODE" != "000" ]; then
   exit 0
 fi
 
