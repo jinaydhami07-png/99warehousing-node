@@ -1,0 +1,83 @@
+# ─────────────────────────────────────────────────────────────────────────
+# 99Warehousing — public_html
+#
+# Apache serves the static site itself and forwards only /api/* to the Node
+# process on a local port. This plan's cPanel has no "Setup Node.js App"
+# and Passenger's directives return 500, but mod_proxy works, which is what
+# makes Node viable here at all.
+#
+# Apache serves the pages rather than proxying everything to Node on
+# purpose. Nothing supervises the Node process on shared hosting, so if it
+# dies the site must not die with it: the pages keep loading and fall back
+# to their bundled sample data until the watchdog restarts it. Proxying
+# every request would turn one dead process into a dead website.
+#
+# Rollback is removing the "API → Node" block. Apache then serves the site
+# exactly as it did before Node existed.
+# ─────────────────────────────────────────────────────────────────────────
+
+Options -Indexes
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # ── https ──────────────────────────────────────────────────────────────
+  # Both conditions are needed: %{HTTPS} is the signal when Apache itself
+  # terminates TLS, and X-Forwarded-Proto is the signal if a CDN is ever put
+  # in front. Testing only the first would redirect forever behind a CDN.
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  # ── API → Node ─────────────────────────────────────────────────────────
+  # [P] hands the request to mod_proxy. The port here must match PORT in
+  # server/env; if they disagree every API call returns 502 while the rest
+  # of the site looks perfectly healthy.
+  RewriteRule ^api/(.*)$ http://127.0.0.1:5050/api/$1 [P,QSA,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  # mod_proxy forwards X-Forwarded-For and X-Forwarded-Host on its own but
+  # not the protocol, so without this Express sees a plain http request and
+  # req.protocol reports the wrong scheme behind TLS.
+  RequestHeader set X-Forwarded-Proto "https" env=HTTPS
+
+  # Hashed and versioned assets may be cached hard; the HTML that references
+  # them must not be, or a deploy ships new assets to pages still asking for
+  # the old ones.
+  <FilesMatch "\.(css|js|woff2?|ttf|eot|svg|png|jpe?g|gif|webp|avif|ico)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml \
+    application/javascript application/json image/svg+xml
+</IfModule>
+
+# Correct types, in case the host's defaults are incomplete — a stylesheet
+# served as text/plain is ignored by every browser, which is one way the CSS
+# on this site has gone missing before.
+<IfModule mod_mime.c>
+  AddType text/css                  .css
+  AddType application/javascript    .js
+  AddType image/svg+xml             .svg
+  AddType image/webp                .webp
+  AddType font/woff2                .woff2
+  AddType application/json          .json
+</IfModule>
+
+# Never serve dotfiles: .env, .git and friends are plain text to Apache.
+<FilesMatch "^\.">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
