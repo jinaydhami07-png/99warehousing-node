@@ -1129,43 +1129,14 @@
     </div>
   </div>
 
-  <div class="hero-rail">
-    <a class="feat-card soft-card" href="property-detail.html">
-      <div class="feat-photo feat-photo-1"><span class="feat-tag">Grade A</span>🏢</div>
-      <div>
-        <div class="feat-name">Bhiwandi Logistics Hub</div>
-        <div class="feat-loc">Bhiwandi, Mumbai MMR</div>
-      </div>
-      <div class="feat-foot">
-        <span class="feat-rate">₹28 <span>/ sq ft</span></span>
-        <span class="feat-area">45,000 sq ft</span>
-      </div>
-    </a>
-
-    <a class="feat-card soft-card" href="property-detail.html">
-      <div class="feat-photo feat-photo-2"><span class="feat-tag">Cold Chain</span>❄️</div>
-      <div>
-        <div class="feat-name">Chakan Cold Storage</div>
-        <div class="feat-loc">Chakan, Pune</div>
-      </div>
-      <div class="feat-foot">
-        <span class="feat-rate">₹45 <span>/ sq ft</span></span>
-        <span class="feat-area">18,000 sq ft</span>
-      </div>
-    </a>
-
-    <a class="feat-card soft-card" href="property-detail.html">
-      <div class="feat-photo feat-photo-3"><span class="feat-tag">Land</span>🏗️</div>
-      <div>
-        <div class="feat-name">Panvel Industrial Park</div>
-        <div class="feat-loc">Panvel, Navi Mumbai</div>
-      </div>
-      <div class="feat-foot">
-        <span class="feat-rate">₹22 <span>/ sq ft</span></span>
-        <span class="feat-area">80,000 sq ft</span>
-      </div>
-    </a>
-  </div>
+  <!-- Filled from the API by renderHeroRail(). It used to hold three
+       hand-written cards — Bhiwandi, Chakan, Panvel — with invented rates and
+       areas, which read to a visitor as three real listings the site did not
+       have. The browse pages were already fixed not to invent listings; this
+       is the same rule applied to the homepage. If the API has nothing to
+       show, or cannot be reached, the rail hides itself rather than falling
+       back to fiction. -->
+  <div class="hero-rail" id="heroRail" hidden></div>
 </section>
 
 <!-- ─── TRUST STRIP ───────────────────────────────────────────────
@@ -1643,6 +1614,69 @@
 
   play();
 })();
+</script>
+
+<script>
+/* ── Featured rail ───────────────────────────────────────────────────────
+   Shows the three newest approved listings. Nothing here invents a
+   property: if the request fails or returns nothing, the rail stays hidden
+   and the hero simply ends after the search panel. An empty space is honest;
+   three plausible-looking warehouses that do not exist are not. */
+/* Deferred on purpose: api.js is loaded with `defer`, so window.API does not
+   exist while this inline script is being parsed. Deferred scripts all run
+   before DOMContentLoaded, so by this event API is guaranteed to be there —
+   without the wait the rail silently stayed empty. */
+document.addEventListener('DOMContentLoaded', function () {
+  var rail = document.getElementById('heroRail');
+  if (!rail || !window.API) return;
+
+  var EMOJI = {
+    'Warehouse': '🏭', 'Cold Storage': '❄️', 'Industrial Shed': '🏗️',
+    'Logistics Park': '🚛', 'Dark Store': '🛒', 'Industrial Land': '🏞️'
+  };
+
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  /* Indian digit grouping, the same convention the listing pages use. */
+  function area(n) {
+    var v = Number(n);
+    return isFinite(v) && v > 0 ? v.toLocaleString('en-IN') + ' sq ft' : '—';
+  }
+
+  API.properties.list({ limit: 3, sort: 'newest' })
+    .then(function (res) {
+      var items = (res && res.items) || [];   /* api.js flattens {data,meta} → {items,…} */
+      if (!items.length) return;
+
+      rail.innerHTML = items.map(function (p, i) {
+        var tag = p.grade || p.type || '';
+        var loc = [p.locality, p.city].filter(Boolean).join(', ');
+        var rate = Number(p.rate);
+        return '<a class="feat-card soft-card" href="property-detail.html?id=' + encodeURIComponent(p.id) + '">' +
+            '<div class="feat-photo feat-photo-' + ((i % 3) + 1) + '">' +
+              (tag ? '<span class="feat-tag">' + esc(tag) + '</span>' : '') +
+              (EMOJI[p.type] || '🏭') +
+            '</div>' +
+            '<div>' +
+              '<div class="feat-name">' + esc(p.name) + '</div>' +
+              '<div class="feat-loc">' + esc(loc || '—') + '</div>' +
+            '</div>' +
+            '<div class="feat-foot">' +
+              '<span class="feat-rate">' +
+                (isFinite(rate) && rate > 0 ? '₹' + rate + ' <span>/ sq ft</span>' : 'On request') +
+              '</span>' +
+              '<span class="feat-area">' + esc(area(p.area)) + '</span>' +
+            '</div>' +
+          '</a>';
+      }).join('');
+      rail.hidden = false;
+    })
+    .catch(function () { /* stays hidden — see the comment above */ });
+});
 </script>
 </body>
 </html>

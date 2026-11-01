@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/img/logo-original.png">
-<title>Bhiwandi Logistics Hub — 99Warehousing</title>
+<title>Property — 99Warehousing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -96,7 +96,7 @@
 /* MAP SECTION */
 .map-section { background: rgba(255,255,255,0.55); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; padding: 24px; margin-bottom: 32px; }
 .map-embed { width: 100%; height: 240px; background: linear-gradient(135deg, rgba(200,216,228,0.4), rgba(232,221,208,0.5)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px; color: rgba(139,111,78,0.3); position: relative; overflow: hidden; }
-.map-embed::after { content: '◉ Bhiwandi, Maharashtra'; position: absolute; bottom: 12px; left: 12px; font-family: var(--font-body); font-size: 11px; color: var(--deep-mahogany); background: rgba(250,247,242,0.9); backdrop-filter: blur(12px); padding: 4px 10px; border-radius: 6px; }
+.map-embed::after { content: attr(data-label); position: absolute; bottom: 12px; left: 12px; font-family: var(--font-body); font-size: 11px; color: var(--deep-mahogany); background: rgba(250,247,242,0.9); backdrop-filter: blur(12px); padding: 4px 10px; border-radius: 6px; }
 .distance-chips { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 .dist-chip { background: rgba(245,240,232,0.7); border: 1px solid rgba(200,168,130,0.2); border-radius: 8px; padding: 6px 12px; font-size: 11px; color: var(--text-mid); }
 .dist-chip b { color: var(--deep-mahogany); }
@@ -295,7 +295,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   <span>›</span>
   <a href="warehouses.html">Warehouses</a>
   <span>›</span>
-  <span style="color: var(--deep-mahogany);" id="pdCrumb">Bhiwandi Logistics Hub — Block C</span>
+  <span style="color: var(--deep-mahogany);" id="pdCrumb">Loading…</span>
 </div>
 
 <!-- GALLERY -->
@@ -324,9 +324,9 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 
     <!-- HEADER -->
     <div class="property-header">
-      <span class="property-tag" id="pdTag">Grade A Warehouse · Bhiwandi, MMR</span>
-      <h1 class="property-title" id="pdTitle">Bhiwandi Logistics Hub<br><em>Block C — 85,000 sq ft</em></h1>
-      <div class="property-location" id="pdLoc">📍 MIDC Bhiwandi Industrial Area, Thane, Maharashtra — 421302</div>
+      <span class="property-tag" id="pdTag"></span>
+      <h1 class="property-title" id="pdTitle">Loading listing…</h1>
+      <div class="property-location" id="pdLoc"></div>
       <div class="property-meta">
         <span class="property-pill">🏗️ Immediately Available</span>
         <span class="property-pill">📅 Listed 3 days ago</span>
@@ -400,7 +400,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     <!-- LOCATION -->
     <div class="map-section" id="pdLocationSection" hidden>
       <h3 class="section-title" style="margin-bottom: 16px;">Location &amp; Connectivity</h3>
-      <div class="map-embed" id="pdMapEmbed">🗺️</div>
+      <div class="map-embed" id="pdMapEmbed" data-label="">🗺️</div>
       <div class="distance-chips" id="pdDistances"></div>
     </div>
 
@@ -664,6 +664,12 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     renderGallery(p);
     setText('pdTag', p.grade + ' ' + p.type + ' · ' + p.location);
     setText('pdLoc', '📍 ' + p.location);
+    /* The caption under the map used to be a CSS constant reading
+       "◉ Bhiwandi, Maharashtra", so every listing in the country was
+       captioned with one town in Maharashtra. It now comes from the
+       listing. */
+    var mapEl = document.getElementById('pdMapEmbed');
+    if (mapEl) mapEl.setAttribute('data-label', p.location ? '◉ ' + p.location : '');
     setText('pdRate', '₹' + p.rate);
     setText('pdViews', '👁️ ' + (p.views || 0).toLocaleString('en-IN') + ' views');
 
@@ -785,20 +791,45 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  /* One place to say "there is no listing here", used by both the missing-id
+     and the failed-fetch paths. */
+  function showNoListing(crumbText, headline, body) {
+    var crumb = document.getElementById('pdCrumb');
+    if (crumb) crumb.textContent = crumbText;
+    var t = document.getElementById('pdTitle');
+    if (t) t.textContent = headline;
+    var d = document.getElementById('pdDesc');
+    if (d) d.textContent = body;
+    document.title = headline + ' — 99Warehousing';
+  }
+
   function loadProperty() {
     var id = new URLSearchParams(location.search).get('id');
-    if (!id) { calcWidget(); return; }
+
+    /* Without an id this page used to sit there showing its own markup —
+       a complete invented listing, Bhiwandi Logistics Hub at ₹28 for
+       85,000 sq ft, indistinguishable from a real one. Anybody who reached
+       the page without an id, from a stale link or by typing the filename,
+       was looking at a property that does not exist. */
+    if (!id) {
+      showNoListing(
+        'No listing selected',
+        'No listing selected',
+        'Open a property from the warehouses or land and parks pages to see its details.'
+      );
+      calcWidget();
+      return;
+    }
 
     API.properties.get(id)
       .then(function (res) { renderProperty(res.item); })
       .catch(function (err) {
         console.warn('[99Warehousing] Could not load property ' + id + ': ' + err.message);
-        var crumb = document.getElementById('pdCrumb');
-        if (crumb) crumb.textContent = 'Property unavailable';
-        var t = document.getElementById('pdTitle');
-        if (t) t.textContent = 'This property is no longer available';
-        var d = document.getElementById('pdDesc');
-        if (d) d.textContent = 'It may have been removed or is awaiting review. Browse all current listings instead.';
+        showNoListing(
+          'Property unavailable',
+          'This property is no longer available',
+          'It may have been removed or is awaiting review. Browse all current listings instead.'
+        );
       });
   }
 

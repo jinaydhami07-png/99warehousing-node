@@ -1013,6 +1013,11 @@
         applyFilters();
       })
       .catch(function (err) {
+        /* The header pills are refreshed only by buildFacets(), which does not
+           run when the load fails. Without this they keep saying the listings
+           are loading, directly above a message explaining that they failed. */
+        setText('pillListings', '🏭 Listings unavailable');
+        setText('pillCities', '📍 —');
         grid.innerHTML =
           '<div style="grid-column:1/-1;padding:48px 24px;text-align:center;color:var(--text-mid);">' +
           '<div style="font-size:30px;opacity:.5;margin-bottom:10px;">⚠️</div>' +
