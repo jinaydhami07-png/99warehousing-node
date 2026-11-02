@@ -33,8 +33,23 @@ const adminLogin = catchAsync(async (req, res) => {
  * display. Swap this for the real consent-screen redirect once
  * GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are configured.
  */
+/**
+ * Every OAuth exit lands on the login page — but *which* login page.
+ *
+ * A relative redirect means this server's own host, and since the API moved
+ * off the web host that is no longer where the site is. A visitor who
+ * started on the real domain would be handed back to the API's host and
+ * silently finish signing in on a different site.
+ *
+ * env.siteUrl comes from the configured CORS origins, never from the
+ * request, so there is nothing here an attacker can point somewhere else.
+ * It is empty in development, where the API serves the pages itself and a
+ * relative path is already right.
+ */
+const loginPage = (suffix) => `${env.siteUrl}/login.html${suffix}`;
+
 const googleStart = (req, res) => {
-  if (!env.google.enabled) return res.redirect('/login.html?error=google_not_configured');
+  if (!env.google.enabled) return res.redirect(loginPage('?error=google_not_configured'));
   res.redirect(authService.googleAuthUrl(res, req));
 };
 
@@ -48,12 +63,12 @@ const googleStart = (req, res) => {
  * immediately (see captureOAuthToken).
  */
 const googleCallback = catchAsync(async (req, res) => {
-  if (!env.google.enabled) return res.redirect('/login.html?error=google_not_configured');
+  if (!env.google.enabled) return res.redirect(loginPage('?error=google_not_configured'));
 
   /* The user pressed Cancel, or Google refused. Not an error worth a stack
      trace — send them back to sign in normally. */
   if (req.query.error || !req.query.code) {
-    return res.redirect('/login.html?error=google_cancelled');
+    return res.redirect(loginPage('?error=google_cancelled'));
   }
 
   try {
@@ -61,10 +76,10 @@ const googleCallback = catchAsync(async (req, res) => {
       code: req.query.code,
       state: req.query.state,
     });
-    return res.redirect('/login.html#token=' + encodeURIComponent(accessToken));
+    return res.redirect(loginPage('#token=' + encodeURIComponent(accessToken)));
   } catch (err) {
     logger.warn({ err: err.message }, 'Google sign-in failed');
-    return res.redirect('/login.html?error=google_failed');
+    return res.redirect(loginPage('?error=google_failed'));
   }
 });
 

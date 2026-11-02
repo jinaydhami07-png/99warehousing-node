@@ -311,6 +311,18 @@ const env = Object.freeze({
 
   corsOrigins: csv(raw.CORS_ORIGINS),
 
+  /* Where the *pages* live, which since the API moved off the web host is
+     no longer where the API lives. Only full-page redirects need it — an
+     OAuth callback cannot send the browser back with a relative path any
+     more, because relative means the API's own host and the visitor would
+     silently end up signed in on the wrong domain.
+
+     Taken from the first CORS origin rather than a new setting of its own:
+     a second place to record the site address is a second place for it to
+     go stale, and the two can never legitimately disagree. Empty in
+     development, where the API serves the pages and relative is correct. */
+  siteUrl: csv(raw.CORS_ORIGINS).find((o) => !/^https?:\/\/localhost/i.test(o)) || '',
+
   jwt: {
     accessSecret: raw.JWT_ACCESS_SECRET,
     refreshSecret: raw.JWT_REFRESH_SECRET,
