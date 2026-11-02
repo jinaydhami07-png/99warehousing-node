@@ -24,6 +24,8 @@
 
 const mongoose = require('mongoose');
 
+const { toDescriptor: toDescriptorRow } = require('../services/image.view');
+
 /* Raster formats a browser can display. SVG is deliberately excluded: it is
    an executable document (it can carry <script>), and serving user-supplied
    SVG from our own origin would be a stored-XSS hole. */
@@ -150,17 +152,12 @@ imageSchema.index({ property: 1 });
  * three files is how the two halves of a record drift apart.
  */
 imageSchema.methods.toDescriptor = function toDescriptor() {
-  return {
-    url: this.url || `/api/v1/images/${this._id}`,
-    publicId: String(this._id),
-    variants: (this.variants || []).map((v) => ({ w: v.w, h: v.h, url: v.url })),
-    blur: this.blur || undefined,
-    width: this.width,
-    height: this.height,
-    contentType: this.contentType,
-    size: this.size,
-    originalName: this.originalName,
-  };
+  /* Delegates rather than repeating the literal. The descriptor now depends
+     on whether the bucket is world-readable, and a second copy of that rule
+     living here is precisely the drift the note above warns about — the
+     migration would have gone on writing bucket URLs into listings while
+     the uploader wrote API ones. */
+  return toDescriptorRow({ ...this.toObject(), id: this._id });
 };
 
 /**

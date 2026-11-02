@@ -328,6 +328,30 @@ async function saveMany(files, user, kind = 'photo') {
 }
 
 /**
+ * The rendition to serve for a requested width.
+ *
+ * The smallest one that still covers what was asked for, so a card asking
+ * for 320 gets the 320px file rather than a 1920px file the browser then
+ * scales down. With nothing asked for it is the largest, because a bare
+ * /images/:id has always meant "the full-size one" and links to it predate
+ * every rendition.
+ *
+ * Returns the variant itself rather than just a width: the S3 path needs its
+ * key, and looking the variant up twice is how the two paths drift apart.
+ */
+function pickVariant(variants, requestedWidth) {
+  const sorted = (variants || []).filter((v) => v && v.w).sort((a, b) => a.w - b.w);
+  if (!sorted.length) return null;
+
+  const want = Number(requestedWidth);
+  if (Number.isFinite(want) && want > 0) {
+    const covering = sorted.find((v) => v.w >= want);
+    if (covering) return covering;
+  }
+  return sorted[sorted.length - 1];
+}
+
+/**
  * Resolves an image id (and an optional requested width) to something the
  * route can send: either a redirect to the CDN, or bytes.
  *
@@ -345,24 +369,42 @@ async function resolve(id, requestedWidth) {
   const image = await db.images.getById(id);
   if (!image) throw ApiError.notFound('Image not found');
 
-  if (isStored(image, 's3')) return { redirect: image.url };
+  if (isStored(image, 's3')) {
+    /* A world-readable bucket (or a CDN in front of one) can answer the
+       browser directly, which is one less hop and no bytes through here.
+       301, because the mapping from id to object never changes. */
+    if (env.media.s3.publicRead) return { redirect: image.url };
+
+    /* Otherwise the bucket is private and this process is the only thing
+       holding credentials for it, so it fetches the object and sends it on.
+       Same rendition-picking rule as the database path below, so `?w=`
+       means the same thing whichever store the bytes are in. */
+    const chosen = pickVariant(image.variants, requestedWidth);
+    const key = (chosen && chosen.key) || image.key;
+    if (!key) throw ApiError.notFound('Image not found');
+
+    const object = await storage.get(key);
+    return {
+      body: object.body,
+      contentType: object.contentType || chosen?.contentType || image.contentType,
+      size: object.size,
+      /* Keyed on the object, not the row: two renditions of one image are
+         different bytes under different keys, and an ETag that ignored that
+         would let the browser answer a request for the 320px file out of its
+         cached 1920px one. */
+      etag: `"img-${image.id}-${chosen ? chosen.w : 'full'}"`,
+    };
+  }
 
   /* Past this point the bytes are in MongoDB, which only exists on that
      driver. On DynamoDB the startup guard already refused to run without
      MEDIA_DRIVER=s3, so reaching here means a row that predates the move. */
   requireMongoMedia('This image predates the move to object storage');
 
-  const widths = (image.variants || []).map((v) => v.w).filter(Boolean).sort((a, b) => a - b);
+  const picked = pickVariant(image.variants, requestedWidth);
 
-  if (widths.length) {
-    /* Smallest rendition that still covers what was asked for; the largest
-       when nothing was asked for, so a bare /images/:id keeps meaning
-       "the full-size one" as it always did. */
-    const want = Number(requestedWidth);
-    const chosen =
-      (Number.isFinite(want) && want > 0 ? widths.find((w) => w >= want) : null) ||
-      widths[widths.length - 1];
-
+  if (picked) {
+    const chosen = picked.w;
     const slice = await Image.findById(id).select({ renditions: { $elemMatch: { w: chosen } } });
     const rendition = slice && slice.renditions && slice.renditions[0];
 

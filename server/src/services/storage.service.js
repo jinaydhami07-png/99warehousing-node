@@ -125,6 +125,43 @@ async function put({ key, body, contentType, cacheControl }) {
 }
 
 /**
+ * Reads one object back.
+ *
+ * This is what lets the bucket stay private. The browser asks this API for a
+ * photo, the API fetches the bytes from S3 over the account's credentials and
+ * sends them on, so no part of the bucket has to be world-readable.
+ *
+ * The SDK hands back a stream; it is collected here rather than piped to the
+ * response because the route sets Content-Length and answers conditional
+ * requests from an ETag, and both need the size up front. These are images
+ * of a few hundred KB at most — the resize pipeline already caps them — so
+ * buffering one is cheaper than the bookkeeping streaming would need.
+ */
+async function get(key) {
+  const loaded = load();
+  if (!loaded) throw ApiError.internal('Object storage is not configured');
+
+  const out = await loaded.client.send(
+    new loaded.sdk.GetObjectCommand({ Bucket: cfg.bucket, Key: key })
+  );
+
+  const chunks = [];
+  for await (const chunk of out.Body) chunks.push(chunk);
+  const body = Buffer.concat(chunks);
+
+  return {
+    body,
+    /* ContentLength is what S3 recorded; body.length is what actually
+       arrived. They agree unless the transfer was cut short, and trusting
+       the header there would send a truncated image with a length that
+       says otherwise. */
+    size: body.length,
+    contentType: out.ContentType,
+    etag: out.ETag,
+  };
+}
+
+/**
  * Deletes objects, best-effort.
  *
  * A failed delete must never fail the user's action — the listing is already
@@ -210,6 +247,7 @@ module.exports = {
   publicUrl,
   newFolder,
   put,
+  get,
   remove,
   check,
   extFor,

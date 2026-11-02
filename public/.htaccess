@@ -59,11 +59,16 @@ DirectoryIndex index.html
   # onclick/onchange handlers; in CSP3 'unsafe-inline' in script-src alone
   # does not cover attribute handlers, and omitting it kills every button.
   #
-  # connect-src is 'self' again now that the API is same-origin. Listing
-  # photos come from the S3 bucket, which is why that host is in img-src:
-  # DynamoDB caps an item at 400KB, so image bytes cannot live beside the
-  # listing data the way they did in MongoDB.
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://99warehousing-media-apse2.s3.ap-southeast-2.amazonaws.com; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+  # connect-src is 'self' again now that the API is same-origin, and so is
+  # img-src: the S3 bucket is private, so listing photos are served by the
+  # API, which reads the objects with the account's own credentials. Nothing
+  # the browser loads comes from the bucket's own hostname, so naming it here
+  # would only widen the policy for no reason.
+  #
+  # Put the bucket host (or a CDN's) back in img-src only alongside
+  # AWS_S3_PUBLIC_READ=true, because that is the setting that makes the saved
+  # photo URLs point at the bucket instead of at this API.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
 
   # ── Caching ────────────────────────────────────────────────────────────
   # Hashed and versioned assets may be cached hard; the HTML that references

@@ -151,6 +151,21 @@ const schema = z.object({
      whose objects are served directly without a CDN. */
   AWS_S3_ACL: optional(z.enum(['public-read', 'private'])),
 
+  /* Whether anyone on the internet can GET an object straight out of the
+     bucket.
+
+     Off by default, and deliberately so: a bucket is private when it is
+     created, and making it public means turning off two of the four
+     account-level public-access blocks. Left off, photo URLs point at this
+     API instead and the bytes are fetched from S3 server-side, so the
+     bucket needs no public policy at all.
+
+     Turn it on only when the objects really are world-readable — a public
+     bucket policy, or a CDN in front with AWS_S3_PUBLIC_BASE_URL — because
+     the URLs saved on a listing are then bucket URLs, and a listing whose
+     photos 403 is indistinguishable from a listing with no photos. */
+  AWS_S3_PUBLIC_READ: z.enum(['true', 'false']).default('false'),
+
   /* Points the S3 client somewhere other than AWS. Left unset for real S3.
      Set it for an S3-compatible store — MinIO, Cloudflare R2, DigitalOcean
      Spaces — or for LocalStack in a test environment. Path-style addressing
@@ -380,6 +395,12 @@ const env = Object.freeze({
       prefix: raw.AWS_S3_PREFIX.replace(/^\/+|\/+$/g, ''),
       acl: raw.AWS_S3_ACL,
       endpoint: raw.AWS_S3_ENDPOINT,
+      /* A CDN base URL implies the objects are reachable without a signature,
+         so it counts as public read on its own — otherwise setting only the
+         CDN would still route every byte through this process and the CDN
+         would never be asked for anything. */
+      publicRead:
+        raw.AWS_S3_PUBLIC_READ === 'true' || Boolean(raw.AWS_S3_PUBLIC_BASE_URL),
       /* Undefined when unset, which is what makes the SDK fall through to
          the instance role / shared credentials file. */
       credentials:
