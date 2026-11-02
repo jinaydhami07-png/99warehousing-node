@@ -1,19 +1,21 @@
 # ─────────────────────────────────────────────────────────────────────────
 # 99Warehousing — public_html
 #
-# Apache serves the static site itself and forwards only /api/* to the Node
-# process on a local port. This plan's cPanel has no "Setup Node.js App"
-# and Passenger's directives return 500, but mod_proxy works, which is what
-# makes Node viable here at all.
+# Apache serves the static site. It does NOT serve the API.
 #
-# Apache serves the pages rather than proxying everything to Node on
-# purpose. Nothing supervises the Node process on shared hosting, so if it
-# dies the site must not die with it: the pages keep loading and fall back
-# to their bundled sample data until the watchdog restarts it. Proxying
-# every request would turn one dead process into a dead website.
+# The API cannot run on this host: GoDaddy's shared hosting enforces an
+# outbound port allowlist (80, 443 and 2096 are open; 27017 is not), so a
+# Node process here can never reach MongoDB Atlas. Measured against a
+# third-party port responder, with port 80 as a passing control — the
+# symptom is identical to a wrong IP in the Atlas access list, so test the
+# port before blaming Atlas.
 #
-# Rollback is removing the "API → Node" block. Apache then serves the site
-# exactly as it did before Node existed.
+# The API therefore runs on Vercel, which can reach Atlas, and the pages
+# call it across origins. The host the pages call is PROD_API_HOST in
+# assets/api.js — the single place that knows where the API lives.
+#
+# An earlier version of this file proxied /api/* to Node on 127.0.0.1:5050.
+# That block is gone: it could only ever answer 503 here.
 # ─────────────────────────────────────────────────────────────────────────
 
 Options -Indexes
@@ -29,20 +31,30 @@ DirectoryIndex index.html
   RewriteCond %{HTTPS} !=on
   RewriteCond %{HTTP:X-Forwarded-Proto} !=https
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
-
-  # ── API → Node ─────────────────────────────────────────────────────────
-  # [P] hands the request to mod_proxy. The port here must match PORT in
-  # server/env; if they disagree every API call returns 502 while the rest
-  # of the site looks perfectly healthy.
-  RewriteRule ^api/(.*)$ http://127.0.0.1:5050/api/$1 [P,QSA,L]
 </IfModule>
 
 <IfModule mod_headers.c>
-  # mod_proxy forwards X-Forwarded-For and X-Forwarded-Host on its own but
-  # not the protocol, so without this Express sees a plain http request and
-  # req.protocol reports the wrong scheme behind TLS.
-  RequestHeader set X-Forwarded-Proto "https" env=HTTPS
+  # ── Security ───────────────────────────────────────────────────────────
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
 
+  # No includeSubDomains: cpanel, webdisk and mail are siblings of this
+  # domain and are not ours to force onto HTTPS.
+  Header always set Strict-Transport-Security "max-age=31536000"
+
+  # script-src-attr is listed separately because the pages use inline
+  # onclick/onchange handlers; in CSP3 'unsafe-inline' in script-src alone
+  # does not cover attribute handlers, and omitting it kills every button.
+  #
+  # The API origin appears in connect-src and img-src because the API is
+  # off-domain (see the header of this file) and listing images are served
+  # from it. Both the current Vercel host and the api subdomain are listed
+  # so that moving to the subdomain is a one-line change in api.js.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://99warehousing.vercel.app https://api.99warehousing.com; connect-src 'self' https://99warehousing.vercel.app https://api.99warehousing.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+
+  # ── Caching ────────────────────────────────────────────────────────────
   # Hashed and versioned assets may be cached hard; the HTML that references
   # them must not be, or a deploy ships new assets to pages still asking for
   # the old ones.

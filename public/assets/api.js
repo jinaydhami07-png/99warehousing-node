@@ -17,8 +17,25 @@
      normal case, http://localhost:5000 — a relative base is correct and no
      CORS is involved. Override with window.BPSF_API_BASE to point at an API
      on another host. */
-  var API_BASE = global.BPSF_API_BASE ||
-    (location.protocol === 'file:' ? 'http://localhost:5000/api/v1' : '/api/v1');
+
+  /* In production the pages and the API are not on the same host. The web
+     host blocks outbound connections on MongoDB's port, so the API cannot
+     run there at all — it runs on Vercel and the pages call it across
+     origins. This constant is the only place that knows where it lives.
+
+     It must stay a *.99warehousing.com name once DNS allows, because the
+     refresh token is an httpOnly sameSite=strict cookie: a browser sends
+     that cookie to a sibling subdomain but not to an unrelated domain, so
+     an off-domain API silently loses every session after the access token
+     expires. */
+  var PROD_API_HOST = 'https://99warehousing.vercel.app';
+
+  var isProdSite = /(^|\.)99warehousing\.com$/.test(location.hostname);
+
+  var API_BASE = global.BPSF_API_BASE || (
+    isProdSite ? PROD_API_HOST + '/api/v1' :
+    location.protocol === 'file:' ? 'http://localhost:5000/api/v1' : '/api/v1'
+  );
 
   /* Where the API lives when the pages are being served by something else.
      Opening the site through Live Server, http-server or a bundler is common,
