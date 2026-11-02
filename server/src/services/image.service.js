@@ -21,8 +21,21 @@
  */
 'use strict';
 
-const Image = require('../models/image.model');
-const Property = require('../models/property.model');
+const Image = require('../models/image.model');   // bytes only, MongoDB media driver
+const db = require('../db');
+const { toDescriptor, isStored, allKeys } = require('./image.view');
+
+/**
+ * Storing or reading image bytes from the database is a MongoDB-only
+ * ability — DynamoDB caps an item at 400KB. env.js refuses to start a
+ * DynamoDB deployment without MEDIA_DRIVER=s3, so this is the second lock
+ * on the same door: it turns a confusing failure deep inside the driver
+ * into a sentence that says what is wrong.
+ */
+function requireMongoMedia(context) {
+  if (db.driver === 'mongo') return;
+  throw new ApiError(503, `${context || 'Image storage is not available'} — this deployment stores images in object storage, not the database.`);
+}
 const storage = require('./storage.service');
 const env = require('../config/env');
 const ApiError = require('../utils/ApiError');
@@ -212,7 +225,7 @@ async function storeOne(file, user, kind) {
 
     const full = uploaded[uploaded.length - 1];
 
-    const doc = await Image.create({
+    const doc = await db.images.create({
       storage: 's3',
       key: full.key,
       bucket: env.media.s3.bucket,
@@ -225,10 +238,10 @@ async function storeOne(file, user, kind) {
       height: full.h,
       originalName: storage.basename(file.originalname),
       kind,
-      uploadedBy: user._id,
+      uploadedBy: String(user.id || user._id),
     });
 
-    return doc.toDescriptor();
+    return toDescriptor(doc);
   }
 
   /* ── MongoDB storage ──
@@ -241,6 +254,7 @@ async function storeOne(file, user, kind) {
      A whole set is a few hundred KB against a single original of several
      MB, so this is smaller in the database than what it replaces. */
   if (rendered) {
+    requireMongoMedia();
     const doc = new Image({
       storage: 'mongo',
       renditions: rendered.renditions.map((r) => ({
@@ -257,7 +271,7 @@ async function storeOne(file, user, kind) {
       height: rendered.renditions[rendered.renditions.length - 1].h,
       originalName: storage.basename(file.originalname),
       kind,
-      uploadedBy: user._id,
+      uploadedBy: String(user.id || user._id),
     });
 
     /* The URLs can only be built once the document has an id, and every
@@ -270,12 +284,13 @@ async function storeOne(file, user, kind) {
     }));
 
     await doc.save();
-    return doc.toDescriptor();
+    return toDescriptor({ ...doc.toObject(), id: doc._id });
   }
 
   /* ── Last resort: no sharp on this host ──
      Store the file as it arrived. Bigger and slower, but a working upload
      beats a failed one, and the startup log already said resizing is off. */
+  requireMongoMedia();
   const doc = await Image.create({
     storage: 'mongo',
     data: file.buffer,
@@ -283,10 +298,10 @@ async function storeOne(file, user, kind) {
     size: file.buffer.length,
     originalName: storage.basename(file.originalname),
     kind,
-    uploadedBy: user._id,
+    uploadedBy: String(user.id || user._id),
   });
 
-  return doc.toDescriptor();
+  return toDescriptor({ ...doc.toObject(), id: doc._id });
 }
 
 /**
@@ -327,10 +342,15 @@ async function saveMany(files, user, kind = 'photo') {
 async function resolve(id, requestedWidth) {
   /* Metadata only. `renditions` and `data` are both select:false, so this
      query carries no pixels — just the widths, which is what picking needs. */
-  const image = await Image.findById(id);
+  const image = await db.images.getById(id);
   if (!image) throw ApiError.notFound('Image not found');
 
-  if (image.isStored('s3')) return { redirect: image.url };
+  if (isStored(image, 's3')) return { redirect: image.url };
+
+  /* Past this point the bytes are in MongoDB, which only exists on that
+     driver. On DynamoDB the startup guard already refused to run without
+     MEDIA_DRIVER=s3, so reaching here means a row that predates the move. */
+  requireMongoMedia('This image predates the move to object storage');
 
   const widths = (image.variants || []).map((v) => v.w).filter(Boolean).sort((a, b) => a - b);
 
@@ -354,7 +374,7 @@ async function resolve(id, requestedWidth) {
         /* The width is part of the identity: without it every size of one
            image would share an ETag and the browser would answer a request
            for the 320px file from its cached 1920px one. */
-        etag: `"img-${image._id}-${chosen}"`,
+        etag: `"img-${image.id}-${chosen}"`,
       };
     }
   }
@@ -385,7 +405,10 @@ async function attachToProperty(images, propertyId, extra = []) {
   if (!ids.length) return;
 
   try {
-    await Image.updateMany({ _id: { $in: ids } }, { $set: { property: propertyId } });
+    /* One update per image rather than an updateMany: DynamoDB has no
+       multi-row update, and a handful of photos per listing makes the
+       difference immaterial. */
+    await Promise.all(ids.map((imageId) => db.images.update(imageId, { property: String(propertyId) })));
   } catch (err) {
     logger.warn({ err: err.message, propertyId }, 'Could not tag images with their property');
   }
@@ -396,10 +419,10 @@ async function attachToProperty(images, propertyId, extra = []) {
  * here rather than in the controller so the rule holds for every caller.
  */
 async function remove(id, user) {
-  const image = await Image.findById(id);
+  const image = await db.images.getById(id);
   if (!image) throw ApiError.notFound('Image not found');
 
-  const isOwner = String(image.uploadedBy) === String(user._id);
+  const isOwner = String(image.uploadedBy) === String(user.id || user._id);
   if (!isOwner && user.role !== 'admin') {
     throw ApiError.forbidden('You can only delete your own uploads');
   }
@@ -407,22 +430,36 @@ async function remove(id, user) {
   /* Detach from any listing still referencing it, so the property is not
      left pointing at a URL that now 404s. Both the gallery and the floor
      plan can hold it, and clearing only one would leave a dead image on the
-     page it was not removed from. */
+     page it was not removed from.
+
+     Read-filter-write rather than $pull: DynamoDB has no operator that
+     removes a matching element from a list. The window between the read and
+     the write is a photo someone else attached in the same instant, which
+     is a far smaller problem than a listing showing a dead image. */
   if (image.property) {
-    await Property.updateOne(
-      { _id: image.property },
-      { $pull: { images: { publicId: String(image._id) } } }
-    ).catch(() => {});
-    await Property.updateOne(
-      { _id: image.property, 'floorPlan.publicId': String(image._id) },
-      { $unset: { floorPlan: 1 } }
-    ).catch(() => {});
+    try {
+      const property = await db.properties.getById(image.property);
+      if (property) {
+        const publicId = String(image.id);
+        const images = (property.images || []).filter((i) => String(i?.publicId) !== publicId);
+        const dropFloorPlan = String(property.floorPlan?.publicId) === publicId;
+        if (images.length !== (property.images || []).length || dropFloorPlan) {
+          await db.properties.update(
+            property.id,
+            { images },
+            { remove: dropFloorPlan ? ['floorPlan'] : [] },
+          );
+        }
+      }
+    } catch (err) {
+      logger.warn({ err: err.message, id }, 'Could not detach image from its listing');
+    }
   }
 
   /* Database first. An orphaned S3 object is a rounding error on the bill;
      a listing pointing at a deleted object is a broken page. */
-  await image.deleteOne();
-  await storage.remove(image.allKeys());
+  await db.images.remove(id);
+  await storage.remove(allKeys(image));
 
   return { id: String(id) };
 }
@@ -432,11 +469,11 @@ async function remove(id, user) {
  * itself is deleted, so its photos do not sit in the bucket forever.
  */
 async function removeForProperty(propertyId) {
-  const images = await Image.find({ property: propertyId });
+  const images = await db.images.listForProperty(propertyId);
   if (!images.length) return { removed: 0 };
 
-  const keys = images.flatMap((img) => img.allKeys());
-  await Image.deleteMany({ _id: { $in: images.map((i) => i._id) } });
+  const keys = images.flatMap((img) => allKeys(img));
+  await db.images.removeMany(images.map((i) => i.id));
   await storage.remove(keys);
 
   logger.info({ propertyId, removed: images.length }, 'Removed images for deleted property');

@@ -2,16 +2,20 @@
   "name": "99warehousing",
   "version": "1.0.0",
   "private": true,
-  "description": "99warehousing.com — Express + MongoDB API and static site",
+  "description": "99warehousing.com \u2014 Express + MongoDB API and static site",
   "main": "app.js",
   "engines": {
     "node": ">=18.18"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dynamo:tables": "node server/src/jobs/dynamo-create-tables.js",
+    "dynamo:verify": "node server/src/jobs/dynamo-create-tables.js --verify"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1152.0",
     "@aws-sdk/client-s3": "^3.1112.0",
+    "@aws-sdk/lib-dynamodb": "^3.1152.0",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",

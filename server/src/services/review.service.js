@@ -3,22 +3,34 @@
  */
 'use strict';
 
-const mongoose = require('mongoose');
-const Review = require('../models/review.model');
-const Property = require('../models/property.model');
-const AuditLog = require('../models/auditlog.model');
+const db = require('../db');
+const auditService = require('./audit.service');
 const ApiError = require('../utils/ApiError');
+
+/**
+ * Shapes a stored review for the wire.
+ *
+ * `author` is dropped. It has no use in the browser and would tie a public
+ * opinion to a real account record — the model's toJSON transform removed it
+ * for exactly that reason, and that transform stops running once these rows
+ * come from the repository layer instead of Mongoose.
+ */
+function toWire(review) {
+  if (!review) return review;
+  const { author, ...rest } = review;
+  return rest;
+}
 
 /**
  * Creates a review, or replaces the author's existing one.
  *
- * Upsert rather than insert because the unique (property, author) index
- * would otherwise reject a second attempt with a duplicate-key error — which
- * reads to the visitor as "something went wrong" when what they meant was
- * "I want to change what I said".
+ * Upsert rather than insert because one review per person per property is a
+ * uniqueness rule in the store; a second insert would otherwise be rejected
+ * with a duplicate-key error — which reads to the visitor as "something went
+ * wrong" when what they meant was "I want to change what I said".
  */
 async function create(propertyId, payload, author) {
-  const property = await Property.findById(propertyId).select('_id status owner');
+  const property = await db.properties.getById(propertyId);
   if (!property) throw ApiError.notFound('Property not found');
 
   /* Only listings the public can actually see may be reviewed. Without this
@@ -28,16 +40,18 @@ async function create(propertyId, payload, author) {
     throw ApiError.badRequest('This listing is not open for reviews yet');
   }
 
+  const authorId = author.id || author._id;
+
   /* An owner rating their own listing is not a review, it is advertising. */
-  if (String(property.owner) === String(author._id)) {
+  if (String(property.owner) === String(authorId)) {
     throw ApiError.forbidden('You cannot review your own listing');
   }
 
-  const existing = await Review.findOne({ property: property._id, author: author._id });
+  const existing = await db.reviews.get(property.id, authorId);
 
-  const doc = {
-    property: property._id,
-    author: author._id,
+  const review = await db.reviews.upsert({
+    property: property.id,
+    author: authorId,
     authorName: author.name || 'Verified user',
     authorRole: payload.authorRole,
     rating: payload.rating,
@@ -46,13 +60,9 @@ async function create(propertyId, payload, author) {
        be swapped for anything after the fact. */
     status: 'pending',
     rejectionReason: undefined,
-  };
+  });
 
-  const review = existing
-    ? await Review.findOneAndUpdate({ _id: existing._id }, doc, { new: true, runValidators: true })
-    : await Review.create(doc);
-
-  return { review, replaced: !!existing };
+  return { review: toWire(review), replaced: !!existing };
 }
 
 /**
@@ -62,84 +72,84 @@ async function create(propertyId, payload, author) {
  * the star summary can never disagree with the reviews under it.
  */
 async function listForProperty(propertyId, { page = 1, limit = 10 } = {}) {
-  const filter = { property: propertyId, status: 'published' };
   const skip = (page - 1) * limit;
 
-  const [items, total, agg] = await Promise.all([
-    Review.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
-    Review.countDocuments(filter),
-    Review.aggregate([
-      /* $match in an aggregation does no schema casting, so the id has to be
-         a real ObjectId here — a string would silently match nothing and the
-         average would read as null against a list of visible reviews. */
-      { $match: { property: new mongoose.Types.ObjectId(String(propertyId)), status: 'published' } },
-      { $group: { _id: null, average: { $avg: '$rating' }, count: { $sum: 1 } } },
-    ]),
+  const [{ items, total }, summary] = await Promise.all([
+    db.reviews.pageForProperty(propertyId, { status: 'published', skip, limit }),
+    db.reviews.ratingFor(propertyId),
   ]);
 
-  const summary = agg[0] || { average: 0, count: 0 };
-
   return {
-    items,
+    items: items.map(toWire),
     total,
     page,
     limit,
     pages: Math.max(1, Math.ceil(total / limit)),
-    average: summary.count ? Math.round(summary.average * 10) / 10 : null,
+    average: summary.count ? summary.average : null,
     count: summary.count,
   };
 }
 
 /** The signed-in user's own review of a property, whatever its status. */
 async function mineFor(propertyId, author) {
-  return Review.findOne({ property: propertyId, author: author._id });
+  return toWire(await db.reviews.get(propertyId, author.id || author._id));
 }
 
-/** Everything awaiting a decision, for the admin queue. */
+/**
+ * Everything awaiting a decision, for the admin queue.
+ *
+ * The listing's name and city used to arrive by populate(). They are fetched
+ * explicitly now — in parallel, and only for the page being shown, so the
+ * queue costs one round trip rather than one per review.
+ */
 async function listPending({ page = 1, limit = 50 } = {}) {
-  const filter = { status: 'pending' };
-  const [items, total] = await Promise.all([
-    Review.find(filter)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .populate('property', 'name city'),
-    Review.countDocuments(filter),
-  ]);
-  return { items, total, page, limit, pages: Math.max(1, Math.ceil(total / limit)) };
+  const skip = (page - 1) * limit;
+  const { items, total } = await db.reviews.pageByStatus('pending', { skip, limit });
+
+  const properties = await Promise.all(
+    items.map((r) => db.properties.getById(r.property).catch(() => null)),
+  );
+
+  const withProperty = items.map((review, i) => ({
+    ...toWire(review),
+    property: properties[i]
+      ? { id: properties[i].id, name: properties[i].name, city: properties[i].city }
+      : null,
+  }));
+
+  return { items: withProperty, total, page, limit, pages: Math.max(1, Math.ceil(total / limit)) };
 }
 
 async function moderate(id, { status, rejectionReason }, actor) {
-  const review = await Review.findById(id);
-  if (!review) throw ApiError.notFound('Review not found');
+  const existing = await db.reviews.getById(id);
+  if (!existing) throw ApiError.notFound('Review not found');
 
-  review.status = status;
-  review.rejectionReason = status === 'rejected' ? rejectionReason : undefined;
-  await review.save();
+  const review = await db.reviews.moderate(id, status, rejectionReason);
 
-  /* AuditLog.record swallows its own failures by design — a logging problem
+  /* audit.record swallows its own failures by design — a logging problem
      must not roll back a moderation decision. */
-  await AuditLog.record({
+  await auditService.record({
     actor,
     action: `review.${status}`,
     entity: 'review',
-    entityId: review._id,
+    entityId: review.id,
     after: { rating: review.rating, property: String(review.property) },
   });
 
-  return review;
+  return toWire(review);
 }
 
 async function remove(id, actor) {
-  const review = await Review.findById(id);
+  const review = await db.reviews.getById(id);
   if (!review) throw ApiError.notFound('Review not found');
 
-  const isOwnReview = String(review.author) === String(actor._id);
+  const actorId = actor.id || actor._id;
+  const isOwnReview = String(review.author) === String(actorId);
   if (actor.role !== 'admin' && !isOwnReview) {
     throw ApiError.forbidden('You can only delete your own review');
   }
 
-  await review.deleteOne();
+  await db.reviews.removeById(id);
   return { id };
 }
 

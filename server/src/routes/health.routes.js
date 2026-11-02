@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const database = require('../config/database');
+const db = require('../db');
 const storage = require('../services/storage.service');
 const { success } = require('../utils/ApiResponse');
 
@@ -15,16 +15,21 @@ const router = express.Router();
  * errors to users.
  */
 router.get('/', async (req, res) => {
-  const db = await database.health();
-  const status = db.ready ? 200 : 503;
+  /* Asks the ACTIVE driver, not MongoDB. The check used to call the Mongoose
+     connection directly, so a DynamoDB deployment — which never opens one —
+     reported itself permanently degraded while serving every request
+     normally. */
+  const store = await db.health();
+  const status = store.ready ? 200 : 503;
 
   res.status(status).json({
-    success: db.ready,
-    message: db.ready ? 'OK' : 'Degraded — database unavailable',
+    success: store.ready,
+    message: store.ready ? 'OK' : 'Degraded — database unavailable',
     data: {
       uptime: Math.floor(process.uptime()),
       timestamp: new Date().toISOString(),
-      database: db.status,
+      database: store.status,
+      driver: db.driver,
       /* Which store images are going to. Deliberately not part of the
          ready/not-ready decision: S3 being unreachable degrades uploads,
          but every text page on the site still works, and taking the whole

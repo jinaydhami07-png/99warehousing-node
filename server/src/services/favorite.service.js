@@ -3,8 +3,8 @@
  */
 'use strict';
 
-const Favorite = require('../models/favorite.model');
-const Property = require('../models/property.model');
+const db = require('../db');
+const { decorate } = require('./property.view');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -15,18 +15,25 @@ const ApiError = require('../utils/ApiError');
  * the network.
  *
  * A listing that was deleted, or has since been pulled from public view,
- * populates as null / non-approved and is filtered out — a stale favourite
+ * resolves to null / non-approved and is filtered out — a stale favourite
  * should quietly disappear, not render as a broken card.
+ *
+ * This used to be one `populate('property')`. DynamoDB has no joins, so the
+ * fetch is explicit now. It is a handful of rows per user and they are read
+ * in parallel, so the cost is one round trip, not one per favourite.
  */
 async function list(userId) {
-  const rows = await Favorite.find({ user: userId })
-    .sort({ createdAt: -1 })
-    .populate('property');
+  const rows = await db.favorites.listForUser(userId);
+
+  const properties = await Promise.all(
+    rows.map((row) => db.properties.getById(row.property).catch(() => null)),
+  );
 
   return rows
-    .filter((row) => row.property && row.property.status === 'approved')
-    .map((row) => ({
-      ...row.property.toJSON(),
+    .map((row, i) => ({ row, property: properties[i] }))
+    .filter(({ property }) => property && property.status === 'approved')
+    .map(({ row, property }) => ({
+      ...decorate(property),
       favoritedAt: row.createdAt,
     }));
 }
@@ -36,24 +43,20 @@ async function list(userId) {
  * so an impatient double-click doesn't surface a failure to the user.
  */
 async function add(userId, propertyId) {
-  const property = await Property.findById(propertyId).select('_id status');
+  const property = await db.properties.getById(propertyId);
   if (!property) throw ApiError.notFound('Property not found');
 
-  /* upsert rather than find-then-create: two rapid taps would both pass the
-     existence check and race to insert. The unique index would reject the
-     loser with a confusing 500; an upsert simply returns the existing row. */
-  await Favorite.updateOne(
-    { user: userId, property: property._id },
-    { $setOnInsert: { user: userId, property: property._id } },
-    { upsert: true }
-  );
+  /* The repository upserts rather than find-then-create: two rapid taps
+     would both pass an existence check and race to insert, and the unique
+     index would reject the loser with a confusing 500. */
+  await db.favorites.add(userId, property.id);
 
-  return { propertyId: String(property._id) };
+  return { propertyId: String(property.id) };
 }
 
 /** Removes a saved listing. Also idempotent — removing a non-favourite is fine. */
 async function remove(userId, propertyId) {
-  await Favorite.deleteOne({ user: userId, property: propertyId });
+  await db.favorites.remove(userId, propertyId);
   return { propertyId: String(propertyId) };
 }
 

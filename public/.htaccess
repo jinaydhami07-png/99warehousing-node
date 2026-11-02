@@ -1,21 +1,21 @@
 # ─────────────────────────────────────────────────────────────────────────
 # 99Warehousing — public_html
 #
-# Apache serves the static site. It does NOT serve the API.
+# Apache serves the static site and forwards only /api/* to the Node process
+# on a local port.
 #
-# The API cannot run on this host: GoDaddy's shared hosting enforces an
-# outbound port allowlist (80, 443 and 2096 are open; 27017 is not), so a
-# Node process here can never reach MongoDB Atlas. Measured against a
-# third-party port responder, with port 80 as a passing control — the
-# symptom is identical to a wrong IP in the Atlas access list, so test the
-# port before blaming Atlas.
+# Why the API can run here at all: this host enforces an outbound port
+# allowlist — 80, 443 and 2096 are open, 27017 is not — so Node here can
+# never reach MongoDB. It reaches DynamoDB, which speaks HTTPS on 443. That
+# is the whole reason the data store moved.
 #
-# The API therefore runs on Vercel, which can reach Atlas, and the pages
-# call it across origins. The host the pages call is PROD_API_HOST in
-# assets/api.js — the single place that knows where the API lives.
+# Apache serves the pages rather than proxying them. Nothing supervises a
+# process on shared hosting, so a backend that dies must not take the
+# website with it: with Node stopped, pages and assets still return 200 and
+# only /api degrades.
 #
-# An earlier version of this file proxied /api/* to Node on 127.0.0.1:5050.
-# That block is gone: it could only ever answer 503 here.
+# Rollback is removing the "API → Node" block. Apache then serves the site
+# exactly as it did before Node existed.
 # ─────────────────────────────────────────────────────────────────────────
 
 Options -Indexes
@@ -31,9 +31,20 @@ DirectoryIndex index.html
   RewriteCond %{HTTPS} !=on
   RewriteCond %{HTTP:X-Forwarded-Proto} !=https
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  # ── API → Node ─────────────────────────────────────────────────────────
+  # [P] hands the request to mod_proxy. The port here must match PORT in
+  # server/env; if they disagree every API call returns 502 while the rest
+  # of the site looks perfectly healthy.
+  RewriteRule ^api/(.*)$ http://127.0.0.1:5050/api/$1 [P,QSA,L]
 </IfModule>
 
 <IfModule mod_headers.c>
+  # mod_proxy forwards X-Forwarded-For and X-Forwarded-Host on its own but
+  # not the protocol, so without this Express sees a plain http request and
+  # req.protocol reports the wrong scheme behind TLS.
+  RequestHeader set X-Forwarded-Proto "https" env=HTTPS
+
   # ── Security ───────────────────────────────────────────────────────────
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "DENY"
@@ -48,11 +59,11 @@ DirectoryIndex index.html
   # onclick/onchange handlers; in CSP3 'unsafe-inline' in script-src alone
   # does not cover attribute handlers, and omitting it kills every button.
   #
-  # The API origin appears in connect-src and img-src because the API is
-  # off-domain (see the header of this file) and listing images are served
-  # from it. Both the current Vercel host and the api subdomain are listed
-  # so that moving to the subdomain is a one-line change in api.js.
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://99warehousing.vercel.app https://api.99warehousing.com; connect-src 'self' https://99warehousing.vercel.app https://api.99warehousing.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+  # connect-src is 'self' again now that the API is same-origin. Listing
+  # photos come from the S3 bucket, which is why that host is in img-src:
+  # DynamoDB caps an item at 400KB, so image bytes cannot live beside the
+  # listing data the way they did in MongoDB.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://99warehousing-media-apse2.s3.ap-southeast-2.amazonaws.com; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
 
   # ── Caching ────────────────────────────────────────────────────────────
   # Hashed and versioned assets may be cached hard; the HTML that references

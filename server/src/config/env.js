@@ -189,6 +189,24 @@ if (raw.MEDIA_DRIVER === 's3' && !(raw.AWS_S3_BUCKET && raw.AWS_REGION)) {
   process.exit(1);
 }
 
+/* DynamoDB cannot hold the bytes.
+   An item is capped at 400KB and one photo at four widths exceeds that on
+   its own, so there is no "store it in the database" option on this driver
+   — storage.service would write to a MongoDB model that the deployment is
+   not even connected to.
+
+   Refusing at startup rather than at the first upload: the alternative is a
+   site that looks healthy until someone adds a listing with a photo, and
+   then fails in the one flow that matters most to the person using it. */
+if ((process.env.DB_DRIVER || 'mongo').toLowerCase() === 'dynamo' && raw.MEDIA_DRIVER !== 's3') {
+  console.error(
+    '\n  ✖ DB_DRIVER=dynamo requires MEDIA_DRIVER=s3.\n' +
+      '    DynamoDB caps an item at 400KB, so image bytes cannot live in it.\n' +
+      '    Set MEDIA_DRIVER=s3 with AWS_S3_BUCKET and AWS_REGION.\n'
+  );
+  process.exit(1);
+}
+
 /* Fail fast on footguns that are legal strings but wrong in practice. */
 if (raw.JWT_ACCESS_SECRET === raw.JWT_REFRESH_SECRET) {
   console.error('\n  ✖ JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must differ.\n');

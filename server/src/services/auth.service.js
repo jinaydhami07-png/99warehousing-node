@@ -19,7 +19,8 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 const logger = require('../config/logger');
-const User = require('../models/user.model');
+const db = require('../db');
+const { stripSecrets } = require('../db/sensitive');
 const ApiError = require('../utils/ApiError');
 const userService = require('./user.service');
 
@@ -27,14 +28,14 @@ const REFRESH_COOKIE = 'bpsf_refresh';
 
 const signAccessToken = (user) =>
   jwt.sign(
-    { sub: user._id.toString(), role: user.role },
+    { sub: String(user.id), role: user.role },
     env.jwt.accessSecret,
     { expiresIn: env.jwt.accessExpires, issuer: 'bpsf-api', audience: 'bpsf-client' }
   );
 
 const signRefreshToken = (user) =>
   jwt.sign(
-    { sub: user._id.toString(), ver: user.tokenVersion || 0 },
+    { sub: String(user.id), ver: user.tokenVersion || 0 },
     env.jwt.refreshSecret,
     { expiresIn: env.jwt.refreshExpires, issuer: 'bpsf-api', audience: 'bpsf-client' }
   );
@@ -60,14 +61,19 @@ function clearRefreshCookie(res) {
 async function register(res, payload) {
   const user = await userService.createUser(payload);
   setRefreshCookie(res, user);
-  return { accessToken: signAccessToken(user), user };
+  return { accessToken: signAccessToken(user), user: stripSecrets(user) };
 }
 
 /** Signs in an existing user. */
 async function login(res, { email, password }) {
   const user = await userService.verifyCredentials(email, password);
   setRefreshCookie(res, user);
-  return { accessToken: signAccessToken(user), user };
+  /* verifyCredentials reads WITH secrets, because it has to compare a hash
+     and read the lockout counters. What goes back to the caller must not
+     carry them: this object is the body of the sign-in response, and on a
+     Mongoose document the schema's toJSON transform removed them during
+     serialisation. A plain row has no such step. */
+  return { accessToken: signAccessToken(user), user: stripSecrets(user) };
 }
 
 /**
@@ -93,9 +99,9 @@ async function adminLogin(res, passkey) {
 
   // Bootstrap a single admin identity on first use so audit trails and
   // ownership checks have a real user to point at.
-  let admin = await User.findOne({ role: 'admin' });
+  let admin = await db.users.findFirstAdmin({ secrets: true });
   if (!admin) {
-    admin = await User.create({
+    admin = await db.users.create({
       name: '99Warehousing Admin',
       email: 'admin@99warehousing.local',
       role: 'admin',
@@ -107,7 +113,7 @@ async function adminLogin(res, passkey) {
   }
 
   setRefreshCookie(res, admin);
-  return { accessToken: signAccessToken(admin), user: admin };
+  return { accessToken: signAccessToken(admin), user: stripSecrets(admin) };
 }
 
 /**
@@ -268,20 +274,23 @@ async function googleCallback(req, res, { code, state }) {
   /* Match on googleId first, then fall back to email so someone who
      registered with a password can sign in with Google afterwards and land
      in the same account rather than a duplicate. */
-  let user = await User.findOne({ googleId: profile.sub });
+  let user = await db.users.findByGoogleId(profile.sub, { secrets: true });
 
   if (!user) {
-    user = await User.findOne({ email });
+    user = await db.users.findByEmail(email, { secrets: true });
     if (user) {
-      user.googleId = profile.sub;
-      if (!user.isEmailVerified) user.isEmailVerified = true;
-      if (profile.picture) user.avatar = profile.picture;
-      await user.save();
+      /* Link the Google identity onto the existing account. One update
+         rather than mutate-then-save: there is no document to mutate. */
+      user = await db.users.update(user.id, {
+        googleId: profile.sub,
+        ...(user.isEmailVerified ? {} : { isEmailVerified: true }),
+        ...(profile.picture ? { avatar: profile.picture } : {}),
+      }, { secrets: true });
     }
   }
 
   if (!user) {
-    user = await User.create({
+    user = await db.users.create({
       name: profile.name || email.split('@')[0],
       email,
       googleId: profile.sub,
@@ -298,7 +307,7 @@ async function googleCallback(req, res, { code, state }) {
   if (!user.isActive) throw ApiError.forbidden('This account has been disabled');
 
   setRefreshCookie(res, user);
-  return { accessToken: signAccessToken(user), user: user.toJSON() };
+  return { accessToken: signAccessToken(user), user: stripSecrets(user) };
 }
 
 async function refresh(req, res) {
@@ -317,7 +326,7 @@ async function refresh(req, res) {
     throw ApiError.unauthorized('Session expired. Please sign in again.');
   }
 
-  const user = await User.findById(payload.sub).select('+tokenVersion');
+  const user = await db.users.getById(payload.sub, { secrets: true });
   if (!user || !user.isActive) {
     clearRefreshCookie(res);
     throw ApiError.unauthorized('Account unavailable');
@@ -330,12 +339,12 @@ async function refresh(req, res) {
 
   // Rotate the refresh cookie on every use, so a stolen one has a short life.
   setRefreshCookie(res, user);
-  return { accessToken: signAccessToken(user), user };
+  return { accessToken: signAccessToken(user), user: stripSecrets(user) };
 }
 
 /** Ends the session everywhere by bumping the token version. */
 async function logout(req, res) {
-  if (req.user) await userService.revokeSessions(req.user._id);
+  if (req.user) await userService.revokeSessions(req.user.id || req.user._id);
   clearRefreshCookie(res);
 }
 

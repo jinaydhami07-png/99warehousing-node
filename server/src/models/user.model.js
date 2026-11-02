@@ -13,6 +13,7 @@
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { isHash } = require('../db/password');
 const env = require('../config/env');
 
 const ROLES = ['buyer', 'owner', 'agency', 'admin'];
@@ -149,9 +150,18 @@ userSchema.index({ lockedUntil: 1 }, { expireAfterSeconds: 0, sparse: true });
    Hooks
    ───────────────────────────────────────────────────────────── */
 
-/** Hash on save — never in a controller, so no code path can store plaintext. */
+/**
+ * Hash on save — never in a controller, so no code path can store plaintext.
+ *
+ * The repository layer now hashes too, because this hook covers only
+ * `save()`: it never fired for `findByIdAndUpdate`, and it does not exist at
+ * all on the DynamoDB driver. The `isHash` guard is what lets both run
+ * safely. Re-hashing an already-hashed value is not a no-op — it yields a
+ * digest no password can ever match, locking the account permanently.
+ */
 userSchema.pre('save', async function hashPassword(next) {
   if (!this.isModified('password') || !this.password) return next();
+  if (isHash(this.password)) return next();
 
   this.password = await bcrypt.hash(this.password, env.bcryptRounds);
 

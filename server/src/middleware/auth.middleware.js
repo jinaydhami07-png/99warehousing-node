@@ -14,7 +14,9 @@
 
 const jwt = require('jsonwebtoken');
 const env = require('../config/env');
-const User = require('../models/user.model');
+const db = require('../db');
+const { passwordChangedAfter } = require('../services/account');
+const { stripSecrets } = require('../db/sensitive');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 
@@ -46,15 +48,21 @@ const authenticate = catchAsync(async (req, res, next) => {
   // Re-read the user on every request rather than trusting the token body.
   // A token minted before a role change or deactivation must not keep
   // working until it expires.
-  const user = await User.findById(payload.sub).select('+tokenVersion +passwordChangedAt');
+  const user = await db.users.getById(payload.sub, { secrets: true });
   if (!user) throw ApiError.unauthorized('Account no longer exists');
   if (!user.isActive) throw ApiError.forbidden('This account has been deactivated');
 
-  if (user.passwordChangedAfter(payload.iat)) {
+  if (passwordChangedAfter(user, payload.iat)) {
     throw ApiError.unauthorized('Password was changed. Please sign in again.');
   }
 
-  req.user = user;
+  /* The lookup above asks for the hidden fields because the check it just
+     made needs passwordChangedAt. What goes on `req.user` must not keep
+     them: controllers return req.user straight to the caller — GET
+     /auth/me is literally that — and on a Mongoose document the schema's
+     toJSON transform removed them during serialisation. A plain row has no
+     such step, so /auth/me answered with the account's password hash. */
+  req.user = stripSecrets(user);
   next();
 });
 
@@ -68,7 +76,7 @@ const optionalAuth = catchAsync(async (req, res, next) => {
       issuer: 'bpsf-api',
       audience: 'bpsf-client',
     });
-    const user = await User.findById(payload.sub);
+    const user = await db.users.getById(payload.sub);
     if (user?.isActive) req.user = user;
   } catch {
     // Anonymous is a valid state for these routes.
