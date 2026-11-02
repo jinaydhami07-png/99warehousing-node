@@ -34,6 +34,16 @@ const ENV_FILE = [
 
 if (ENV_FILE) require('dotenv').config({ path: ENV_FILE });
 
+/* Which data store the repositories sit on. Read straight from the
+   environment rather than imported from db/, because the schema below needs
+   it and db/ requires this module.
+
+   It has to affect the schema: on DynamoDB there is no MongoDB to configure,
+   and demanding a connection string for a database the process never opens
+   is a deployment that fails for no reason — which is exactly what it did,
+   with "MONGODB_URI is required" on a host that has no MongoDB. */
+const DB_DRIVER = (process.env.DB_DRIVER || 'mongo').toLowerCase();
+
 /** Treats blanks and leftover `<< PASTE … >>` placeholders as unset. */
 const optional = (schema) =>
   z.preprocess((v) => {
@@ -70,8 +80,9 @@ const schema = z.object({
     .union([z.coerce.number().int().positive(), z.string().min(1)])
     .default(5000),
 
-  /* Never hardcoded, never committed — see .env.example */
-  MONGODB_URI: required('MONGODB_URI'),
+  /* Never hardcoded, never committed — see .env.example.
+     Required only on the MongoDB driver; see DB_DRIVER above. */
+  MONGODB_URI: DB_DRIVER === 'dynamo' ? optional(z.string()) : required('MONGODB_URI'),
   MONGO_POOL_SIZE: z.coerce.number().int().positive().max(100).default(10),
   MONGO_MIN_POOL_SIZE: z.coerce.number().int().nonnegative().default(2),
 
@@ -213,7 +224,7 @@ if (raw.MEDIA_DRIVER === 's3' && !(raw.AWS_S3_BUCKET && raw.AWS_REGION)) {
    Refusing at startup rather than at the first upload: the alternative is a
    site that looks healthy until someone adds a listing with a photo, and
    then fails in the one flow that matters most to the person using it. */
-if ((process.env.DB_DRIVER || 'mongo').toLowerCase() === 'dynamo' && raw.MEDIA_DRIVER !== 's3') {
+if (DB_DRIVER === 'dynamo' && raw.MEDIA_DRIVER !== 's3') {
   console.error(
     '\n  ✖ DB_DRIVER=dynamo requires MEDIA_DRIVER=s3.\n' +
       '    DynamoDB caps an item at 400KB, so image bytes cannot live in it.\n' +
@@ -334,6 +345,9 @@ const env = Object.freeze({
   port: raw.PORT,
   bodyLimit: raw.BODY_LIMIT,
   trustProxy: raw.TRUST_PROXY,
+  /* Exposed so the boot sequence does not have to re-read process.env and
+     risk disagreeing with the schema about which store is in use. */
+  dbDriver: DB_DRIVER,
   logLevel: raw.LOG_LEVEL,
 
   mongo: {

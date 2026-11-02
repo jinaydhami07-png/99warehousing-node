@@ -59,18 +59,29 @@ async function start() {
      anyway, and keep retrying underneath. Pages stay up, health reports
      "disconnected", and the site heals itself once Network Access is fixed —
      without anyone having to find Restart in cPanel. */
-  try {
-    await database.connect();
-  } catch (err) {
-    logger.fatal(
-      { err: err.message },
-      'MongoDB unreachable at startup. Pages will still serve, but every API ' +
-        'request fails until it connects. On cPanel this is almost always the ' +
-        'Atlas IP allowlist: Atlas -> Network Access -> Add IP Address, using ' +
-        'the Shared IP Address from the cPanel home page. Retrying in the ' +
-        'background — no restart needed once it is fixed.'
+  if (env.dbDriver === 'dynamo') {
+    /* No MongoDB to connect to, and nothing to retry. Opening a pool here
+       would be pointless work on every boot, and the failure logged below
+       would send whoever read it to the Atlas IP allowlist to debug a
+       database this process does not use. */
+    logger.info(
+      { driver: 'dynamo' },
+      'Data store: DynamoDB — skipping the MongoDB connection'
     );
-    retryDatabaseInBackground();
+  } else {
+    try {
+      await database.connect();
+    } catch (err) {
+      logger.fatal(
+        { err: err.message },
+        'MongoDB unreachable at startup. Pages will still serve, but every API ' +
+          'request fails until it connects. On cPanel this is almost always the ' +
+          'Atlas IP allowlist: Atlas -> Network Access -> Add IP Address, using ' +
+          'the Shared IP Address from the cPanel home page. Retrying in the ' +
+          'background — no restart needed once it is fixed.'
+      );
+      retryDatabaseInBackground();
+    }
   }
 
   /* Say where images are going, at boot, every time. Whether uploads land in
