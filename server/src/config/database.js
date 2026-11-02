@@ -146,13 +146,53 @@ async function disconnect() {
   logger.info('MongoDB connection closed');
 }
 
-/** Used by the health endpoint. 1 === connected in the Mongoose readyState enum. */
-function health() {
+/**
+ * Used by the health endpoint.
+ *
+ * readyState on its own is the wrong question. It is a cached flag, and
+ * `maxIdleTimeMS` above closes sockets that have been idle for 30 seconds —
+ * which, on a low-traffic serverless deployment, is most of the time. The
+ * flag then reads 0 or 2 while the connection is perfectly recoverable: the
+ * driver reopens a socket on the next query and it succeeds. Measured on
+ * production, roughly one health check in twelve reported "disconnected"
+ * while every data route beside it answered 200.
+ *
+ * A health check that says the API is down while it is demonstrably serving
+ * traffic is worse than no health check, because it is the kind of alert
+ * people learn to ignore. So ask the server rather than the flag.
+ *
+ * The ping is bounded. A health check that hangs is worse than one that
+ * answers "no", and serverSelectionTimeoutMS is 10s — far too long to hold
+ * a monitoring request open.
+ */
+const HEALTH_PING_TIMEOUT_MS = 3_000;
+
+async function health() {
   const states = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
-  return {
-    status: states[mongoose.connection.readyState] || 'unknown',
-    ready: mongoose.connection.readyState === 1,
-  };
+  const status = states[mongoose.connection.readyState] || 'unknown';
+
+  /* Shutting down, or never connected at all: there is nothing to ping and
+     no reason to wait three seconds to find that out. */
+  if (mongoose.connection.readyState === 3 || !mongoose.connection.db) {
+    return { status, ready: false };
+  }
+
+  let timer;
+  try {
+    await Promise.race([
+      mongoose.connection.db.admin().ping(),
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error('health ping timed out')), HEALTH_PING_TIMEOUT_MS);
+      }),
+    ]);
+    return { status: 'connected', ready: true };
+  } catch (err) {
+    return { status, ready: false };
+  } finally {
+    /* Without this the pending timer holds the event loop open for up to
+       three seconds after a ping that already succeeded. */
+    clearTimeout(timer);
+  }
 }
 
 module.exports = { connect, disconnect, health, mongoose };

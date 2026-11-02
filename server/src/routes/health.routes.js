@@ -14,8 +14,8 @@ const router = express.Router();
  * orchestrator stops routing traffic to this instance instead of serving
  * errors to users.
  */
-router.get('/', (req, res) => {
-  const db = database.health();
+router.get('/', async (req, res) => {
+  const db = await database.health();
   const status = db.ready ? 200 : 503;
 
   res.status(status).json({
