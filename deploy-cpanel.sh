@@ -90,6 +90,39 @@ cp -R public/. "$HOME/public_html/"
 echo "  copied public/ → public_html/"
 
 echo
+echo "── cache busting ──────────────────────────────────"
+# .htaccess serves css/js with max-age=2592000 on the stated assumption that
+# assets are "hashed and versioned". They were not. Nothing versioned them, so
+# a returning visitor kept a month-old script and paired it with today's
+# headers — which is exactly how the site broke once the CSP stopped allowing
+# the host that the stale api.js was still calling. The page looked fine and
+# simply never loaded any data.
+#
+# So stamp each referenced asset with a hash of its own contents. The HTML is
+# no-cache, so it is always fresh: a changed file gets a new URL and is
+# refetched on the next page view, and an unchanged file keeps its URL and
+# stays cached. Done here rather than in the repository so that nobody has to
+# remember to update a hash by hand — the thing that would certainly be
+# forgotten, and whose failure is invisible.
+for asset in site.js demo-data.js bpsf-store.js api.js site.css auth.css; do
+  f="$HOME/public_html/assets/$asset"
+  [ -f "$f" ] || continue
+
+  hash=$(md5sum "$f" 2>/dev/null | cut -c1-8)
+  [ -n "$hash" ] || hash=$(cksum "$f" | cut -d' ' -f1)
+
+  # Dots are regex wildcards; escape them so site.js cannot match site_js.
+  esc=$(printf '%s' "$asset" | sed 's/\./\\./g')
+
+  # Matches both a bare reference and one already carrying a stamp, so this
+  # converges on re-runs instead of appending a second ?v=.
+  find "$HOME/public_html" -maxdepth 1 -name '*.html' -exec \
+    sed -i "s|assets/$esc\(?v=[0-9a-f]*\)\{0,1\}|assets/$asset?v=$hash|g" {} +
+
+  printf '  %-16s v=%s\n' "$asset" "$hash"
+done
+
+echo
 echo "── done ──────────────────────────────────────────"
 echo "Add this cron entry once, if it is not already there:"
 echo "  */2 * * * *  \$HOME/nodeapp/keepalive.sh >/dev/null 2>&1"
