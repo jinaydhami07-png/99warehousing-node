@@ -70,6 +70,30 @@ npm run dynamo:verify
 echo
 echo "── start ─────────────────────────────────────────"
 chmod +x keepalive.sh
+
+# keepalive.sh is a WATCHDOG: it starts the app only when /health does not
+# answer, and returns immediately when it does. That is right for a cron
+# every two minutes and wrong here — straight after a pull the app is still
+# answering, using the code this deploy just replaced. Without an explicit
+# stop the deploy prints every tick in green and the old process keeps
+# serving, which is indistinguishable from the change not working.
+#
+# So stop it, and let the watchdog start the new one. `|| true` throughout:
+# this script runs under `set -e`, and pgrep exits non-zero when it matches
+# nothing, which is the ordinary case on a first install.
+PID="$(cat keepalive.pid 2>/dev/null || true)"
+if [ -z "${PID:-}" ] || ! kill -0 "$PID" 2>/dev/null; then
+  PID="$(pgrep -f "$APP_DIR/app.js" 2>/dev/null | head -n 1 || true)"
+fi
+if [ -n "${PID:-}" ] && kill -0 "$PID" 2>/dev/null; then
+  echo "  stopping pid $PID so the new code is the code that runs"
+  kill "$PID" 2>/dev/null || true
+  sleep 3
+  if kill -0 "$PID" 2>/dev/null; then kill -9 "$PID" 2>/dev/null || true; fi
+else
+  echo "  nothing running to stop"
+fi
+
 ./keepalive.sh
 # The app has to open its first HTTPS connection to DynamoDB in Sydney before
 # /health answers, which is slower than a local database would be.
