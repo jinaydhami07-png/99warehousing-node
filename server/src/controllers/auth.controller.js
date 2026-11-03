@@ -48,8 +48,56 @@ const adminLogin = catchAsync(async (req, res) => {
  */
 const loginPage = (suffix) => `${env.siteUrl}/login.html${suffix}`;
 
+/* ── Where the packaged mobile app wants to come back to ──────────────
+ * The app's pages are files inside the APK, so there is no URL on this
+ * server that can hand control back to it. A custom scheme can: Android
+ * routes com.warehousing99.app://auth to the app, which reads the token off
+ * the end exactly as the website reads it off the fragment.
+ *
+ * The app cannot use the website's flow at all. Google refuses OAuth inside
+ * an embedded WebView (disallowed_useragent), so the app opens this in a
+ * real Chrome tab instead — and a Chrome tab has no way back into the app
+ * except a link like this one.
+ *
+ * NONE of this is reachable from the website. It turns on only when
+ * /auth/google is called with ?native=1, which only the app sends, and the
+ * web path below is left exactly as it was. */
+const APP_SCHEME_URL = 'com.warehousing99.app://auth';
+const NATIVE_COOKIE = 'bpsf_oauth_native';
+
+/* Carried in a cookie rather than the state parameter so the existing CSRF
+   check is not touched. 'lax' and a 10-minute life mirror the state and
+   callback cookies next to it in auth.service.js — proven to survive
+   Google's cross-site redirect back, which a 'strict' cookie would not. */
+const markNative = (res) =>
+  res.cookie(NATIVE_COOKIE, '1', {
+    httpOnly: true,
+    secure: env.isProd,
+    sameSite: 'lax',
+    maxAge: 10 * 60 * 1000,
+    path: '/',
+  });
+
+/**
+ * The destination for every exit from the OAuth round-trip.
+ *
+ * Returns the website's login page unless this run was started by the app,
+ * so a change here cannot alter web behaviour. Errors honour it too — an app
+ * user who cancels should land back in the app, not on the website inside
+ * the Chrome tab they were sent to.
+ */
+function exitTo(req, res, suffix) {
+  if (req.cookies?.[NATIVE_COOKIE] !== '1') return loginPage(suffix);
+  res.clearCookie(NATIVE_COOKIE, { path: '/' });
+  return APP_SCHEME_URL + suffix;
+}
+
 const googleStart = (req, res) => {
-  if (!env.google.enabled) return res.redirect(loginPage('?error=google_not_configured'));
+  const native = req.query.native === '1';
+  /* Marked before the guard below, so even the not-configured exit returns
+     an app caller to the app rather than stranding it on the website. */
+  if (native) markNative(res);
+  if (!env.google.enabled) return res.redirect(exitTo(req, res, '?error=google_not_configured'));
   res.redirect(authService.googleAuthUrl(res, req));
 };
 
@@ -63,12 +111,12 @@ const googleStart = (req, res) => {
  * immediately (see captureOAuthToken).
  */
 const googleCallback = catchAsync(async (req, res) => {
-  if (!env.google.enabled) return res.redirect(loginPage('?error=google_not_configured'));
+  if (!env.google.enabled) return res.redirect(exitTo(req, res, '?error=google_not_configured'));
 
   /* The user pressed Cancel, or Google refused. Not an error worth a stack
      trace — send them back to sign in normally. */
   if (req.query.error || !req.query.code) {
-    return res.redirect(loginPage('?error=google_cancelled'));
+    return res.redirect(exitTo(req, res, '?error=google_cancelled'));
   }
 
   try {
@@ -76,10 +124,10 @@ const googleCallback = catchAsync(async (req, res) => {
       code: req.query.code,
       state: req.query.state,
     });
-    return res.redirect(loginPage('#token=' + encodeURIComponent(accessToken)));
+    return res.redirect(exitTo(req, res, '#token=' + encodeURIComponent(accessToken)));
   } catch (err) {
     logger.warn({ err: err.message }, 'Google sign-in failed');
-    return res.redirect(loginPage('?error=google_failed'));
+    return res.redirect(exitTo(req, res, '?error=google_failed'));
   }
 });
 
