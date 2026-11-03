@@ -28,6 +28,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const sanitizeHtml = require('sanitize-html');
 
+const { userId } = require('../db/userId');
 const env = require('../config/env');
 const logger = require('../config/logger');
 const ApiError = require('../utils/ApiError');
@@ -216,7 +217,7 @@ const contactLimiter = rateLimit({
   ...limiterBase,
   windowMs: 60 * 60 * 1000,
   max: 30,
-  keyGenerator: (req) => (req.user ? `u:${req.user._id}` : `ip:${req.ip}`),
+  keyGenerator: (req) => (req.user ? `u:${userId(req.user)}` : `ip:${req.ip}`),
   handler: (req, res, next) =>
     next(ApiError.tooMany('You have viewed a lot of contact details. Please try again later.')),
 });

@@ -155,6 +155,12 @@
       <div><span class="stat-num" id="cLive">—</span><span class="stat-lab">Live</span></div>
       <div><span class="stat-num" id="cWaiting">—</span><span class="stat-lab">Awaiting review</span></div>
     </div>
+
+    <!-- The listings themselves. Counts alone told an owner that something
+         was "awaiting review" without saying which, and a rejected listing
+         showed up nowhere at all — the moderator's reason was stored on the
+         property and never shown to the one person who needed to act on it. -->
+    <div id="myListings" style="margin-top:20px;"></div>
   </div>
 
   <div class="card">
@@ -226,12 +232,86 @@ function initial(u) {
   return s;
 }
 
+/* Status as the owner experiences it, not the database's word for it.
+   "rejected" on its own reads as final; what the moderator actually means is
+   that it needs changes before it can go live. */
+var LISTING_STATE = {
+  approved: { label: 'Live on site',    bg: 'rgba(154,175,155,0.25)', fg: '#2a5a2b' },
+  pending:  { label: 'Awaiting review', bg: 'rgba(212,176,106,0.25)', fg: '#7a5c14' },
+  rejected: { label: 'Needs changes',   bg: 'rgba(166,54,45,0.15)',   fg: '#A6362D' },
+  draft:    { label: 'Draft',           bg: 'rgba(107,87,68,0.15)',   fg: '#6B5744' }
+};
+
+function escAcc(v) {
+  return String(v == null ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function renderMyListings(items) {
+  var box = document.getElementById('myListings');
+  if (!box) return;
+
+  if (!items.length) {
+    box.innerHTML =
+      '<p class="page-sub" style="margin:0;">You have not listed a property yet. ' +
+      '<a href="submit-listing.html" style="color:var(--antique-gold);font-weight:600;">List one now</a>.</p>';
+    return;
+  }
+
+  /* Needs-changes first, then awaiting review: the ones the owner can do
+     something about, before the ones that are simply live. */
+  var order = { rejected: 0, pending: 1, draft: 2, approved: 3 };
+  items = items.slice().sort(function (a, b) {
+    return (order[a.status] == null ? 9 : order[a.status]) - (order[b.status] == null ? 9 : order[b.status]);
+  });
+
+  box.innerHTML = items.map(function (p) {
+    var st = LISTING_STATE[p.status] || LISTING_STATE.draft;
+
+    /* The moderator's note. Shown only when it still applies — the server
+       clears it once a listing leaves the rejected state, so a stale reason
+       cannot sit under a listing that is already live. */
+    var note = (p.status === 'rejected' && p.rejectionReason)
+      ? '<div style="margin-top:8px;padding:10px 12px;border-radius:8px;' +
+        'background:rgba(166,54,45,0.08);border:1px solid rgba(166,54,45,0.2);' +
+        'font-size:12.5px;line-height:1.6;color:var(--text-mid);">' +
+        '<b style="color:#A6362D;">What to change:</b> ' + escAcc(p.rejectionReason) + '</div>'
+      : '';
+
+    /* Only an approved listing has a public page to link to. */
+    var link = p.status === 'approved'
+      ? '<a href="property-detail.html?id=' + escAcc(p.id) + '" ' +
+        'style="font-size:12px;color:var(--antique-gold);font-weight:600;">View live →</a>'
+      : '<span style="font-size:12px;color:var(--text-mid);">Not public yet</span>';
+
+    return '' +
+      '<div style="padding:14px 0;border-top:1px solid rgba(200,168,130,0.2);">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">' +
+          '<div style="min-width:0;">' +
+            '<div style="font-weight:600;color:var(--deep-mahogany);">' + escAcc(p.name) + '</div>' +
+            '<div style="font-size:12px;color:var(--text-mid);margin-top:2px;">' +
+              escAcc(p.location || p.city || '') +
+              (p.rate ? ' · ₹' + escAcc(p.rate) + '/sq ft' : '') +
+            '</div>' +
+          '</div>' +
+          '<span style="flex-shrink:0;padding:4px 10px;border-radius:100px;font-size:10px;' +
+            'letter-spacing:1px;text-transform:uppercase;font-weight:600;' +
+            'background:' + st.bg + ';color:' + st.fg + ';">' + st.label + '</span>' +
+        '</div>' +
+        note +
+        '<div style="margin-top:8px;">' + link + '</div>' +
+      '</div>';
+  }).join('');
+}
+
 function loadCounts() {
   return API.properties.mine().then(function (res) {
     var items = res.items || [];
     document.getElementById('cMine').textContent = items.length;
     document.getElementById('cLive').textContent = items.filter(function (p) { return p.status === 'approved'; }).length;
     document.getElementById('cWaiting').textContent = items.filter(function (p) { return p.status === 'pending'; }).length;
+    renderMyListings(items);
   }).catch(function () { /* counts are a nicety, not worth an error banner */ });
 }
 

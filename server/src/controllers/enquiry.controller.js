@@ -3,6 +3,7 @@
  */
 'use strict';
 
+const { userId } = require('../db/userId');
 const catchAsync = require('../utils/catchAsync');
 const { success, created, paginated } = require('../utils/ApiResponse');
 const { getPagination } = require('../utils/pagination');
@@ -19,7 +20,7 @@ const create = catchAsync(async (req, res) => {
 
 /** GET /api/v1/enquiries/mine */
 const listMine = catchAsync(async (req, res) => {
-  const items = await enquiryService.listMine(req.user._id);
+  const items = await enquiryService.listMine(userId(req.user));
   success(res, { message: 'Your enquiries retrieved', data: { items } });
 });
 

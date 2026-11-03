@@ -4,6 +4,7 @@
  */
 'use strict';
 
+const { userId } = require('../db/userId');
 const catchAsync = require('../utils/catchAsync');
 const { success, created, paginated } = require('../utils/ApiResponse');
 const { getPagination } = require('../utils/pagination');
@@ -18,7 +19,7 @@ const list = catchAsync(async (req, res) => {
 
 /** GET /api/v1/properties/mine — the signed-in user's own submissions */
 const listMine = catchAsync(async (req, res) => {
-  const items = await propertyService.listMine(req.user._id);
+  const items = await propertyService.listMine(userId(req.user));
   success(res, { message: 'Your listings retrieved', data: { items } });
 });
 

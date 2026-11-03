@@ -17,6 +17,7 @@ const env = require('../config/env');
 const db = require('../db');
 const { passwordChangedAfter } = require('../services/account');
 const { stripSecrets } = require('../db/sensitive');
+const { userId } = require('../db/userId');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 
@@ -106,7 +107,7 @@ const authorizeOwner = (loadResource, ownerField = 'owner') =>
 
     if (req.user.role !== 'admin') {
       const ownerId = String(doc[ownerField]?._id || doc[ownerField] || '');
-      if (ownerId !== String(req.user._id)) {
+      if (ownerId !== userId(req.user)) {
         throw ApiError.forbidden('You can only modify your own resources');
       }
     }
