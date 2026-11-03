@@ -251,4 +251,70 @@
       revealables.forEach(function (el) { el.classList.add('visible'); });
     }
   }
+  /* ─── Hardware back button (native app only) ───────────────────────
+     Android's back button is a system gesture, not a browser control. In a
+     WebView nothing is bound to it by default, so from ANY page it closes
+     the whole app — including with a dialog open or three pages deep into
+     the catalogue. That is the single most jarring thing about a wrapped
+     site, and it is invisible on the web, where the browser owns the
+     control and does the right thing already.
+
+     Order matters: dismiss what is on top first. A back press with a modal
+     open should close the modal, not navigate the page out from under it.
+
+     Guarded on window.Capacitor, so this is inert in a browser — the whole
+     block costs the website nothing but the bytes.
+     ───────────────────────────────────────────────────────────────── */
+  (function hardwareBackButton() {
+    if (!window.Capacitor) return;
+
+    var App = window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+    if (!App) return;   // plugin not installed in this build
+
+    /* Both modals and the mobile menu mark themselves with .open, which is
+       what makes one selector enough. */
+    function topmostOpenLayer() {
+      var layers = document.querySelectorAll('.modal.open, [id$="Modal"].open, #mobileMenu.open');
+      return layers.length ? layers[layers.length - 1] : null;
+    }
+
+    function flash(message) {
+      var el = document.createElement('div');
+      el.setAttribute('role', 'status');
+      el.textContent = message;
+      el.style.cssText =
+        'position:fixed;left:50%;bottom:72px;transform:translateX(-50%);z-index:3000;' +
+        'background:rgba(74,55,40,0.95);color:#faf7f2;padding:10px 18px;border-radius:100px;' +
+        'font-family:inherit;font-size:13px;pointer-events:none;';
+      document.body.appendChild(el);
+      setTimeout(function () { el.remove(); }, 1800);
+    }
+
+    var exitArmed = false;
+
+    App.addListener('backButton', function (event) {
+      var layer = topmostOpenLayer();
+      if (layer) {
+        /* The mobile menu has its own teardown — body scroll lock, the
+           hamburger's X-fold — so go through toggleMenu rather than just
+           stripping the class and leaving the page unscrollable. */
+        if (layer.id === 'mobileMenu' && typeof window.toggleMenu === 'function') window.toggleMenu();
+        else layer.classList.remove('open');
+        return;
+      }
+
+      if (event && event.canGoBack) {
+        window.history.back();
+        return;
+      }
+
+      /* Nowhere left to go. Require a second press, because a single stray
+         tap on the entry page would otherwise drop the user out of the app
+         with no warning. */
+      if (exitArmed) { App.exitApp(); return; }
+      exitArmed = true;
+      flash('Press back again to exit');
+      setTimeout(function () { exitArmed = false; }, 2000);
+    });
+  })();
 })();

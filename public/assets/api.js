@@ -27,8 +27,39 @@
      is an httpOnly sameSite=strict cookie, and a browser will not send that
      to a different site at all. Off-host, every session quietly ended when
      the 15-minute access token expired. */
+  /* Inside the Android/iOS app there is no server at this origin — the pages
+     are files in the APK — so the relative path above would resolve against
+     the bundle and 404. The API has to be named absolutely.
+
+     Detected via global.Capacitor, NOT by inspecting the URL. iOS serves the
+     bundle from capacitor://localhost but ANDROID serves it from
+     http://localhost, which is indistinguishable from a local dev server and
+     would collide with LOCAL_API below.
+
+     The host matters as much as the scheme. The refresh token is an httpOnly
+     sameSite=strict cookie, so the browser sends it only to the same *site*.
+     capacitor.config.json gives the app the hostname www.99warehousing.com,
+     which shares the registrable domain with the API host below — same-site,
+     cookie sent, sessions survive. Point this at a different domain and every
+     session dies silently when the 15-minute access token expires.
+
+     Why www rather than a dedicated app.* origin: the app's requests are
+     cross-ORIGIN, so the API's CORS allow-list has to name whatever host the
+     app uses, and the deployed list already contains www.99warehousing.com.
+     app.99warehousing.com was tried first and the live API answered 403
+     "Not allowed by CORS" to every request. Reusing an origin the server
+     already trusts needs no change on the host at all. The cost is that app
+     traffic is indistinguishable from web traffic in the server logs; if
+     that matters, add app.99warehousing.com to CORS_ORIGINS and switch the
+     hostname back.
+
+     Note this host is never resolved through DNS — Capacitor answers it from
+     the bundle inside the app. It only has to match the allow-list. */
+  var NATIVE_API = 'https://99warehousing.com/api/v1';
+
   var API_BASE = global.BPSF_API_BASE ||
-    (location.protocol === 'file:' ? 'http://localhost:5000/api/v1' : '/api/v1');
+    (global.Capacitor ? NATIVE_API :
+     location.protocol === 'file:' ? 'http://localhost:5000/api/v1' : '/api/v1');
 
   /* Where the API lives when the pages are being served by something else.
      Opening the site through Live Server, http-server or a bundler is common,
@@ -56,6 +87,33 @@
   var TOKEN_KEY = 'bpsf.access_token';
   var USER_KEY = 'bpsf.user';
 
+  /* ── Staying signed in across browser restarts ──────────────────────
+     The access token lives in sessionStorage and is gone the moment the
+     browser closes — deliberately, because it is a bearer token and a short
+     life limits what a stolen one is worth. The refresh token is the part
+     meant to last: it is an httpOnly cookie with a seven-day life, which the
+     browser keeps across restarts and JavaScript cannot read.
+
+     What was missing is anything that USED it on the way in. refresh() only
+     ran reactively, after a request came back 401, and every page decides
+     what to draw from API.isAuthed() — which reads the access token that is
+     no longer there. So a returning visitor with a perfectly valid session
+     was shown a signed-out site and asked to log in again.
+
+     This marker closes that gap. It records only that a session existed,
+     never who it belonged to or any part of a token, and it is the reason an
+     anonymous visitor does not pay for a pointless /auth/refresh on every
+     page they open. It is cleared on sign-out and whenever a restore fails,
+     so a stale one cannot keep costing a request forever. */
+  var SESSION_HINT = 'bpsf.has_session';
+
+  function rememberSession(exists) {
+    try {
+      if (exists) localStorage.setItem(SESSION_HINT, '1');
+      else localStorage.removeItem(SESSION_HINT);
+    } catch (e) { /* private mode — restore simply will not be attempted */ }
+  }
+
   var accessToken = null;
   try { accessToken = sessionStorage.getItem(TOKEN_KEY); } catch (e) { /* private mode */ }
 
@@ -67,6 +125,7 @@
       if (user) sessionStorage.setItem(USER_KEY, JSON.stringify(user));
       else sessionStorage.removeItem(USER_KEY);
     } catch (e) { /* ignore */ }
+    rememberSession(Boolean(token));
     global.dispatchEvent(new CustomEvent('bpsf:auth', { detail: { user: user || null } }));
   }
 
@@ -422,7 +481,23 @@
         clearTimeout(timer);
         return toDemo('/auth/refresh', { method: 'POST' });
       })
-      .then(function (d) { if (d && d.accessToken) setSession(d.accessToken, d.user); return d; });
+      /* unwrap() matters here. Every other call reaches the server through
+         request(), which unwraps {success,message,data} before returning.
+         refresh() uses fetch directly and so received the raw envelope —
+         and then tested d.accessToken, which lives at d.data.accessToken.
+         The test was always false, so a refresh that the server answered
+         with 200 and a valid token never established the session.
+
+         That silently broke three things: the 401 retry in request() reused
+         the same missing token and failed again, account.html's boot
+         fallback signed nobody in, and a returning visitor could not be
+         restored from their refresh cookie. Unwrapping also makes what this
+         returns match every other method, which is what callers assume. */
+      .then(function (d) {
+        var session = unwrap(d);
+        if (session && session.accessToken) setSession(session.accessToken, session.user);
+        return session;
+      });
   }
 
   var qs = function (params) {
@@ -741,6 +816,39 @@
     API.auth.me()
       .then(function (d) { setSession(token, d.user); })
       .catch(function () { setSession(null, null); });
+  })();
+
+  /* Restore the session before the page decides the visitor is signed out.
+     Runs after captureOAuthToken, so a Google sign-in that just handed us a
+     token is not followed by a redundant refresh.
+
+     API.ready resolves to whether a session is active. Pages that gate on
+     API.isAuthed() can await it to avoid drawing a signed-out header and
+     then correcting it a moment later; those that do not are still updated
+     by the bpsf:auth event that setSession fires, which site.js already
+     listens to for the account chip.
+
+     Concurrent refreshes are safe here: account.html runs its own on boot.
+     The server rotates the cookie but keeps no denylist — it validates the
+     JWT and tokenVersion — so two calls with the same cookie both succeed
+     and the later one simply wins. */
+  API.ready = (function restoreSession() {
+    if (accessToken) return Promise.resolve(true);
+    if (location.protocol === 'file:') return Promise.resolve(false);
+
+    var hinted = false;
+    try { hinted = localStorage.getItem(SESSION_HINT) === '1'; } catch (e) {}
+    if (!hinted) return Promise.resolve(false);
+
+    return refresh().then(
+      function (d) { return Boolean(d && d.accessToken); },
+      function () {
+        /* Expired, revoked, or signed out elsewhere. Drop the marker so
+           this is not retried on every page from now on. */
+        rememberSession(false);
+        return false;
+      }
+    );
   })();
 
   global.API = API;
